@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   ShieldIcon, 
-  BrainIcon, 
-  TreeIcon, 
   CodeIcon, 
   LayoutIcon, 
   TableIcon, 
@@ -15,31 +13,11 @@ import {
 } from './components/Icons';
 
 // Core Business Data
-const brands = {
-  aegis: {
-    name: "Aegis Core",
-    slogan: "Secure by Design. Built for Tomorrow.",
-    description: "Vi utvecklar säkra, intelligenta och framtidssäkra tekniska lösningar inom cybersäkerhet, inbyggda system, robust mjukvaruutveckling och digital innovation.",
-    accent: "text-cyan-400 border-cyan-500/30",
-    bgClass: "bg-cyan-500/10",
-    icon: ShieldIcon
-  },
-  nexora: {
-    name: "Nexora Technologies",
-    slogan: "Building Secure Intelligence.",
-    description: "Där innovation möter säkerhet – vi bygger morgondagens teknik och digitala system med fokus på kvalitet, artificiell intelligens och smarta molnlösningar.",
-    accent: "text-purple-400 border-purple-500/30",
-    bgClass: "bg-purple-500/10",
-    icon: BrainIcon
-  },
-  cedrus: {
-    name: "Cedrus Technologies",
-    slogan: "Rooted in Strength. Driven by Innovation.",
-    description: "Med styrka, stabilitet och innovation som grund skapar vi hållbara och stabila tekniklösningar för en säker, automatiserad och uppkopplad framtid.",
-    accent: "text-emerald-400 border-emerald-500/30",
-    bgClass: "bg-emerald-500/10",
-    icon: TreeIcon
-  }
+const brand = {
+  name: "Aegis",
+  slogan: "Secure by Design. Built for Tomorrow.",
+  description: "Vi utvecklar säkra, intelligenta och framtidssäkra tekniska lösningar inom cybersäkerhet, inbyggda system, robust mjukvaruutveckling och digital innovation.",
+  icon: ShieldIcon
 };
 
 const services = [
@@ -192,14 +170,7 @@ const services = [
 ];
 
 function App() {
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('theme') || 'aegis';
-  });
-
   const [activeTab, setActiveTab] = useState('programming');
-  const [activeSimScenario, setActiveSimScenario] = useState('data');
-  const [simStep, setSimStep] = useState(0); // 0: Start, 1: Problem, 2: Process, 3: Result
-  const [isSimulating, setIsSimulating] = useState(false);
 
   // Calculator State
   const [selectedServices, setSelectedServices] = useState({
@@ -218,37 +189,15 @@ function App() {
     name: '',
     email: '',
     service: 'fullstack',
-    message: '',
-    selectedBrand: theme
+    message: ''
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-    setFormData(prev => ({ ...prev, selectedBrand: theme }));
-  }, [theme]);
-
-  // Run scenario simulation auto steps
-  useEffect(() => {
-    let timer;
-    if (isSimulating) {
-      if (simStep < 3) {
-        timer = setTimeout(() => {
-          setSimStep(prev => prev + 1);
-        }, 2000);
-      } else {
-        setIsSimulating(false);
-      }
-    }
-    return () => clearTimeout(timer);
-  }, [isSimulating, simStep]);
-
-  const startSimulation = (scenarioId) => {
-    setActiveSimScenario(scenarioId);
-    setSimStep(1);
-    setIsSimulating(true);
-  };
+    document.documentElement.setAttribute('data-theme', 'aegis');
+  }, []);
 
   const toggleCalculatorService = (service) => {
     setSelectedServices(prev => ({ ...prev, [service]: !prev[service] }));
@@ -325,14 +274,31 @@ function App() {
 
   const estimate = calculateEstimate();
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    // Simulate API request
-    setFormSubmitted(true);
-    setTimeout(() => {
-      // Print console log to simulate backend receiving data
-      console.log("Inquiry received:", formData);
-    }, 500);
+    setIsSubmitting(true);
+    setFormError('');
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+      const responseData = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(responseData?.message || 'Kunde inte skicka formuläret');
+      }
+
+      setFormSubmitted(true);
+    } catch (error) {
+      setFormError(error.message || 'Något gick fel när formuläret skulle skickas. Försök igen om en stund.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleResetForm = () => {
@@ -340,13 +306,13 @@ function App() {
       name: '',
       email: '',
       service: 'fullstack',
-      message: '',
-      selectedBrand: theme
+      message: ''
     });
+    setFormError('');
     setFormSubmitted(false);
   };
 
-  const activeBrand = brands[theme];
+  const activeBrand = brand;
   const ActiveBrandIcon = activeBrand.icon;
 
   return (
@@ -367,29 +333,6 @@ function App() {
                 {activeBrand.slogan}
               </span>
             </div>
-          </div>
-
-          <div className="flex items-center gap-2 bg-brand-bg border border-brand-border p-1 rounded-2xl shadow-inner">
-            <span className="text-xs font-semibold px-3 py-1.5 text-brand-muted font-mono hidden md:inline">
-              VÄLJ DESIGNKONCEPT:
-            </span>
-            {Object.keys(brands).map((key) => {
-              const b = brands[key];
-              const isSelected = theme === key;
-              return (
-                <button
-                  key={key}
-                  onClick={() => setTheme(key)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 ${
-                    isSelected 
-                      ? 'bg-brand-primary text-brand-bg shadow-lg scale-105 font-black' 
-                      : 'text-brand-muted hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  {b.name.split(' ')[0]}
-                </button>
-              );
-            })}
           </div>
         </div>
       </div>
@@ -430,62 +373,6 @@ function App() {
         </div>
       </section>
 
-      {/* Founders & Vision Section */}
-      <section className="py-20 bg-black/20 border-b border-brand-border relative">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
-              Vår Vision & Grundare
-            </h2>
-            <div className="w-16 h-1 bg-brand-primary mx-auto mt-4 rounded-full"></div>
-            <p className="mt-6 text-brand-muted max-w-2xl mx-auto">
-              Vi drivs av att förstå människors problem och skapa smarta, säkra lösningar som gör skillnad på riktigt.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Founder 1 */}
-            <div className="glass-effect rounded-3xl p-8 flex flex-col items-center text-center relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-brand-primary/5 rounded-full blur-2xl"></div>
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-brand-primary to-brand-secondary p-0.5 shadow-lg group-hover:scale-105 transition-transform duration-300">
-                <div className="w-full h-full rounded-[14px] bg-brand-bg flex items-center justify-center font-bold text-2xl text-brand-primary">
-                  SR
-                </div>
-              </div>
-              <h3 className="mt-6 text-xl font-bold text-white">Sharbel Rasho</h3>
-              <p className="text-xs text-brand-primary font-mono uppercase tracking-widest mt-1">Medgrundare & Fullstack-utvecklare</p>
-              <p className="mt-4 text-sm text-brand-muted leading-relaxed font-light">
-                Specialist på systemutveckling, API-integrationer och automatisering. Drivs av att transformera krångliga manuella processer till sömlös, effektiv programvara.
-              </p>
-              <div className="flex flex-wrap justify-center gap-2 mt-6">
-                {["Fullstack", "Python", "React", "Automation", "Databaser"].map(s => (
-                  <span key={s} className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/5 text-xs text-brand-muted font-mono">{s}</span>
-                ))}
-              </div>
-            </div>
-
-            {/* Founder 2 */}
-            <div className="glass-effect rounded-3xl p-8 flex flex-col items-center text-center relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-brand-primary/5 rounded-full blur-2xl"></div>
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-brand-primary to-brand-secondary p-0.5 shadow-lg group-hover:scale-105 transition-transform duration-300">
-                <div className="w-full h-full rounded-[14px] bg-brand-bg flex items-center justify-center font-bold text-2xl text-brand-primary">
-                  BN
-                </div>
-              </div>
-              <h3 className="mt-6 text-xl font-bold text-white">Butros Nasrallah</h3>
-              <p className="text-xs text-brand-primary font-mono uppercase tracking-widest mt-1">Medgrundare & Säkerhetsexpert</p>
-              <p className="mt-4 text-sm text-brand-muted leading-relaxed font-light">
-                Brinner för inbyggda system (IoT), hårdvara, nätverkskonfiguration och cybersäkerhet. Designar lösningar som är robusta och säkra i alla led.
-              </p>
-              <div className="flex flex-wrap justify-center gap-2 mt-6">
-                {["Cybersäkerhet", "IoT", "Low-level C", "VPN", "Nätverk"].map(s => (
-                  <span key={s} className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/5 text-xs text-brand-muted font-mono">{s}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Services Explorer Section */}
       <section className="py-20 border-b border-brand-border">
@@ -579,150 +466,6 @@ function App() {
         </div>
       </section>
 
-      {/* Interactive Scenario Simulator */}
-      <section className="py-20 bg-black/20 border-b border-brand-border">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
-              Interaktiv Problemlösare
-            </h2>
-            <div className="w-16 h-1 bg-brand-primary mx-auto mt-4 rounded-full"></div>
-            <p className="mt-6 text-brand-muted max-w-2xl mx-auto">
-              Välj en vanlig utmaning företag ställs inför och klicka på "Starta Process" för att se hur vi löser det steg-för-steg.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column: Select Scenario */}
-            <div className="flex flex-col gap-3">
-              {[
-                { id: 'data', label: 'Ekonomens Excel-kaos', title: '500 spridda Excel-filer' },
-                { id: 'fullstack', label: 'Frisörens telefonsamtal', title: 'Bokningar via telefon' },
-                { id: 'embedded', label: 'Fabrikens maskiner stannar', title: 'Överhettade fabriksmaskiner' },
-                { id: 'ai', label: 'Överbelastad kundtjänst', title: 'AI-chatbot lösning' },
-                { id: 'cybersecurity', label: 'Orolig webbutik-ägare', title: 'Säkerhetsgranskning' }
-              ].map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    setActiveSimScenario(item.id);
-                    setSimStep(0);
-                    setIsSimulating(false);
-                  }}
-                  className={`w-full text-left p-4 rounded-2xl border transition-all duration-300 ${
-                    activeSimScenario === item.id 
-                      ? 'bg-brand-primary/10 border-brand-primary/40 text-white' 
-                      : 'bg-transparent border-transparent hover:bg-white/5 text-brand-muted hover:text-white'
-                  }`}
-                >
-                  <span className="block font-bold text-sm sm:text-base">{item.label}</span>
-                  <span className="block text-xs text-brand-muted font-mono mt-1">{item.title}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Middle & Right Columns: Visual Flow Area */}
-            <div className="lg:col-span-2 glass-effect rounded-3xl p-6 sm:p-8 flex flex-col justify-between min-h-[380px]">
-              <div>
-                <div className="flex justify-between items-center mb-6 pb-4 border-b border-brand-border">
-                  <span className="text-xs font-bold text-brand-primary font-mono tracking-widest uppercase">
-                    PROCESS-SIMULATOR
-                  </span>
-                  <span className="px-3 py-1 rounded-full bg-white/5 border border-white/5 text-xs text-brand-muted font-mono">
-                    Aktiv: {activeSimScenario.toUpperCase()}
-                  </span>
-                </div>
-
-                {/* Step Visualizer */}
-                <div className="grid grid-cols-3 gap-2 mb-8">
-                  {['1. Problemet', '2. Vår Process', '3. Resultat'].map((stepName, i) => {
-                    const stepNum = i + 1;
-                    const isActive = simStep >= stepNum;
-                    const isCurrent = simStep === stepNum;
-                    return (
-                      <div key={i} className="flex flex-col gap-2">
-                        <div className={`h-1.5 rounded-full transition-all duration-500 ${
-                          isCurrent 
-                            ? 'bg-brand-primary shadow-lg shadow-brand-glow' 
-                            : isActive 
-                              ? 'bg-brand-primary/60' 
-                              : 'bg-white/10'
-                        }`} />
-                        <span className={`text-[10px] sm:text-xs font-mono text-center font-bold ${
-                          isActive ? 'text-white' : 'text-brand-muted'
-                        }`}>
-                          {stepName}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Content Box Based on Step */}
-                <div className="min-h-[140px] flex items-center justify-center p-4 rounded-2xl bg-black/30 border border-brand-border">
-                  {simStep === 0 && (
-                    <div className="text-center">
-                      <p className="text-brand-muted text-sm sm:text-base mb-2">Simulatorn är redo.</p>
-                      <p className="text-xs text-brand-muted font-light">Klicka på knappen nedan för att starta den animerade lösningen.</p>
-                    </div>
-                  )}
-
-                  {simStep === 1 && (
-                    <div className="w-full animate-fade-in text-center sm:text-left">
-                      <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-mono uppercase font-bold mb-3">
-                        UTMANING
-                      </div>
-                      <p className="text-white text-base sm:text-lg font-bold mb-2">
-                        {services.find(s => s.id === activeSimScenario)?.scenario.problem}
-                      </p>
-                    </div>
-                  )}
-
-                  {simStep === 2 && (
-                    <div className="w-full animate-fade-in text-center sm:text-left">
-                      <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono uppercase font-bold mb-3">
-                        VÅR HANDLING & ANALYS
-                      </div>
-                      <p className="text-white text-sm sm:text-base leading-relaxed">
-                        {services.find(s => s.id === activeSimScenario)?.scenario.action}
-                      </p>
-                    </div>
-                  )}
-
-                  {simStep === 3 && (
-                    <div className="w-full animate-fade-in text-center sm:text-left">
-                      <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono uppercase font-bold mb-3">
-                        VÄRDE & UTFALL 🎉
-                      </div>
-                      <p className="text-emerald-400 text-base sm:text-lg font-extrabold mb-1">
-                        {services.find(s => s.id === activeSimScenario)?.scenario.result}
-                      </p>
-                      <p className="text-xs text-brand-muted font-light">
-                        Vi minimerar manuella klick, säkrar datan och maximerar er produktivitet.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Start Simulation Button */}
-              <div className="mt-6 flex justify-end">
-                <button
-                  onClick={() => startSimulation(activeSimScenario)}
-                  disabled={isSimulating}
-                  className={`px-6 py-3 rounded-xl font-bold transition-all duration-300 text-sm ${
-                    isSimulating 
-                      ? 'bg-brand-primary/20 text-brand-muted cursor-not-allowed' 
-                      : 'bg-brand-primary text-brand-bg hover:bg-brand-primary-hover shadow-md hover:scale-105 active:scale-95'
-                  }`}
-                >
-                  {isSimulating ? 'Simulerar process...' : simStep === 3 ? 'Kör Igen' : 'Starta Process ⚡'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Project Complexity & Cost Calculator */}
       <section id="calculator" className="py-20 border-b border-brand-border">
@@ -905,9 +648,9 @@ function App() {
                 <div className="w-20 h-20 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto mb-6">
                   <CheckIcon className="w-10 h-10" />
                 </div>
-                <h3 className="text-2xl font-extrabold text-white mb-2">Förfrågan skickad!</h3>
+                <h3 className="text-2xl font-extrabold text-white mb-2">Tack för din förfrågan!</h3>
                 <p className="text-brand-muted text-sm sm:text-base max-w-sm mx-auto mb-8 font-light">
-                  Tack {formData.name}, vi har mottagit din förfrågan. Vi kommer att analysera din projektidé och kontakta dig snart.
+                  Tack för din förfrågan. Vi återkommer snart.
                 </p>
                 <button
                   onClick={handleResetForm}
@@ -954,14 +697,14 @@ function App() {
                     onChange={(e) => setFormData({ ...formData, service: e.target.value })}
                     className="w-full px-4 py-3.5 bg-black/40 border border-brand-border focus:border-brand-primary rounded-xl text-brand-muted outline-none transition-all duration-300 font-bold"
                   >
-                    <option value="programming">Programmering & Utveckling</option>
-                    <option value="fullstack">Fullstack-utveckling</option>
-                    <option value="data">Data & Excel-automation</option>
-                    <option value="cybersecurity">Cybersäkerhet</option>
-                    <option value="network">Nätverk & Brandvägg</option>
-                    <option value="embedded">Embedded Systems / IoT</option>
-                    <option value="ai">AI-chatbot / Automation</option>
-                    <option value="games">Spelutveckling</option>
+                    <option className="bg-white text-black" value="programming">Programmering & Utveckling</option>
+                    <option className="bg-white text-black" value="fullstack">Fullstack-utveckling</option>
+                    <option className="bg-white text-black" value="data">Data & Excel-automation</option>
+                    <option className="bg-white text-black" value="cybersecurity">Cybersäkerhet</option>
+                    <option className="bg-white text-black" value="network">Nätverk & Brandvägg</option>
+                    <option className="bg-white text-black" value="embedded">Embedded Systems / IoT</option>
+                    <option className="bg-white text-black" value="ai">AI-chatbot / Automation</option>
+                    <option className="bg-white text-black" value="games">Spelutveckling</option>
                   </select>
                 </div>
 
@@ -981,10 +724,16 @@ function App() {
                 {/* Submit button */}
                 <button
                   type="submit"
+                  disabled={isSubmitting}
                   className="w-full py-4 rounded-xl font-bold bg-brand-primary text-brand-bg hover:bg-brand-primary-hover shadow-lg shadow-brand-glow transition-all duration-300 hover:scale-[1.01] active:scale-[0.99]"
                 >
-                  Skicka Förfrågan ⚡
+                  {isSubmitting ? 'Skickar förfrågan...' : 'Skicka Förfrågan ⚡'}
                 </button>
+                {formError && (
+                  <p className="text-sm text-rose-300 text-center font-medium">
+                    {formError}
+                  </p>
+                )}
               </form>
             )}
           </div>
@@ -1005,9 +754,7 @@ function App() {
             <p className="text-xs text-brand-muted">
               © 2026 {activeBrand.name}. Alla rättigheter reserverade.
             </p>
-            <p className="text-[10px] text-brand-muted/70 font-mono mt-1">
-              Designad av Antigravity för Sharbel Rasho & Butros Nasrallah.
-            </p>
+            
           </div>
         </div>
       </footer>
