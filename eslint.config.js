@@ -1,13 +1,11 @@
 import js from '@eslint/js'
 import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(['dist', '.next', 'out']),
   {
-    files: ['api/**/*.js', 'vite.config.js'],
+    files: ['app/api/**/*.js', 'app/lib/**/*.js', 'next.config.js', 'postcss.config.mjs'],
     extends: [
       js.configs.recommended,
     ],
@@ -20,11 +18,10 @@ export default defineConfig([
     },
   },
   {
-    files: ['src/**/*.{js,jsx}'],
+    files: ['app/**/*.{js,jsx}'],
+    ignores: ['app/api/**/*.js', 'app/lib/**/*.js'],
     extends: [
       js.configs.recommended,
-      reactHooks.configs.flat.recommended,
-      reactRefresh.configs.vite,
     ],
     languageOptions: {
       globals: globals.browser,

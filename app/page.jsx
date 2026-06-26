@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+"use client";
+
+import { useState } from 'react';
 import { 
   ShieldIcon, 
   CodeIcon, 
@@ -169,7 +171,7 @@ const services = [
   }
 ];
 
-function App() {
+export default function Page() {
   const [activeTab, setActiveTab] = useState('programming');
 
   // Calculator State
@@ -188,16 +190,13 @@ function App() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     service: 'fullstack',
     message: ''
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', 'aegis');
-  }, []);
 
   const toggleCalculatorService = (service) => {
     setSelectedServices(prev => ({ ...prev, [service]: !prev[service] }));
@@ -225,7 +224,7 @@ function App() {
     if (selectedServices.frontend) {
       baseWeeks += 0.5;
       complexity += 10;
-      stack.push("React", "Tailwind CSS v4");
+      stack.push("Next.js", "Tailwind CSS v4");
     }
     if (selectedServices.backend) {
       baseWeeks += 1;
@@ -305,6 +304,7 @@ function App() {
     setFormData({
       name: '',
       email: '',
+      phone: '',
       service: 'fullstack',
       message: ''
     });
@@ -513,7 +513,7 @@ function App() {
                 <h3 className="text-lg font-bold text-white mb-4">2. Vilka tekniska delar krävs?</h3>
                 <div className="space-y-2.5">
                   {[
-                    { id: 'frontend', label: 'Gränssnitt / Frontend (React & CSS)', complexity: 'Medel' },
+                    { id: 'frontend', label: 'Gränssnitt / Frontend (Next.js & CSS)', complexity: 'Medel' },
                     { id: 'backend', label: 'Server-kod / Backend (APIs)', complexity: 'Medel' },
                     { id: 'database', label: 'Databas & Lagring (SQL/NoSQL)', complexity: 'Enkel' },
                     { id: 'security', label: 'Cybersäkerhet & Kryptering (Härdning)', complexity: 'Hög' },
@@ -668,7 +668,7 @@ function App() {
                     <input
                       type="text"
                       required
-                      placeholder="T.ex. Sharbel"
+                      placeholder="Namn"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       className="w-full px-4 py-3.5 bg-black/40 border border-brand-border focus:border-brand-primary focus:ring-1 focus:ring-brand-primary rounded-xl text-white outline-none transition-all duration-300 font-medium"
@@ -686,6 +686,23 @@ function App() {
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       className="w-full px-4 py-3.5 bg-black/40 border border-brand-border focus:border-brand-primary focus:ring-1 focus:ring-brand-primary rounded-xl text-white outline-none transition-all duration-300 font-medium"
                     />
+                  </div>
+
+                  {/* Phone field */}
+                  <div className="flex flex-col gap-2 sm:col-span-2">
+                    <label className="text-xs font-bold text-brand-muted font-mono tracking-wider uppercase">Ditt Telefonnummer</label>
+                    <input
+                      type="tel"
+                      required
+                      inputMode="tel"
+                      placeholder="T.ex. 070 123 45 67"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="w-full px-4 py-3.5 bg-black/40 border border-brand-border focus:border-brand-primary focus:ring-1 focus:ring-brand-primary rounded-xl text-white outline-none transition-all duration-300 font-medium"
+                    />
+                    <p className="text-[11px] text-brand-muted/80 font-light">
+                      Vi använder numret för att kunna skicka en kort bekräftelse via SMS.
+                    </p>
                   </div>
                 </div>
 
@@ -762,5 +779,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
