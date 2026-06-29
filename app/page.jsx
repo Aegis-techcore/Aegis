@@ -37,7 +37,7 @@ const services = [
     ],
     scenario: {
       title: "Java-applikation som kraschar",
-      problem: "En student har byggt ett Java-program som kraschar varje gång användaren klickar på en specifik knapp.",
+      problem: "Ett Java-program som kraschar varje gång användaren klickar på en specifik knapp.",
       action: "Vi läser och analyserar källkoden, identifierar minnesläckan/pekarfelet, åtgärdar logiken och levererar stabil kod tillsammans med en tydlig förklaring.",
       result: "Programmet fungerar nu stabilt, snabbt och kraschfritt under belastning."
     }
@@ -129,7 +129,7 @@ const services = [
     scenario: {
       title: "Överhettade fabriksmaskiner",
       problem: "En fabrik upplever plötsliga maskinstopp för att deras äldre maskiner blir för varma utan förvarning.",
-      action: "Vi installerar temperatursensorer kopplade till ESP32-mikrokontrollers som skickar data i realtid till en dashboard.",
+      action: "Vi installerar mjukvaran för temperatursensorer kopplade till ESP32-mikrokontrollers som skickar data i realtid till en dashboard.",
       result: "Automatiskt larm skickas direkt till teknikers telefoner innan överhettning sker. Noll oplanerade driftstopp."
     }
   },
