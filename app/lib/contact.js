@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { saveContactRequest } from './requestStore';
 
 const OWNER_EMAIL = 'aegis.infon@gmail.com';
 const FROM_EMAIL = 'onboarding@resend.dev';
@@ -143,14 +144,25 @@ export async function sendContactRequest(payload) {
   const service = sanitize(payload?.service);
   const message = sanitize(payload?.message);
   const serviceLabel = SERVICE_LABELS[service] || service;
+  const requestData = { name, company, email, phone, service, serviceLabel, message };
 
   if (!name || !email || !phone || !service || !message) {
     return { ok: false, status: 400, message: 'Alla fält måste fyllas i.' };
   }
 
   if (!process.env.RESEND_API_KEY) {
-    return { ok: false, status: 500, message: 'Servern saknar RESEND_API_KEY. Lägg till den i environment variables.' };
+    const result = { ok: false, status: 500, message: 'Servern saknar RESEND_API_KEY. Lägg till den i environment variables.' };
+    await saveContactRequest({ ...requestData, status: 'failed', error: result.message });
+    return result;
   }
 
-  return sendWithResend({ name, company, email, phone, serviceLabel, message });
+  const result = await sendWithResend({ name, company, email, phone, serviceLabel, message });
+
+  await saveContactRequest({
+    ...requestData,
+    status: result.ok ? 'sent' : 'failed',
+    error: result.ok ? '' : result.message,
+  });
+
+  return result;
 }

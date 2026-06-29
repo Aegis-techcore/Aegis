@@ -29,3 +29,16 @@ Lägg Resend-nyckeln i `.env.local` lokalt eller som environment variable i host
 ```env
 RESEND_API_KEY=din_resend_api_key
 ```
+
+## Adminpanel
+
+Adminpanelen finns på `http://localhost:3000/admin`.
+
+Lägg till ett adminlösenord i `.env.local` lokalt eller som environment variable i hostingen:
+
+```env
+ADMIN_PASSWORD=ditt_starka_losenord
+ADMIN_SESSION_SECRET=en_lang_slumpmassig_secret
+```
+
+Förfrågningar sparas server-side i `data/contact-requests.json` när projektet körs på en Node-server. På serverless-hosting med read-only filsystem bör detta bytas till en databas innan produktion.
