@@ -1022,7 +1022,7 @@ export default function Page() {
                   <label className="text-sm font-bold text-white">Företag</label>
                   <input
                     type="text"
-                    placeholder="Företagsnamn AB"
+                    placeholder="Företagsnamn AB / Privatkundensnamn"
                     value={formData.company}
                     onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                     className="w-full rounded-xl border border-brand-border bg-white px-4 py-4 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/30"
