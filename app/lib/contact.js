@@ -38,8 +38,9 @@ const normalizePhone = (value) => {
   return `+${compact}`;
 };
 
-const buildInquiryText = ({ name, email, phone, serviceLabel, message }) => [
+const buildInquiryText = ({ name, company, email, phone, serviceLabel, message }) => [
   `Namn: ${name}`,
+  `Företag: ${company || 'Ej angivet'}`,
   `E-post: ${email}`,
   `Telefon: ${phone}`,
   `Huvudområde: ${serviceLabel}`,
@@ -80,12 +81,13 @@ const sendSmsConfirmation = async ({ phone, name }) => {
   });
 };
 
-const sendWithResend = async ({ name, email, phone, serviceLabel, message }) => {
+const sendWithResend = async ({ name, company, email, phone, serviceLabel, message }) => {
   const resend = new Resend(process.env.RESEND_API_KEY);
-  const inquiryText = buildInquiryText({ name, email, phone, serviceLabel, message });
+  const inquiryText = buildInquiryText({ name, company, email, phone, serviceLabel, message });
   const inquiryHtml = `
     <h2>Ny förfrågan från ${escapeHtml(name)}</h2>
     <p><strong>Namn:</strong> ${escapeHtml(name)}</p>
+    <p><strong>Företag:</strong> ${escapeHtml(company || 'Ej angivet')}</p>
     <p><strong>E-post:</strong> ${escapeHtml(email)}</p>
     <p><strong>Telefon:</strong> ${escapeHtml(phone)}</p>
     <p><strong>Huvudområde:</strong> ${escapeHtml(serviceLabel)}</p>
@@ -135,6 +137,7 @@ const sendWithResend = async ({ name, email, phone, serviceLabel, message }) => 
 
 export async function sendContactRequest(payload) {
   const name = sanitize(payload?.name);
+  const company = sanitize(payload?.company);
   const email = sanitize(payload?.email);
   const phone = normalizePhone(payload?.phone);
   const service = sanitize(payload?.service);
@@ -149,5 +152,5 @@ export async function sendContactRequest(payload) {
     return { ok: false, status: 500, message: 'Servern saknar RESEND_API_KEY. Lägg till den i environment variables.' };
   }
 
-  return sendWithResend({ name, email, phone, serviceLabel, message });
+  return sendWithResend({ name, company, email, phone, serviceLabel, message });
 }

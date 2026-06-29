@@ -189,6 +189,7 @@ export default function Page() {
   // Contact Form State
   const [formData, setFormData] = useState({
     name: '',
+    company: '',
     email: '',
     phone: '',
     service: 'fullstack',
@@ -303,6 +304,7 @@ export default function Page() {
   const handleResetForm = () => {
     setFormData({
       name: '',
+      company: '',
       email: '',
       phone: '',
       service: 'fullstack',
@@ -322,9 +324,11 @@ export default function Page() {
       <div className="w-full bg-brand-bg/80 backdrop-blur-md border-b border-brand-border sticky top-0 z-50 transition-colors duration-500">
         <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-brand-primary/10 border border-brand-border flex items-center justify-center text-brand-primary animate-pulse-slow">
-              <ActiveBrandIcon className="w-6 h-6" />
-            </div>
+            <img
+              src="/aegis-logo.svg"
+              alt="Aegis logotyp"
+              className="h-12 w-12 rounded-2xl shadow-lg shadow-brand-glow/20"
+            />
             <div>
               <span className="font-extrabold text-xl tracking-tight text-white block">
                 {activeBrand.name}
@@ -627,127 +631,143 @@ export default function Page() {
       </section>
 
       {/* Contact / Inquiry Form */}
-      <section id="contact" className="py-20 relative">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
-              Låt oss bygga något säkert och smart
+      <section id="contact" className="relative overflow-hidden border-t border-brand-border bg-[radial-gradient(circle_at_12%_88%,rgba(6,182,212,0.20),transparent_34%),linear-gradient(135deg,#020617_0%,#07111f_52%,#020617_100%)] px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+        <div className="absolute inset-x-0 bottom-0 h-44 bg-brand-primary/10 blur-3xl" />
+        <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-[1fr_500px]">
+          <div className="max-w-2xl">
+            <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-brand-border bg-brand-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.28em] text-brand-primary">
+              <ActiveBrandIcon className="h-4 w-4" />
+              Aegis konsultation
+            </div>
+            <h2 className="max-w-xl text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl">
+              Boka ett kostnadsfritt säkerhets- och tillväxtsamtal
             </h2>
-            <div className="w-16 h-1 bg-brand-primary mx-auto mt-4 rounded-full"></div>
-            <p className="mt-6 text-brand-muted max-w-xl mx-auto leading-relaxed">
-              Berätta om dina utmaningar. Vi återkommer inom 24 timmar med ett förslag på lösning.
+            <p className="mt-8 max-w-xl text-base font-medium leading-8 text-brand-muted sm:text-lg">
+              Få en tydlig bild av var ert projekt står idag, vilka tekniska risker som bromsar er och vilka tre steg som skulle skapa störst effekt på kort sikt.
             </p>
+            <div className="mt-10 flex flex-col items-start gap-3 text-sm font-bold text-white">
+              <a href="mailto:aegis.infon@gmail.com" className="inline-flex items-center gap-2 rounded-full border border-brand-border bg-white/5 px-4 py-2 transition hover:border-brand-primary hover:text-brand-primary">
+                <span className="text-brand-primary">@</span>
+                Aegis.infon@gmail.com
+              </a>
+              <span className="inline-flex items-center gap-2 rounded-full border border-brand-border bg-white/5 px-4 py-2">
+                <span className="text-brand-primary">24h</span>
+                Svar inom ett dygn
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full border border-brand-border bg-white/5 px-4 py-2">
+                <span className="text-brand-primary">SMS</span>
+                Bekräftelse till mobilen
+              </span>
+            </div>
           </div>
 
-          <div className="glass-effect rounded-3xl p-6 sm:p-10 relative overflow-hidden">
-            {/* Subtle glow border overlay */}
-            <div className="absolute top-0 right-0 w-48 h-48 bg-brand-primary/5 rounded-full blur-3xl"></div>
-
+          <div className="rounded-3xl border border-brand-border bg-slate-950/85 p-5 shadow-2xl shadow-brand-glow/20 backdrop-blur-xl sm:p-6">
             {formSubmitted ? (
-              <div className="text-center py-12 animate-fade-in">
-                <div className="w-20 h-20 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto mb-6">
-                  <CheckIcon className="w-10 h-10" />
+              <div className="flex min-h-[520px] flex-col items-center justify-center text-center animate-fade-in">
+                <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
+                  <CheckIcon className="h-10 w-10" />
                 </div>
-                <h3 className="text-2xl font-extrabold text-white mb-2">Tack för din förfrågan!</h3>
-                <p className="text-brand-muted text-sm sm:text-base max-w-sm mx-auto mb-8 font-light">
-                  Tack för din förfrågan. Vi återkommer snart.
+                <h3 className="text-2xl font-extrabold text-white">Tack för din förfrågan!</h3>
+                <p className="mt-3 max-w-sm text-sm leading-6 text-brand-muted">
+                  Vi har mottagit ditt meddelande och återkommer snart.
                 </p>
                 <button
                   onClick={handleResetForm}
-                  className="px-6 py-2.5 rounded-xl text-xs font-bold border border-brand-border hover:bg-white/5 transition-all duration-200"
+                  className="mt-8 rounded-xl border border-brand-border px-6 py-2.5 text-xs font-bold text-white transition hover:border-brand-primary hover:bg-brand-primary/10"
                 >
                   Skicka en ny förfrågan
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleFormSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {/* Name field */}
-                  <div className="flex flex-col gap-2">
-                    <label className="text-xs font-bold text-brand-muted font-mono tracking-wider uppercase">Ditt Namn</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Namn"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-4 py-3.5 bg-black/40 border border-brand-border focus:border-brand-primary focus:ring-1 focus:ring-brand-primary rounded-xl text-white outline-none transition-all duration-300 font-medium"
-                    />
-                  </div>
+              <form onSubmit={handleFormSubmit} className="space-y-5">
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-bold text-white">Namn</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ange ditt fullständiga namn"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full rounded-xl border border-brand-border bg-white px-4 py-4 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/30"
+                  />
+                </div>
 
-                  {/* Email field */}
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-bold text-white">Företag</label>
+                  <input
+                    type="text"
+                    placeholder="Företagsnamn AB"
+                    value={formData.company}
+                    onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                    className="w-full rounded-xl border border-brand-border bg-white px-4 py-4 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/30"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                   <div className="flex flex-col gap-2">
-                    <label className="text-xs font-bold text-brand-muted font-mono tracking-wider uppercase">Din E-post</label>
+                    <label className="text-sm font-bold text-white">E-post</label>
                     <input
                       type="email"
                       required
                       placeholder="namn@foretag.se"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-4 py-3.5 bg-black/40 border border-brand-border focus:border-brand-primary focus:ring-1 focus:ring-brand-primary rounded-xl text-white outline-none transition-all duration-300 font-medium"
+                      className="w-full rounded-xl border border-brand-border bg-white px-4 py-4 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/30"
                     />
                   </div>
-
-                  {/* Phone field */}
-                  <div className="flex flex-col gap-2 sm:col-span-2">
-                    <label className="text-xs font-bold text-brand-muted font-mono tracking-wider uppercase">Ditt Telefonnummer</label>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm font-bold text-white">Telefon</label>
                     <input
                       type="tel"
                       required
                       inputMode="tel"
-                      placeholder="T.ex. 070 123 45 67"
+                      placeholder="070 000 00 00"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-4 py-3.5 bg-black/40 border border-brand-border focus:border-brand-primary focus:ring-1 focus:ring-brand-primary rounded-xl text-white outline-none transition-all duration-300 font-medium"
+                      className="w-full rounded-xl border border-brand-border bg-white px-4 py-4 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/30"
                     />
-                    <p className="text-[11px] text-brand-muted/80 font-light">
-                      Vi använder numret för att kunna skicka en kort bekräftelse via SMS.
-                    </p>
                   </div>
                 </div>
 
-                {/* Service selection */}
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-bold text-brand-muted font-mono tracking-wider uppercase">Huvudområde</label>
+                  <label className="text-sm font-bold text-white">Huvudområde</label>
                   <select
                     value={formData.service}
                     onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                    className="w-full px-4 py-3.5 bg-black/40 border border-brand-border focus:border-brand-primary rounded-xl text-brand-muted outline-none transition-all duration-300 font-bold"
+                    className="w-full rounded-xl border border-brand-border bg-white px-4 py-4 font-semibold text-slate-950 outline-none transition focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/30"
                   >
-                    <option className="bg-white text-black" value="programming">Programmering & Utveckling</option>
-                    <option className="bg-white text-black" value="fullstack">Fullstack-utveckling</option>
-                    <option className="bg-white text-black" value="data">Data & Excel-automation</option>
-                    <option className="bg-white text-black" value="cybersecurity">Cybersäkerhet</option>
-                    <option className="bg-white text-black" value="network">Nätverk & Brandvägg</option>
-                    <option className="bg-white text-black" value="embedded">Embedded Systems / IoT</option>
-                    <option className="bg-white text-black" value="ai">AI-chatbot / Automation</option>
-                    <option className="bg-white text-black" value="games">Spelutveckling</option>
+                    <option value="programming">Programmering & Utveckling</option>
+                    <option value="fullstack">Fullstack-utveckling</option>
+                    <option value="data">Data & Excel-automation</option>
+                    <option value="cybersecurity">Cybersäkerhet</option>
+                    <option value="network">Nätverk & Brandvägg</option>
+                    <option value="embedded">Embedded Systems / IoT</option>
+                    <option value="ai">AI-chatbot / Automation</option>
+                    <option value="games">Spelutveckling</option>
                   </select>
                 </div>
 
-                {/* Message field */}
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-bold text-brand-muted font-mono tracking-wider uppercase">Projektbeskrivning / Problem</label>
+                  <label className="text-sm font-bold text-white">Vad behöver ni hjälp med?</label>
                   <textarea
                     required
                     rows={4}
-                    placeholder="Beskriv vad du vill bygga, eller vilket tidskrävande problem du vill lösa..."
+                    placeholder="Beskriv kort ert nuläge, vad som inte fungerar idag och vad ni vill uppnå"
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full px-4 py-3.5 bg-black/40 border border-brand-border focus:border-brand-primary focus:ring-1 focus:ring-brand-primary rounded-xl text-white outline-none transition-all duration-300 font-light resize-y"
+                    className="w-full resize-y rounded-xl border border-brand-border bg-white px-4 py-4 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/30"
                   />
                 </div>
 
-                {/* Submit button */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-4 rounded-xl font-bold bg-brand-primary text-brand-bg hover:bg-brand-primary-hover shadow-lg shadow-brand-glow transition-all duration-300 hover:scale-[1.01] active:scale-[0.99]"
+                  className="w-full rounded-xl bg-brand-primary px-6 py-4 font-black text-brand-bg shadow-lg shadow-brand-glow transition hover:bg-brand-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {isSubmitting ? 'Skickar förfrågan...' : 'Skicka Förfrågan ⚡'}
+                  {isSubmitting ? 'Skickar...' : 'Skicka'}
                 </button>
                 {formError && (
-                  <p className="text-sm text-rose-300 text-center font-medium">
+                  <p className="text-center text-sm font-medium text-rose-300">
                     {formError}
                   </p>
                 )}
@@ -755,26 +775,22 @@ export default function Page() {
             )}
           </div>
         </div>
+
+        <footer className="relative mx-auto mt-20 flex max-w-6xl flex-col items-center justify-between gap-6 border-t border-brand-border pt-8 text-brand-muted md:flex-row">
+          <div className="flex items-center gap-3 text-white">
+            <img
+              src="/aegis-logo.svg"
+              alt="Aegis logotyp"
+              className="h-9 w-9 rounded-xl shadow-md shadow-brand-glow/20"
+            />
+            <span className="font-extrabold tracking-tight">Aegis</span>
+          </div>
+     
+          <div className="text-center text-xs md:text-right">
+            <p>© 2026 Aegis – Secure by Design. Built for Tomorrow. All rights reserved.</p>
+          </div>
+        </footer>
       </section>
-
-      {/* Footer */}
-      <footer className="mt-auto bg-black/40 border-t border-brand-border py-12 transition-colors duration-500">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-3">
-            <ActiveBrandIcon className="w-5 h-5 text-brand-primary" />
-            <span className="font-extrabold text-lg text-white font-mono tracking-wider">
-              {activeBrand.name.toUpperCase()}
-            </span>
-          </div>
-
-          <div className="text-center md:text-right">
-            <p className="text-xs text-brand-muted">
-              © 2026 {activeBrand.name}. Alla rättigheter reserverade.
-            </p>
-            
-          </div>
-        </div>
-      </footer>
 
     </div>
   );
