@@ -54,6 +54,13 @@ export const SparklesIcon = ({ className = "w-6 h-6", ...props }) => (
   </svg>
 );
 
+export const ChatBubbleIcon = ({ className = "w-6 h-6", ...props }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className} {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3h5.25M21 11.25c0 4.142-4.03 7.5-9 7.5a10.63 10.63 0 01-3.28-.51L3 20.25l1.88-4.516C3.704 14.48 3 12.93 3 11.25c0-4.142 4.03-7.5 9-7.5s9 3.358 9 7.5z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75l.28 1.47 1.47.28-1.47.28-.28 1.47-.28-1.47-1.47-.28 1.47-.28.28-1.47z" />
+  </svg>
+);
+
 export const GamepadIcon = ({ className = "w-6 h-6", ...props }) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className} {...props}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5h.008v.008h-.008V10.5zm.008 2.25h-.008v.008h.008v-.008zm-3.25-1.125h.008v.008h-.008v-.008zm0 2.25h-.008v.008h.008v-.008zM12 18.75l-3-3m0 0l-3 3m3-3v-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

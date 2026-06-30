@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from 'react';
-import { buildFallbackReply } from '../lib/chatRules';
-import { CheckIcon, SparklesIcon } from './Icons';
+import { asksForDirectWork, buildFallbackReply, isOutOfScope, mentionsMoney, mentionsSubscription, needsHumanHelp, normalize } from '../lib/chatRules';
+import { ChatBubbleIcon, SparklesIcon } from './Icons';
 
 const initialMessages = [
   {
@@ -11,24 +11,132 @@ const initialMessages = [
   }
 ];
 
-const quickPrompts = [
+const defaultSuggestedPrompts = [
   'Vad kan ni hjälpa med?',
   'Jag vill bygga en AI-chatbot',
   'Vilken lösning passar mig?',
-  'Vad kostar det?'
+  'Hjälp mig skriva ett mejl'
 ];
+
+const mailSuggestedPrompts = [
+  'Hjälp mig skriva ett mejl',
+  'Vilken information ska jag skicka?',
+  'Öppna kontaktformuläret'
+];
+
+const CHAT_REOPEN_DELAY_MS = 30000;
 
 const sectionLabels = {
   top: 'startsidan',
   services: 'tjänsteområdet',
   calculator: 'projektkalkylatorn',
+  subscriptions: 'abonnemang för webbundehåll och IT-support',
   contact: 'kontaktformuläret'
 };
 
 const sectionPrompts = {
   services: 'Jag ser att du tittar på våra tjänster. Vilket område låter mest relevant för dig: hemsida/app, AI, cybersäkerhet, data/Excel eller IoT?',
   calculator: 'Vill du att jag hjälper dig välja rätt delar i projektkalkylatorn? Berätta kort vad du vill bygga.',
+  subscriptions: 'Jag ser att du tittar på abonnemang. Är det för dig som privatperson eller för ett företag, och behöver du mest webbundehåll, mindre utveckling eller IT-support?',
   contact: 'Du är nära kontaktformuläret. Vill du att jag hjälper dig formulera ett tydligt meddelande till Aegis innan du skickar?'
+};
+
+const sectionSuggestedPrompts = {
+  services: [
+    'Vilken tjänst passar mig?',
+    'Jag behöver hjälp med en hemsida',
+    'Jag vill ha IT-support',
+    'Hjälp mig skriva ett mejl'
+  ],
+  calculator: [
+    'Vilka delar behöver mitt projekt?',
+    'Är mitt projekt litet eller stort?',
+    'Jag vill beskriva mitt projekt',
+    'Öppna kontaktformuläret'
+  ],
+  subscriptions: [
+    'Är Privat rätt för mig?',
+    'Vilket paket passar företag?',
+    'Vad ingår i högre nivåer?',
+    'Hjälp mig skriva ett mejl'
+  ],
+  contact: mailSuggestedPrompts
+};
+
+const buildSuggestedPrompts = (message) => {
+  const normalized = normalize(message);
+
+  if (isOutOfScope(message)) {
+    return [
+      'Vad kan Aegis hjälpa med?',
+      'Jag behöver hjälp med en hemsida',
+      'Jag vill ha IT-support',
+      'Hjälp mig skriva ett mejl'
+    ];
+  }
+
+  if (mentionsMoney(message) || /(mejl|mail|kontakt|formular|skicka|offert)/.test(normalized)) {
+    return mailSuggestedPrompts;
+  }
+
+  if (asksForDirectWork(message)) {
+    return mailSuggestedPrompts;
+  }
+
+  if (mentionsSubscription(message)) {
+    return [
+      'Är Privat rätt för mig?',
+      'Vilket paket passar företag?',
+      'Vad ingår i högre nivåer?',
+      'Öppna kontaktformuläret'
+    ];
+  }
+
+  if (/(ai|chatbot|automation|automatisering|assistent|support)/.test(normalized)) {
+    return [
+      'Vilka frågor ska chatboten svara på?',
+      'Kan chatboten samla kundens mejl?',
+      'Kan den skicka vidare svåra frågor?',
+      'Hjälp mig skriva ett mejl'
+    ];
+  }
+
+  if (/(webb|hemsida|app|system|fullstack|bokning|portal)/.test(normalized)) {
+    return [
+      'Behöver jag en ny sida eller underhåll?',
+      'Vilka funktioner behöver sidan?',
+      'Kan ni hjälpa efter lansering?',
+      'Öppna kontaktformuläret'
+    ];
+  }
+
+  if (/(sakerhet|cyber|gdpr|intrang|brandvagg|nätverk|natverk)/.test(normalized)) {
+    return [
+      'Vad behöver säkras först?',
+      'Kan ni felsöka IT-problem?',
+      'Behöver jag löpande support?',
+      'Hjälp mig skriva ett mejl'
+    ];
+  }
+
+  if (/(excel|data|rapport|databas|automatisera)/.test(normalized)) {
+    return [
+      'Vad kan automatiseras?',
+      'Kan ni samla mina filer?',
+      'Kan ni skapa rapporter?',
+      'Hjälp mig skriva ett mejl'
+    ];
+  }
+
+  if (needsHumanHelp(message)) {
+    return [
+      'Hjälp mig skriva ett mejl',
+      'Vilken information ska jag skicka?',
+      'Öppna kontaktformuläret'
+    ];
+  }
+
+  return defaultSuggestedPrompts;
 };
 
 const toApiMessages = (messages) =>
@@ -44,7 +152,11 @@ export default function ChatbotWidget() {
   const [isThinking, setIsThinking] = useState(false);
   const [pageContext, setPageContext] = useState('startsidan');
   const [answerSource, setAnswerSource] = useState('ready');
+  const [suggestedPrompts, setSuggestedPrompts] = useState(defaultSuggestedPrompts);
   const askedSectionsRef = useRef(new Set());
+  const hasAutoOpenedRef = useRef(false);
+  const userDismissedRef = useRef(false);
+  const reopenTimerRef = useRef(null);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -52,6 +164,67 @@ export default function ChatbotWidget() {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, isOpen, isThinking]);
+
+  useEffect(() => () => {
+    if (reopenTimerRef.current) {
+      window.clearTimeout(reopenTimerRef.current);
+    }
+  }, []);
+
+  const clearReopenTimer = () => {
+    if (reopenTimerRef.current) {
+      window.clearTimeout(reopenTimerRef.current);
+      reopenTimerRef.current = null;
+    }
+  };
+
+  const openChat = () => {
+    clearReopenTimer();
+    userDismissedRef.current = false;
+    hasAutoOpenedRef.current = true;
+    setIsOpen(true);
+  };
+
+  const closeChat = () => {
+    userDismissedRef.current = true;
+    setIsOpen(false);
+    clearReopenTimer();
+
+    reopenTimerRef.current = window.setTimeout(() => {
+      userDismissedRef.current = false;
+      hasAutoOpenedRef.current = true;
+      setIsOpen(true);
+      reopenTimerRef.current = null;
+    }, CHAT_REOPEN_DELAY_MS);
+  };
+
+  useEffect(() => {
+    const openOnActivity = () => {
+      if (hasAutoOpenedRef.current || userDismissedRef.current) {
+        return;
+      }
+
+      hasAutoOpenedRef.current = true;
+      window.setTimeout(() => {
+        if (!userDismissedRef.current) {
+          openChat();
+        }
+      }, 250);
+    };
+
+    const listenerOptions = { passive: true };
+    window.addEventListener('pointermove', openOnActivity, listenerOptions);
+    window.addEventListener('wheel', openOnActivity, listenerOptions);
+    window.addEventListener('touchstart', openOnActivity, listenerOptions);
+    window.addEventListener('keydown', openOnActivity);
+
+    return () => {
+      window.removeEventListener('pointermove', openOnActivity, listenerOptions);
+      window.removeEventListener('wheel', openOnActivity, listenerOptions);
+      window.removeEventListener('touchstart', openOnActivity, listenerOptions);
+      window.removeEventListener('keydown', openOnActivity);
+    };
+  }, []);
 
   useEffect(() => {
     const sections = document.querySelectorAll('[data-chat-section]');
@@ -81,7 +254,12 @@ export default function ChatbotWidget() {
         askedSectionsRef.current.add(section);
 
         window.setTimeout(() => {
-          setIsOpen(true);
+          if (userDismissedRef.current) {
+            return;
+          }
+
+          openChat();
+          setSuggestedPrompts(sectionSuggestedPrompts[section] || defaultSuggestedPrompts);
           setMessages((currentMessages) => [
             ...currentMessages,
             { role: 'assistant', text: sectionPrompts[section] }
@@ -120,12 +298,14 @@ export default function ChatbotWidget() {
         ...currentMessages,
         { role: 'assistant', text: data.reply }
       ]);
+      setSuggestedPrompts(buildSuggestedPrompts(`${userText} ${data.reply}`));
     } catch {
       setAnswerSource('fallback');
       setMessages((currentMessages) => [
         ...currentMessages,
         { role: 'assistant', text: buildFallbackReply(userText) }
       ]);
+      setSuggestedPrompts(buildSuggestedPrompts(userText));
     } finally {
       setIsThinking(false);
     }
@@ -144,12 +324,35 @@ export default function ChatbotWidget() {
     setMessages(nextMessages);
     setInput('');
     setIsThinking(true);
+    setSuggestedPrompts(buildSuggestedPrompts(trimmed));
     askChat(nextMessages, trimmed);
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
     sendMessage(input);
+  };
+
+  const openContactForm = () => {
+    document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    openChat();
+    setSuggestedPrompts(mailSuggestedPrompts);
+    setMessages((currentMessages) => [
+      ...currentMessages,
+      {
+        role: 'assistant',
+        text: 'Jag öppnar kontaktformuläret. Skriv gärna namn, e-post, telefon och en kort beskrivning av vad du behöver hjälp med.'
+      }
+    ]);
+  };
+
+  const handleSuggestedPrompt = (prompt) => {
+    if (prompt === 'Öppna kontaktformuläret') {
+      openContactForm();
+      return;
+    }
+
+    sendMessage(prompt);
   };
 
   const statusText = answerSource === 'ollama'
@@ -165,8 +368,9 @@ export default function ChatbotWidget() {
         >
           <div className="flex items-center justify-between border-b border-brand-border bg-white/[0.03] px-4 py-3">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-brand-border bg-brand-primary/10 text-brand-primary">
-                <SparklesIcon className="h-5 w-5" />
+              <div className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-brand-border bg-brand-primary/10 text-brand-primary">
+                <ChatBubbleIcon className="h-5 w-5" />
+                <SparklesIcon className="absolute -right-1 -top-1 h-3.5 w-3.5 rounded-full bg-slate-950 text-brand-primary" />
               </div>
               <div>
                 <h2 className="text-sm font-black text-white">Aegis AI</h2>
@@ -175,7 +379,7 @@ export default function ChatbotWidget() {
             </div>
             <button
               type="button"
-              onClick={() => setIsOpen(false)}
+              onClick={closeChat}
               className="flex h-9 w-9 items-center justify-center rounded-xl border border-brand-border text-brand-muted transition hover:border-brand-primary hover:text-white"
               aria-label="Stäng chatten"
               title="Stäng chatten"
@@ -220,11 +424,11 @@ export default function ChatbotWidget() {
 
           <div className="border-t border-brand-border px-4 py-3">
             <div className="mb-3 flex flex-wrap gap-2">
-              {quickPrompts.map((prompt) => (
+              {suggestedPrompts.map((prompt) => (
                 <button
                   key={prompt}
                   type="button"
-                  onClick={() => sendMessage(prompt)}
+                  onClick={() => handleSuggestedPrompt(prompt)}
                   disabled={isThinking}
                   className="rounded-full border border-brand-border bg-white/[0.03] px-3 py-1.5 text-xs font-bold text-brand-muted transition hover:border-brand-primary hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
@@ -258,13 +462,20 @@ export default function ChatbotWidget() {
 
       <button
         type="button"
-        onClick={() => setIsOpen((current) => !current)}
+        onClick={() => {
+          if (isOpen) {
+            closeChat();
+          } else {
+            openChat();
+          }
+        }}
         className="group flex items-center gap-3 rounded-2xl border border-brand-border bg-brand-primary px-4 py-3 font-black text-brand-bg shadow-xl shadow-brand-glow transition hover:bg-brand-primary-hover active:scale-95"
         aria-expanded={isOpen}
         aria-label={isOpen ? 'Stäng Aegis AI-chatbot' : 'Öppna Aegis AI-chatbot'}
       >
-        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-bg/15">
-          <CheckIcon className="h-4 w-4" />
+        <span className="relative flex h-7 w-7 items-center justify-center rounded-lg bg-brand-bg/15">
+          <ChatBubbleIcon className="h-4 w-4" />
+          <SparklesIcon className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-brand-primary text-brand-bg" />
         </span>
         <span className="text-sm">Chatta med Aegis AI</span>
       </button>

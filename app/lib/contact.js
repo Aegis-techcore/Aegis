@@ -12,6 +12,7 @@ const SERVICE_LABELS = {
   network: 'Nätverk & Brandvägg',
   embedded: 'Embedded Systems / IoT',
   ai: 'AI-chatbot / Automation',
+  maintenance: 'Webbunderhåll & IT-support',
   games: 'Spelutveckling'
 };
 

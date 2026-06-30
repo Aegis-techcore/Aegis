@@ -1,4 +1,20 @@
-import { buildFallbackReply, buildSystemPrompt, mentionsMoney, moneyReply } from '../../lib/chatRules';
+import {
+  buildFallbackReply,
+  buildSystemPrompt,
+  asksForDirectWork,
+  companyInfoReply,
+  directWorkReply,
+  isOutOfScope,
+  mailHelpReply,
+  mentionsCompanyInfo,
+  mentionsMailHelp,
+  mentionsMoney,
+  mentionsSubscription,
+  moneyReply,
+  scopeReply,
+  subscriptionReply,
+  withHumanHandoff
+} from '../../lib/chatRules';
 
 export const runtime = 'nodejs';
 
@@ -59,6 +75,26 @@ export async function POST(request) {
     return Response.json({ reply: moneyReply(), source: 'policy' });
   }
 
+  if (mentionsMailHelp(lastUserMessage)) {
+    return Response.json({ reply: mailHelpReply(), source: 'guided' });
+  }
+
+  if (asksForDirectWork(lastUserMessage)) {
+    return Response.json({ reply: directWorkReply(), source: 'boundary' });
+  }
+
+  if (isOutOfScope(lastUserMessage)) {
+    return Response.json({ reply: scopeReply(), source: 'scope' });
+  }
+
+  if (mentionsSubscription(lastUserMessage)) {
+    return Response.json({ reply: subscriptionReply(), source: 'guided' });
+  }
+
+  if (mentionsCompanyInfo(lastUserMessage)) {
+    return Response.json({ reply: companyInfoReply(), source: 'guided' });
+  }
+
   const baseUrl = cleanText(process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434').replace(/\/$/, '');
   const model = cleanText(process.env.OLLAMA_MODEL || 'llama3.2:3b');
 
@@ -97,10 +133,10 @@ export async function POST(request) {
       throw new Error('Ollama gav inget textsvar');
     }
 
-    return Response.json({ reply, source: 'ollama', model });
+    return Response.json({ reply: withHumanHandoff(reply, lastUserMessage), source: 'ollama', model });
   } catch {
     return Response.json({
-      reply: buildFallbackReply(lastUserMessage),
+      reply: withHumanHandoff(buildFallbackReply(lastUserMessage), lastUserMessage),
       source: 'fallback'
     });
   }
