@@ -20,6 +20,31 @@ npm run start
 npm run lint
 ```
 
+## Gratis AI-chatbot
+
+Chatboten anvander en lokal gratis AI-modell via Ollama nar den finns tillganglig.
+
+Installera Ollama och hamta modellen:
+
+```bash
+ollama pull llama3.2:3b
+```
+
+Starta sedan webbplatsen som vanligt:
+
+```bash
+npm run dev
+```
+
+Standardinstallningen ar:
+
+```env
+OLLAMA_BASE_URL=http://127.0.0.1:11434
+OLLAMA_MODEL=llama3.2:3b
+```
+
+Om Ollama inte ar igang svarar chatten med ett enklare fallback-lage, men regeln om pris/offert/betalning till mejl galler fortfarande.
+
 ## E-post
 
 Kontaktformuläret använder Next.js API-routen `app/api/contact/route.js` och skickar förfrågningar till `aegis.infon@gmail.com` via Resend.

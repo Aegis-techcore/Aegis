@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import ChatbotWidget from './components/ChatbotWidget';
 import LogoLink from './components/LogoLink';
 import { 
   ShieldIcon, 
@@ -329,7 +330,7 @@ export default function Page() {
       </div>
 
       {/* Hero Section */}
-      <section id="top" className="relative pt-12 pb-24 overflow-hidden border-b border-brand-border">
+      <section id="top" data-chat-section="top" className="relative pt-12 pb-24 overflow-hidden border-b border-brand-border">
         {/* Dynamic decorative vectors */}
         <div className="absolute inset-0 z-0 pointer-events-none opacity-40 mix-blend-screen" style={{ backgroundImage: 'var(--hero-pattern)' }}></div>
         
@@ -366,7 +367,7 @@ export default function Page() {
 
 
       {/* Services Explorer Section */}
-      <section className="py-20 border-b border-brand-border">
+      <section id="services" data-chat-section="services" className="py-20 border-b border-brand-border">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
@@ -459,7 +460,7 @@ export default function Page() {
 
 
       {/* Project Complexity & Cost Calculator */}
-      <section id="calculator" className="py-20 border-b border-brand-border">
+      <section id="calculator" data-chat-section="calculator" className="py-20 border-b border-brand-border">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
@@ -618,7 +619,7 @@ export default function Page() {
       </section>
 
       {/* Contact / Inquiry Form */}
-      <section id="contact" className="relative overflow-hidden border-t border-brand-border bg-[radial-gradient(circle_at_12%_88%,rgba(6,182,212,0.20),transparent_34%),linear-gradient(135deg,#020617_0%,#07111f_52%,#020617_100%)] px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+      <section id="contact" data-chat-section="contact" className="relative overflow-hidden border-t border-brand-border bg-[radial-gradient(circle_at_12%_88%,rgba(6,182,212,0.20),transparent_34%),linear-gradient(135deg,#020617_0%,#07111f_52%,#020617_100%)] px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
         <div className="absolute inset-x-0 bottom-0 h-44 bg-brand-primary/10 blur-3xl" />
         <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-[1fr_500px]">
           <div className="max-w-2xl">
@@ -771,6 +772,8 @@ export default function Page() {
           </div>
         </footer>
       </section>
+
+      <ChatbotWidget />
 
     </div>
   );
