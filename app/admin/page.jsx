@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import LogoLink from '../components/LogoLink';
 
 const formatDate = (value) => {
   if (!value) return '';
@@ -116,7 +117,7 @@ export default function AdminPage() {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,rgba(6,182,212,0.18),transparent_38%),#020617] px-4 text-white">
         <form onSubmit={handleLogin} className="w-full max-w-md rounded-3xl border border-brand-border bg-slate-950/85 p-8 shadow-2xl shadow-brand-glow/20">
-          <img src="/aegis-logo.svg" alt="Aegis logotyp" className="mb-6 h-14 w-14 rounded-2xl" />
+          <LogoLink variant="admin" className="mb-6" />
           <h1 className="text-3xl font-black tracking-tight">Adminpanel</h1>
           <p className="mt-2 text-sm leading-6 text-brand-muted">Logga in för att se inkomna förfrågningar.</p>
           <label className="mt-8 block text-sm font-bold">Lösenord</label>
@@ -142,7 +143,7 @@ export default function AdminPage() {
       <div className="mx-auto max-w-6xl">
         <header className="flex flex-col gap-6 border-b border-brand-border pb-8 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-4">
-            <img src="/aegis-logo.svg" alt="Aegis logotyp" className="h-14 w-14 rounded-2xl" />
+            <LogoLink variant="admin" />
             <div>
               <h1 className="text-3xl font-black tracking-tight">Förfrågningar</h1>
               <p className="text-sm text-brand-muted">{requests.length} sparade kontakter</p>

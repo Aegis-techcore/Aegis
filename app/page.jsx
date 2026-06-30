@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import LogoLink from './components/LogoLink';
 import { 
   ShieldIcon, 
   CodeIcon, 
@@ -323,26 +324,12 @@ export default function Page() {
       {/* Brand Switcher / Top Panel */}
       <div className="w-full bg-brand-bg/80 backdrop-blur-md border-b border-brand-border sticky top-0 z-50 transition-colors duration-500">
         <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-3">
-            <img
-              src="/aegis-logo.svg"
-              alt="Aegis logotyp"
-              className="h-12 w-12 rounded-2xl shadow-lg shadow-brand-glow/20"
-            />
-            <div>
-              <span className="font-extrabold text-xl tracking-tight text-white block">
-                {activeBrand.name}
-              </span>
-              <span className="text-xs text-brand-muted block font-mono">
-                {activeBrand.slogan}
-              </span>
-            </div>
-          </div>
+          <LogoLink showSlogan />
         </div>
       </div>
 
       {/* Hero Section */}
-      <section className="relative pt-12 pb-24 overflow-hidden border-b border-brand-border">
+      <section id="top" className="relative pt-12 pb-24 overflow-hidden border-b border-brand-border">
         {/* Dynamic decorative vectors */}
         <div className="absolute inset-0 z-0 pointer-events-none opacity-40 mix-blend-screen" style={{ backgroundImage: 'var(--hero-pattern)' }}></div>
         
@@ -777,14 +764,7 @@ export default function Page() {
         </div>
 
         <footer className="relative mx-auto mt-20 flex max-w-6xl flex-col items-center justify-between gap-6 border-t border-brand-border pt-8 text-brand-muted md:flex-row">
-          <div className="flex items-center gap-3 text-white">
-            <img
-              src="/aegis-logo.svg"
-              alt="Aegis logotyp"
-              className="h-9 w-9 rounded-xl shadow-md shadow-brand-glow/20"
-            />
-            <span className="font-extrabold tracking-tight">Aegis</span>
-          </div>
+          <LogoLink variant="footer" />
      
           <div className="text-center text-xs md:text-right">
             <p>© 2026 Aegis – Secure by Design. Built for Tomorrow. All rights reserved.</p>
