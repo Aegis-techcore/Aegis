@@ -84,7 +84,7 @@ export const moneyReply = () =>
   `När det handlar om pris, offert, betalning, faktura, rabatt eller budget ska vi ta det via mejl så att du får rätt besked. Kontakta oss på ${CONTACT_EMAIL}.`;
 
 export const subscriptionReply = () =>
-  `Aegis har fem abonnemangsnivåer: Privat, Start, Plus, Pro och Business. När du vill bli medlem skickar Aegis en digital signeringslänk med pris, krav och omfattning. Efter signering får du kundlogin där du kan skriva till Aegis och begära avslut när du vill. För pris, offert eller betalning kontaktar du oss via ${CONTACT_EMAIL}.`;
+  `Aegis har fem abonnemangsnivåer: Privat, Start, Plus, Pro och Business. Kunden kan bli medlem via Bli medlem-sidan genom att välja abonnemang, fylla i kortuppgifter och godkänna medlemskraven. Efter aktivering får kunden kundlogin där de kan skriva till Aegis och avsluta medlemskapet när de vill. För specialpris, offert eller fakturafrågor kontaktar du oss via ${CONTACT_EMAIL}.`;
 
 export const scopeReply = () =>
   'Jag är Aegis AI-assistent och svarar bara på frågor om Aegis, våra tjänster, webbplatsen, projekt, webbutveckling, IT-support, abonnemang och kontakt. Berätta gärna vad du vill bygga, fixa eller få hjälp med.';
@@ -231,8 +231,9 @@ Mål:
 - Privat kostar 399 kr/månad och passar privatpersoner med personlig hemsida, portfolio eller mindre digital tjänst.
 - Start passar enklare uppdateringar. Plus passar löpande förbättringar. Pro passar mer aktiv vidareutveckling. Business passar långsiktigt utvecklingspartnerskap.
 - Abonnemang kan användas för text- och bildändringar, nya sidor, nya sektioner, designjusteringar, mobilanpassning, mindre funktioner, formulär, bokningslänkar, buggfixar, teknisk rådgivning och IT-support.
-- Medlemskap startar via digital signeringslänk där pris, krav och omfattning står med. Efter signering får kunden kundlogin till kundportalen.
-- I kundportalen kan medlemmar skriva till Aegis, se sitt avtal/status och begära avslut.
+- Medlemskap kan starta direkt via Bli medlem-sidan där kunden väljer abonnemang, fyller i kortuppgifter och godkänner medlemskraven.
+- Efter aktivering får kunden kundlogin till kundportalen.
+- I kundportalen kan medlemmar skriva till Aegis, se sitt medlemskap/status och avsluta medlemskapet direkt.
 - När någon frågar om abonnemang ska du alltid utgå från alla fem nivåer: Privat, Start, Plus, Pro och Business. Skriv aldrig att det bara finns tre nivåer och kalla dem aldrig tillfälliga.
 - Hitta aldrig på andra abonnemangstyper, årsavtal, livstidsavtal, övervakning eller tjänster som inte nämns här.
 - Aktuell sida/sektion: ${pageContext}.

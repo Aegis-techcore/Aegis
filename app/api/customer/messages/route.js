@@ -1,5 +1,6 @@
 import { getCustomerIdFromRequest } from '../../../lib/customerAuth';
 import { addCustomerMessage, getCustomer } from '../../../lib/customerStore';
+import { addAdminNotification } from '../../../lib/notificationStore';
 
 export const runtime = 'nodejs';
 
@@ -29,6 +30,13 @@ export async function POST(request) {
   if (!message) {
     return Response.json({ message: 'Skriv ett meddelande först.' }, { status: 400 });
   }
+
+  await addAdminNotification({
+    type: 'customer_message',
+    title: 'Nytt kundmeddelande',
+    message: `${customer.name} skrev i kundportalen.`,
+    customerId: customer.id
+  });
 
   return Response.json({ message });
 }

@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { addAdminNotification } from './notificationStore';
 import { saveContactRequest } from './requestStore';
 
 const OWNER_EMAIL = 'aegis.infon@gmail.com';
@@ -153,16 +154,29 @@ export async function sendContactRequest(payload) {
 
   if (!process.env.RESEND_API_KEY) {
     const result = { ok: false, status: 500, message: 'Servern saknar RESEND_API_KEY. Lägg till den i environment variables.' };
-    await saveContactRequest({ ...requestData, status: 'failed', error: result.message });
+    const record = await saveContactRequest({ ...requestData, status: 'failed', error: result.message });
+    await addAdminNotification({
+      type: 'contact_request',
+      title: 'Ny förfrågan',
+      message: `${name} skickade en förfrågan inom ${serviceLabel}.`,
+      requestId: record.id
+    });
     return result;
   }
 
   const result = await sendWithResend({ name, company, email, phone, serviceLabel, message });
 
-  await saveContactRequest({
+  const record = await saveContactRequest({
     ...requestData,
     status: result.ok ? 'sent' : 'failed',
     error: result.ok ? '' : result.message,
+  });
+
+  await addAdminNotification({
+    type: 'contact_request',
+    title: 'Ny förfrågan',
+    message: `${name} skickade en förfrågan inom ${serviceLabel}.`,
+    requestId: record.id
   });
 
   return result;

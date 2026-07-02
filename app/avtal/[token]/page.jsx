@@ -33,6 +33,7 @@ export default function AgreementPage() {
   const [agreement, setAgreement] = useState(null);
   const [signatureName, setSignatureName] = useState('');
   const [signatureTitle, setSignatureTitle] = useState('');
+  const [accessCode, setAccessCode] = useState('');
   const [accepted, setAccepted] = useState(false);
   const [login, setLogin] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -75,7 +76,7 @@ export default function AgreementPage() {
       const response = await fetch(`/api/agreements/${token}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ signatureName, signatureTitle, accepted })
+        body: JSON.stringify({ signatureName, signatureTitle, accessCode, accepted })
       });
       const data = await response.json().catch(() => null);
 
@@ -191,6 +192,15 @@ export default function AgreementPage() {
                     placeholder="Ex. VD, ägare eller privatperson"
                     className="mt-2 w-full rounded-xl border border-brand-border bg-white px-4 py-3 text-slate-950 outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/30"
                   />
+                  <label className="mt-4 block text-sm font-bold">Skapa kundkod för login</label>
+                  <input
+                    value={accessCode}
+                    onChange={(event) => setAccessCode(event.target.value.toUpperCase())}
+                    placeholder="Ex. AEGIS-MITTKONTO-2026"
+                    className="mt-2 w-full rounded-xl border border-brand-border bg-white px-4 py-3 text-slate-950 outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/30"
+                    required
+                  />
+                  <p className="mt-2 text-xs leading-5 text-brand-muted">Minst 8 tecken. Denna kod används med din e-post i kundportalen.</p>
                   <label className="mt-5 flex items-start gap-3 rounded-2xl border border-brand-border bg-black/25 p-4 text-sm leading-6 text-brand-muted">
                     <input
                       type="checkbox"

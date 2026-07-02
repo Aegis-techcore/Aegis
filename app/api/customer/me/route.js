@@ -18,7 +18,9 @@ const publicCustomer = (customer) => ({
   requirements: customer.requirements,
   signedAt: customer.signedAt,
   cancellationRequestedAt: customer.cancellationRequestedAt,
+  cancelledAt: customer.cancelledAt,
   cancellationReason: customer.cancellationReason,
+  paymentMethod: customer.paymentMethod,
   messages: customer.messages || []
 });
 

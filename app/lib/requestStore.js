@@ -32,7 +32,7 @@ export async function saveContactRequest(request) {
   };
 
   requests.unshift(record);
-  await writeRequests(requests.slice(0, 500));
+  await writeRequests(requests);
 
   return record;
 }

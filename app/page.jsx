@@ -429,15 +429,6 @@ export default function Page() {
     setFormSubmitted(false);
   };
 
-  const handleSubscriptionSelect = (plan) => {
-    setSelectedSubscriptionName(plan.name);
-    setFormData(prev => ({
-      ...prev,
-      service: 'maintenance',
-      message: `Hej! Jag vill bli medlem via abonnemanget ${plan.name} (${plan.price}${plan.period}) för webbundehåll, löpande utveckling eller IT-support. Skicka gärna avtal/signering och nästa steg.`
-    }));
-  };
-
   const activeBrand = brand;
   const ActiveBrandIcon = activeBrand.icon;
 
@@ -449,7 +440,7 @@ export default function Page() {
         <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <LogoLink showSlogan />
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <a href="#subscriptions" className="rounded-xl border border-brand-border px-4 py-2 text-sm font-bold text-white transition hover:border-brand-primary hover:text-brand-primary">
+            <a href="/bli-medlem" className="rounded-xl border border-brand-border px-4 py-2 text-sm font-bold text-white transition hover:border-brand-primary hover:text-brand-primary">
               Bli medlem
             </a>
             <a href="/kund" className="rounded-xl bg-brand-primary px-4 py-2 text-sm font-black text-brand-bg shadow-lg shadow-brand-glow transition hover:bg-brand-primary-hover">
@@ -982,11 +973,8 @@ export default function Page() {
                       <p className="mt-2 text-sm leading-6 text-white/85">{plan.fit}</p>
                     </div>
                     <a
-                      href="#contact"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        handleSubscriptionSelect(plan);
-                      }}
+                      href={`/bli-medlem?plan=${encodeURIComponent(plan.name)}`}
+                      onClick={(event) => event.stopPropagation()}
                       className={`block w-full rounded-xl px-4 py-3 text-center text-sm font-black transition active:scale-95 ${isSelected || plan.highlighted
                         ? 'bg-brand-primary text-brand-bg hover:bg-brand-primary-hover'
                         : 'border border-brand-border text-white hover:border-brand-primary hover:bg-brand-primary/10'
@@ -1017,8 +1005,7 @@ export default function Page() {
                 <p className="mt-3 text-sm leading-7 text-brand-muted">{selectedSubscriptionPlan.audience}</p>
               </div>
               <a
-                href="#contact"
-                onClick={() => handleSubscriptionSelect(selectedSubscriptionPlan)}
+                href={`/bli-medlem?plan=${encodeURIComponent(selectedSubscriptionPlan.name)}`}
                 className="rounded-xl bg-brand-primary px-5 py-3 text-center text-sm font-black text-brand-bg shadow-lg shadow-brand-glow transition hover:bg-brand-primary-hover active:scale-95"
               >
                 Starta medlemskap

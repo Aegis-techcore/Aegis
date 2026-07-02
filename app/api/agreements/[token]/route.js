@@ -1,4 +1,4 @@
-import { getCustomerBySignToken, signAgreement } from '../../../lib/customerStore';
+import { getCustomerBySignToken, listCustomers, signAgreement } from '../../../lib/customerStore';
 
 export const runtime = 'nodejs';
 
@@ -48,6 +48,30 @@ export async function POST(request, { params }) {
 
   if (!payload?.accepted) {
     return Response.json({ message: 'Du behöver godkänna avtalet först.' }, { status: 400 });
+  }
+
+  const accessCode = String(payload?.accessCode || '').trim();
+
+  if (accessCode.length < 8) {
+    return Response.json({ message: 'Skapa en kundkod med minst 8 tecken.' }, { status: 400 });
+  }
+
+  const existingCustomer = await getCustomerBySignToken(token);
+
+  if (!existingCustomer) {
+    return Response.json({ message: 'Avtalet hittades inte.' }, { status: 404 });
+  }
+
+  const customers = await listCustomers();
+  const normalizedAccessCode = accessCode.toUpperCase();
+  const loginAlreadyExists = customers.some((customer) =>
+    customer.id !== existingCustomer.id &&
+    String(customer.email || '').toLowerCase() === String(existingCustomer.email || '').toLowerCase() &&
+    String(customer.accessCode || '').toUpperCase() === normalizedAccessCode
+  );
+
+  if (loginAlreadyExists) {
+    return Response.json({ message: 'Den kundkoden används redan för denna e-post.' }, { status: 409 });
   }
 
   const customer = await signAgreement(token, payload, { ip: getIp(request) });

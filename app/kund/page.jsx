@@ -99,6 +99,12 @@ export default function CustomerPortalPage() {
 
   const handleSendMessage = async (event) => {
     event.preventDefault();
+    const trimmedMessage = message.trim();
+
+    if (!trimmedMessage) {
+      return;
+    }
+
     setIsSubmitting(true);
     setError('');
 
@@ -106,7 +112,7 @@ export default function CustomerPortalPage() {
       const response = await fetch('/api/customer/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message })
+        body: JSON.stringify({ message: trimmedMessage })
       });
       const data = await response.json().catch(() => null);
 
@@ -115,7 +121,15 @@ export default function CustomerPortalPage() {
       }
 
       setMessage('');
-      await loadMe();
+      if (data?.message) {
+        setCustomer((currentCustomer) => ({
+          ...currentCustomer,
+          messages: [
+            data.message,
+            ...(currentCustomer?.messages || [])
+          ]
+        }));
+      }
     } catch (messageError) {
       setError(messageError.message || 'Kunde inte skicka meddelandet.');
     } finally {
@@ -125,7 +139,7 @@ export default function CustomerPortalPage() {
 
   const handleCancel = async (event) => {
     event.preventDefault();
-    const confirmed = window.confirm('Vill du begära avslut av ditt medlemskap eller uppdrag?');
+    const confirmed = window.confirm('Vill du avsluta medlemskapet direkt?');
 
     if (!confirmed) return;
 
@@ -145,7 +159,9 @@ export default function CustomerPortalPage() {
       }
 
       setCancelReason('');
-      await loadMe();
+      if (data?.customer) {
+        setCustomer(data.customer);
+      }
     } catch (cancelError) {
       setError(cancelError.message || 'Kunde inte begära avslut.');
     } finally {
@@ -248,6 +264,15 @@ export default function CustomerPortalPage() {
                 <p className="mt-2 text-xl font-black">{customer.price || 'Enligt överenskommelse'}</p>
                 <p className="text-sm text-brand-muted">{customer.billingCycle}</p>
               </div>
+              {customer.paymentMethod?.last4 && (
+                <div className="mt-4 rounded-2xl border border-brand-border bg-black/25 p-4">
+                  <p className="text-xs font-black uppercase tracking-widest text-brand-muted">Betalning</p>
+                  <p className="mt-2 text-sm font-bold text-white">
+                    {customer.paymentMethod.brand} **** {customer.paymentMethod.last4}
+                    {customer.paymentMethod.mode === 'test' ? ' · testläge' : ''}
+                  </p>
+                </div>
+              )}
               {customer.signedAt && (
                 <p className="mt-4 flex items-center gap-2 text-sm font-bold text-emerald-300">
                   <CheckIcon className="h-4 w-4" />
@@ -259,7 +284,7 @@ export default function CustomerPortalPage() {
             <form onSubmit={handleCancel} className="rounded-3xl border border-brand-border bg-slate-950/75 p-6 shadow-xl shadow-black/20">
               <h2 className="text-xl font-black">Avsluta medlemskap</h2>
               <p className="mt-2 text-sm leading-6 text-brand-muted">
-                Du kan begära avslut när du vill. Aegis markerar kontot och återkommer om pågående arbete eller slutdatum.
+                Du kan avsluta när du vill. Kontot markeras som avslutat direkt.
               </p>
               <textarea
                 value={cancelReason}
@@ -267,8 +292,8 @@ export default function CustomerPortalPage() {
                 placeholder="Valfri kommentar"
                 className="mt-4 min-h-28 w-full resize-y rounded-xl border border-brand-border bg-white px-4 py-3 text-slate-950 outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/30"
               />
-              <button disabled={isSubmitting || customer.status === 'cancel_requested' || customer.status === 'cancelled'} className="mt-4 w-full rounded-xl border border-rose-500/40 px-4 py-3 text-sm font-black text-rose-200 transition hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60">
-                {customer.status === 'cancel_requested' ? 'Avslut är begärt' : 'Begär avslut'}
+              <button disabled={isSubmitting || customer.status === 'cancelled'} className="mt-4 w-full rounded-xl border border-rose-500/40 px-4 py-3 text-sm font-black text-rose-200 transition hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60">
+                {customer.status === 'cancelled' ? 'Medlemskapet är avslutat' : 'Avsluta direkt'}
               </button>
             </form>
           </div>
@@ -315,7 +340,7 @@ export default function CustomerPortalPage() {
                 placeholder="Skriv till Aegis..."
                 className="min-w-0 flex-1 rounded-xl border border-brand-border bg-white px-4 py-3 text-slate-950 outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/30"
               />
-              <button disabled={isSubmitting} className="rounded-xl bg-brand-primary px-5 py-3 font-black text-brand-bg shadow-lg shadow-brand-glow transition hover:bg-brand-primary-hover disabled:cursor-not-allowed disabled:opacity-60">
+              <button disabled={isSubmitting || !message.trim()} className="rounded-xl bg-brand-primary px-5 py-3 font-black text-brand-bg shadow-lg shadow-brand-glow transition hover:bg-brand-primary-hover disabled:cursor-not-allowed disabled:opacity-60">
                 Skicka
               </button>
             </form>

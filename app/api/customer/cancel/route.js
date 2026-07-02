@@ -3,6 +3,26 @@ import { requestCustomerCancellation } from '../../../lib/customerStore';
 
 export const runtime = 'nodejs';
 
+const publicCustomer = (customer) => ({
+  id: customer.id,
+  type: customer.type,
+  status: customer.status,
+  name: customer.name,
+  company: customer.company,
+  email: customer.email,
+  phone: customer.phone,
+  plan: customer.plan,
+  price: customer.price,
+  billingCycle: customer.billingCycle,
+  projectTitle: customer.projectTitle,
+  requirements: customer.requirements,
+  signedAt: customer.signedAt,
+  cancellationRequestedAt: customer.cancellationRequestedAt,
+  cancelledAt: customer.cancelledAt,
+  cancellationReason: customer.cancellationReason,
+  messages: customer.messages || []
+});
+
 export async function POST(request) {
   const customerId = getCustomerIdFromRequest(request);
 
@@ -24,5 +44,5 @@ export async function POST(request) {
     return Response.json({ message: 'Kunden hittades inte.' }, { status: 404 });
   }
 
-  return Response.json({ customer });
+  return Response.json({ customer: publicCustomer(customer) });
 }

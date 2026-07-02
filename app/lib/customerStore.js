@@ -45,6 +45,12 @@ const writeCustomers = async (customers) => {
 const generateAccessCode = () =>
   `AEGIS-${randomBytes(3).toString('hex').toUpperCase()}-${randomBytes(2).toString('hex').toUpperCase()}`;
 
+const normalizeAccessCode = (value) =>
+  sanitize(value)
+    .toUpperCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^A-Z0-9-]/g, '');
+
 const generateToken = () => randomBytes(24).toString('hex');
 
 const createSystemMessage = (text) => ({
@@ -130,7 +136,7 @@ export async function createAgreementFromRequest(contactRequest, input = {}) {
     messages: [
       createSystemMessage('Nytt avtal/signering skapades av admin.'),
       ...baseMessages
-    ].slice(0, 200)
+    ]
   };
 
   if (existingIndex >= 0) {
@@ -139,6 +145,62 @@ export async function createAgreementFromRequest(contactRequest, input = {}) {
     customers.unshift(customer);
   }
 
+  await writeCustomers(customers);
+  return customer;
+}
+
+export async function createMembershipCustomer(input = {}, requestMeta = {}) {
+  const customers = await readCustomers();
+  const createdAt = nowIso();
+  const plan = sanitize(input.plan) || 'Start';
+  const price = sanitize(input.price);
+  const billingCycle = sanitize(input.billingCycle) || 'per månad';
+  const name = sanitize(input.name);
+  const email = normalizeEmail(input.email);
+  const requestedAccessCode = normalizeAccessCode(input.accessCode);
+  const accessCode = requestedAccessCode || generateAccessCode();
+  const cardLast4 = sanitize(input.cardLast4).slice(-4);
+
+  const customer = {
+    id: randomUUID(),
+    source: 'direct-membership',
+    type: 'membership',
+    status: 'active',
+    name,
+    company: sanitize(input.company),
+    email,
+    phone: sanitize(input.phone),
+    service: 'maintenance',
+    serviceLabel: 'Webbunderhåll & IT-support',
+    plan,
+    price,
+    billingCycle,
+    projectTitle: `${plan}-medlemskap`,
+    requirements: sanitize(input.requirements),
+    adminNotes: '',
+    signToken: '',
+    signedAt: createdAt,
+    signatureName: name,
+    signatureTitle: sanitize(input.signatureTitle),
+    signatureIp: sanitize(requestMeta.ip),
+    accessCode,
+    paymentMethod: {
+      brand: sanitize(input.cardBrand) || 'Kort',
+      last4: cardLast4,
+      expMonth: sanitize(input.expMonth),
+      expYear: sanitize(input.expYear),
+      holderName: sanitize(input.cardHolder),
+      mode: sanitize(input.paymentMode) || 'test'
+    },
+    createdAt,
+    updatedAt: createdAt,
+    messages: [
+      createSystemMessage('Medlemskap skapades direkt via Bli medlem-flödet.'),
+      createSystemMessage('Kunden godkände medlemskraven digitalt.')
+    ]
+  };
+
+  customers.unshift(customer);
   await writeCustomers(customers);
   return customer;
 }
@@ -158,6 +220,7 @@ export async function signAgreement(token, input = {}, requestMeta = {}) {
   }
 
   const signedAt = nowIso();
+  const requestedAccessCode = normalizeAccessCode(input.accessCode);
   const nextCustomer = {
     ...customer,
     status: 'active',
@@ -165,11 +228,12 @@ export async function signAgreement(token, input = {}, requestMeta = {}) {
     signatureName: sanitize(input.signatureName) || customer.name,
     signatureTitle: sanitize(input.signatureTitle),
     signatureIp: sanitize(requestMeta.ip),
+    accessCode: requestedAccessCode || customer.accessCode,
     updatedAt: signedAt,
     messages: [
       createSystemMessage('Avtalet signerades digitalt av kunden.'),
       ...(customer.messages || [])
-    ].slice(0, 200)
+    ]
   };
 
   customers[index] = nextCustomer;
@@ -232,7 +296,7 @@ export async function addCustomerMessage(id, author, text) {
     messages: [
       message,
       ...(customer.messages || [])
-    ].slice(0, 200)
+    ]
   };
 
   await writeCustomers(customers);
@@ -248,23 +312,36 @@ export async function requestCustomerCancellation(id, reason = '') {
   }
 
   const customer = customers[index];
-  const cancellationText = sanitize(reason) || 'Kunden begärde avslut utan extra kommentar.';
+  const cancellationText = sanitize(reason) || 'Kunden avslutade medlemskapet utan extra kommentar.';
   const updatedAt = nowIso();
 
   customers[index] = {
     ...customer,
-    status: customer.status === 'cancelled' ? 'cancelled' : 'cancel_requested',
+    status: 'cancelled',
     cancellationRequestedAt: customer.cancellationRequestedAt || updatedAt,
+    cancelledAt: customer.cancelledAt || updatedAt,
     cancellationReason: cancellationText,
     updatedAt,
     messages: [
-      createSystemMessage(`Kunden begärde avslut: ${cancellationText}`),
+      createSystemMessage(`Kunden avslutade medlemskapet: ${cancellationText}`),
       ...(customer.messages || [])
-    ].slice(0, 200)
+    ]
   };
 
   await writeCustomers(customers);
   return customers[index];
+}
+
+export async function deleteCustomer(id) {
+  const customers = await readCustomers();
+  const nextCustomers = customers.filter((customer) => customer.id !== id);
+
+  if (nextCustomers.length === customers.length) {
+    return false;
+  }
+
+  await writeCustomers(nextCustomers);
+  return true;
 }
 
 export function getCustomerStats(customers) {

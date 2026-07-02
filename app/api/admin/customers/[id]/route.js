@@ -1,5 +1,5 @@
 import { isAdminRequest } from '../../../../lib/adminAuth';
-import { updateCustomer } from '../../../../lib/customerStore';
+import { deleteCustomer, updateCustomer } from '../../../../lib/customerStore';
 
 export const runtime = 'nodejs';
 
@@ -24,4 +24,19 @@ export async function PATCH(request, { params }) {
   }
 
   return Response.json({ customer });
+}
+
+export async function DELETE(request, { params }) {
+  if (!isAdminRequest(request)) {
+    return Response.json({ message: 'Inte inloggad.' }, { status: 401 });
+  }
+
+  const { id } = await params;
+  const deleted = await deleteCustomer(id);
+
+  if (!deleted) {
+    return Response.json({ message: 'Kunden hittades inte.' }, { status: 404 });
+  }
+
+  return Response.json({ message: 'Kunden togs bort.' });
 }
