@@ -52,3 +52,8 @@ export async function deleteContactRequest(id) {
   await writeRequests(nextRequests);
   return true;
 }
+
+export async function getContactRequest(id) {
+  const requests = await readRequests();
+  return requests.find((request) => request.id === id) || null;
+}

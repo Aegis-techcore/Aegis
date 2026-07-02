@@ -19,6 +19,60 @@ export default function AdminPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [deletingId, setDeletingId] = useState('');
+  const [approvingId, setApprovingId] = useState('');
+  const [rejectingId, setRejectingId] = useState('');
+
+  const handleApproveRequest = async (requestId) => {
+    const shouldApprove = window.confirm('Vill du godkänna denna förfrågan och skicka e-post?');
+
+    if (!shouldApprove) return;
+
+    setApprovingId(requestId);
+    setError('');
+
+    try {
+      const response = await fetch(`/api/admin/requests/${requestId}/approve`, {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.message || 'Kunde inte godkänna förfrågan.');
+      }
+
+      await loadRequests();
+    } catch (approveError) {
+      setError(approveError.message || 'Kunde inte godkänna förfrågan.');
+    } finally {
+      setApprovingId('');
+    }
+  };
+
+  const handleRejectRequest = async (requestId) => {
+    const shouldReject = window.confirm('Vill du neka denna förfrågan och skicka e-post?');
+
+    if (!shouldReject) return;
+
+    setRejectingId(requestId);
+    setError('');
+
+    try {
+      const response = await fetch(`/api/admin/requests/${requestId}/reject`, {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.message || 'Kunde inte neka förfrågan.');
+      }
+
+      await loadRequests();
+    } catch (rejectError) {
+      setError(rejectError.message || 'Kunde inte neka förfrågan.');
+    } finally {
+      setRejectingId('');
+    }
+  };
 
   const loadRequests = async () => {
     const response = await fetch('/api/admin/requests');
@@ -184,13 +238,31 @@ export default function AdminPage() {
                 <div className="text-sm text-brand-muted md:text-right">
                   <p>{request.email}</p>
                   <p>{request.phone}</p>
-                  <button
-                    onClick={() => handleDeleteRequest(request.id)}
-                    disabled={deletingId === request.id}
-                    className="mt-3 rounded-xl border border-rose-500/30 px-4 py-2 text-xs font-black uppercase tracking-widest text-rose-300 transition hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {deletingId === request.id ? 'Tar bort...' : 'Ta bort'}
-                  </button>
+                  <div className="mt-3 flex flex-wrap justify-end gap-2">
+                    <button
+                      onClick={() => handleApproveRequest(request.id)}
+                      disabled={approvingId === request.id}
+                      className="rounded-xl border border-emerald-500/40 px-4 py-2 text-xs font-black uppercase tracking-widest text-emerald-300 transition hover:bg-emerald-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {approvingId === request.id ? 'Godkänner...' : 'Godkänn'}
+                    </button>
+
+                    <button
+                      onClick={() => handleDeleteRequest(request.id)}
+                      disabled={deletingId === request.id}
+                      className="rounded-xl border border-orange-500/40 px-4 py-2 text-xs font-black uppercase tracking-widest text-orange-300 transition hover:bg-orange-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {deletingId === request.id ? 'Tar bort...' : 'Ta bort'}
+                    </button>
+
+                    <button
+                      onClick={() => handleRejectRequest(request.id)}
+                      disabled={rejectingId === request.id}
+                      className="rounded-xl border border-rose-500/40 px-4 py-2 text-xs font-black uppercase tracking-widest text-rose-300 transition hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {rejectingId === request.id ? 'Nekar...' : 'Neka'}
+                    </button>
+                  </div>
                 </div>
               </div>
               <div className="mt-5 grid gap-3 text-sm md:grid-cols-[220px_1fr]">

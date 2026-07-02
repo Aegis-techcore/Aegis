@@ -1,3 +1,5 @@
+import { ShieldIcon } from './Icons';
+
 const sizeClasses = {
   header: 'h-12 w-12 rounded-2xl shadow-lg shadow-brand-glow/20',
   footer: 'h-9 w-9 rounded-xl shadow-md shadow-brand-glow/20',
@@ -13,11 +15,9 @@ const textClasses = {
 export default function LogoLink({ variant = 'header', showSlogan = false, className = '' }) {
   return (
     <a href="/" className={`flex items-center gap-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-primary/60 ${className}`}>
-      <img
-        src="/aegis-logo.svg"
-        alt="Aegis logotyp"
-        className={sizeClasses[variant] || sizeClasses.header}
-      />
+      <div className={`${sizeClasses[variant] || sizeClasses.header} flex items-center justify-center bg-brand-primary/10 border border-brand-border text-brand-primary`}>
+        <ShieldIcon className="h-6 w-6" />
+      </div>
       <div>
         <span className={textClasses[variant] || textClasses.header}>Aegis</span>
         {showSlogan && (

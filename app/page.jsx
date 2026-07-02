@@ -3,17 +3,17 @@
 import { useState } from 'react';
 import ChatbotWidget from './components/ChatbotWidget';
 import LogoLink from './components/LogoLink';
-import { 
-  ShieldIcon, 
-  CodeIcon, 
-  LayoutIcon, 
-  TableIcon, 
-  ServerIcon, 
-  CpuIcon, 
-  SparklesIcon, 
-  GamepadIcon, 
-  ChevronIcon, 
-  CheckIcon 
+import {
+  ShieldIcon,
+  CodeIcon,
+  LayoutIcon,
+  TableIcon,
+  ServerIcon,
+  CpuIcon,
+  SparklesIcon,
+  GamepadIcon,
+  ChevronIcon,
+  CheckIcon
 } from './components/Icons';
 
 // Core Business Data
@@ -176,10 +176,10 @@ const services = [
 const subscriptionPlans = [
   {
     name: 'Privat',
-    price: '250 kr',
+    price: '399 kr',
     period: '/månad',
-    audience: 'För privatpersoner som vill ha enkel hjälp med en personlig hemsida, portfolio eller mindre digital tjänst.',
-    hours: 'Upp till 30 minuters arbete varje månad',
+    audience: 'För privatpersoner som vill ha hjälp med en personlig hemsida, portfolio eller mindre digital tjänst utan stora kostnader.',
+    hours: 'Upp till 30 minuters hjälp varje månad',
     features: [
       'Ändring av enklare texter och bilder',
       'Uppdatering av kontaktuppgifter eller länkar',
@@ -187,32 +187,32 @@ const subscriptionPlans = [
       'Hjälp med enklare publicering',
       'Support via e-post'
     ],
-    fit: 'Har en mindre privat webbplats och vill kunna få enkel hjälp utan stora kostnader.',
+    fit: 'Har en mindre privat webbplats och vill kunna få enkel hjälp vid behov.',
     useCaseCount: 4
   },
   {
     name: 'Start',
-    price: '399 kr',
+    price: '899 kr',
     period: '/månad',
-    audience: 'För mindre företag som vill hålla sin webbplats uppdaterad och professionell.',
-    hours: 'Upp till 1 timmes arbete varje månad',
+    audience: 'För mindre företag som vill hålla sin webbplats uppdaterad, professionell och fungerande över tid.',
+    hours: 'Upp till 1,5 timmes arbete varje månad',
     features: [
       'Ändring av texter, bilder och innehåll',
       'Uppdatering av kontaktuppgifter, öppettider och företagsinformation',
       'Mindre designjusteringar',
-      'Hjälp med att publicera nytt innehåll',
       'Felsökning av mindre problem',
+      'Enklare teknisk rådgivning',
       'Support via e-post'
     ],
-    fit: 'Vill ha enkel hjälp då och då för att hålla webbplatsen aktuell.',
+    fit: 'Vill ha hjälp då och då för att hålla webbplatsen aktuell och professionell.',
     useCaseCount: 6
   },
   {
     name: 'Plus',
-    price: '699 kr',
+    price: '1 790 kr',
     period: '/månad',
-    audience: 'För företag som vill förbättra sin webbplats löpande och ge besökarna en bättre upplevelse.',
-    hours: 'Upp till 2 timmars arbete varje månad',
+    audience: 'För företag som vill förbättra sin webbplats löpande och utveckla nya delar utan stora engångskostnader.',
+    hours: 'Upp till 3 timmars arbete varje månad',
     features: [
       'Allt som ingår i Start',
       'Skapande av nya sektioner på webbplatsen',
@@ -222,46 +222,46 @@ const subscriptionPlans = [
       'Mindre funktioner, till exempel formulär, knappar eller bokningslänkar',
       'Prioriterad e-postsupport'
     ],
-    fit: 'Vill kunna utveckla webbplatsen lite varje månad utan stora engångskostnader.',
+    fit: 'Vill kunna utveckla webbplatsen lite varje månad med tillgång till teknisk hjälp.',
     highlighted: true,
     useCaseCount: 8
   },
   {
     name: 'Pro',
-    price: '1 199 kr',
+    price: '3 490 kr',
     period: '/månad',
-    audience: 'För företag som vill arbeta mer aktivt med sin webbplats eller app och förbättra den över tid.',
-    hours: 'Upp till 5 timmars arbete varje månad',
+    audience: 'För företag som vill ha löpande utveckling, förbättringar och teknisk support varje månad.',
+    hours: 'Upp till 6 timmars arbete varje månad',
     features: [
       'Allt som ingår i Plus',
       'Löpande vidareutveckling av webbplats eller app',
       'Nya sidor och landningssidor',
       'Förbättringar av användarupplevelse och design',
-      'Justeringar baserat på företagets behov',
       'Felsökning och buggfixar',
       'Teknisk rådgivning kring förbättringar',
+      'Enklare API- och automationshjälp',
       'Support via e-post och telefon'
     ],
-    fit: 'Vill ha en flexibel webbutvecklare tillgänglig varje månad.',
+    fit: 'Vill ha en flexibel utvecklingspartner tillgänglig varje månad.',
     useCaseCount: 11
   },
   {
     name: 'Business',
-    price: '2 299 kr',
+    price: '6 990 kr',
     period: '/månad',
-    audience: 'För företag som vill ha en långsiktig utvecklingspartner som hjälper till med kontinuerliga förbättringar.',
-    hours: 'Upp till 10 timmars arbete varje månad',
+    audience: 'För företag som vill ha en långsiktig teknikpartner för utveckling, förbättringar, support och digital tillväxt.',
+    hours: 'Upp till 12 timmars arbete varje månad',
     features: [
       'Allt som ingår i Pro',
-      'Kontinuerlig utveckling av webbplats eller app',
+      'Kontinuerlig utveckling av webbplats, app eller digital tjänst',
       'Planering och genomförande av nya funktioner',
-      'Större designförbättringar',
+      'Större design- och strukturförbättringar',
       'Hjälp med kampanjsidor och nya tjänstesidor',
-      'Förbättring av struktur, innehåll och användarflöde',
+      'AI-, automation- och API-förbättringar vid behov',
       'Regelbundna avstämningar',
       'Prioriterad support och snabbare hantering'
     ],
-    fit: 'Vill ha en pålitlig partner som aktivt hjälper företaget att växa digitalt.',
+    fit: 'Vill ha en pålitlig teknikpartner som aktivt hjälper företaget att växa digitalt.',
     useCaseCount: 13
   }
 ];
@@ -443,7 +443,7 @@ export default function Page() {
 
   return (
     <div className="min-h-screen flex flex-col font-display text-white selection:bg-brand-primary selection:text-brand-bg transition-colors duration-500">
-      
+
       {/* Brand Switcher / Top Panel */}
       <div className="w-full bg-brand-bg/80 backdrop-blur-md border-b border-brand-border sticky top-0 z-50 transition-colors duration-500">
         <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -452,44 +452,81 @@ export default function Page() {
       </div>
 
       {/* Hero Section */}
-      <section id="top" data-chat-section="top" className="relative pt-12 pb-24 overflow-hidden border-b border-brand-border">
+      <section
+        id="top"
+        data-chat-section="top"
+        className="relative pt-12 pb-24 overflow-hidden border-b border-brand-border"
+      >
         {/* Dynamic decorative vectors */}
-        <div className="absolute inset-0 z-0 pointer-events-none opacity-40 mix-blend-screen" style={{ backgroundImage: 'var(--hero-pattern)' }}></div>
-        
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 animate-slide-up">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-primary/10 border border-brand-border text-brand-primary mb-8 text-sm font-semibold tracking-wide">
-            <ActiveBrandIcon className="w-4 h-4" />
-            <span>KVALITET • SÄKERHET • INNOVATION</span>
+        <div
+          className="absolute inset-0 z-0 pointer-events-none opacity-40 mix-blend-screen"
+          style={{ backgroundImage: "var(--hero-pattern)" }}
+        ></div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 animate-slide-up">
+
+          <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] items-center gap-6">
+
+            {/* TEXT */}
+            <div className="text-center lg:text-left">
+
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-primary/10 border border-brand-border text-brand-primary mb-8 text-sm font-semibold tracking-wide">
+                <ActiveBrandIcon className="w-4 h-4" />
+                <span>KVALITET • SÄKERHET • INNOVATION</span>
+              </div>
+
+              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight text-white">
+                {activeBrand.slogan}
+              </h1>
+
+              <p className="mt-8 text-lg sm:text-xl text-brand-muted max-w-2xl leading-relaxed font-light">
+                {activeBrand.description}
+              </p>
+
+              <div className="mt-10 flex flex-wrap justify-center lg:justify-start gap-4">
+                <a
+                  href="#calculator"
+                  className="px-8 py-4 rounded-xl font-bold bg-brand-primary text-brand-bg hover:bg-brand-primary-hover shadow-lg shadow-brand-glow transition-all duration-300 hover:scale-[1.03] active:scale-95"
+                >
+                  Beräkna ditt projekt
+                </a>
+
+                <a
+                  href="#contact"
+                  className="px-8 py-4 rounded-xl font-bold glass-effect border border-brand-border text-white hover:bg-white/5 transition-all duration-300"
+                >
+                  Boka gratis konsultation
+                </a>
+
+                <a
+                  href="#subscriptions"
+                  className="px-8 py-4 rounded-xl font-bold border border-brand-border text-brand-primary hover:border-brand-primary hover:bg-brand-primary/10 transition-all duration-300"
+                >
+                  Se abonnemang
+                </a>
+              </div>
+
+            </div>
+
+            {/* LOGO */}
+            <div className="relative flex justify-center lg:justify-end">
+
+              <div className="absolute -inset-8 rounded-full bg-cyan-400/30 blur-[90px] animate-logo-glow"></div>
+
+              <div className="relative overflow-hidden rounded-[30px] shadow-2xl shadow-brand-glow animate-logo-reveal">
+
+                <img
+                  src="/aegis-hero-logo.png"
+                  alt="Aegis logo"
+                  className="w-[340px] lg:w-[420px] rounded-[30px] object-cover scale-105"
+                />
+
+              </div>
+
+            </div>
+
           </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight text-white">
-            {activeBrand.slogan}
-          </h1>
-          
-          <p className="mt-8 text-lg sm:text-xl text-brand-muted max-w-3xl mx-auto leading-relaxed font-light">
-            {activeBrand.description}
-          </p>
-
-          <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <a 
-              href="#calculator" 
-              className="px-8 py-4 rounded-xl font-bold bg-brand-primary text-brand-bg hover:bg-brand-primary-hover shadow-lg shadow-brand-glow transition-all duration-300 hover:scale-[1.03] active:scale-95"
-            >
-              Beräkna ditt projekt
-            </a>
-            <a 
-              href="#contact" 
-              className="px-8 py-4 rounded-xl font-bold glass-effect border border-brand-border text-white hover:bg-white/5 transition-all duration-300"
-            >
-              Boka gratis konsultation
-            </a>
-            <a
-              href="#subscriptions"
-              className="px-8 py-4 rounded-xl font-bold border border-brand-border text-brand-primary hover:border-brand-primary hover:bg-brand-primary/10 transition-all duration-300"
-            >
-              Se abonnemang
-            </a>
-          </div>
         </div>
       </section>
 
@@ -517,16 +554,14 @@ export default function Page() {
                   <button
                     key={s.id}
                     onClick={() => setActiveTab(s.id)}
-                    className={`w-full text-left p-4 rounded-2xl flex items-center justify-between transition-all duration-300 border ${
-                      isActive 
-                        ? 'bg-brand-primary/10 border-brand-primary/40 text-white shadow-md' 
-                        : 'bg-transparent border-transparent hover:bg-white/5 text-brand-muted hover:text-white'
-                    }`}
+                    className={`w-full text-left p-4 rounded-2xl flex items-center justify-between transition-all duration-300 border ${isActive
+                      ? 'bg-brand-primary/10 border-brand-primary/40 text-white shadow-md'
+                      : 'bg-transparent border-transparent hover:bg-white/5 text-brand-muted hover:text-white'
+                      }`}
                   >
                     <div className="flex items-center gap-3.5">
-                      <div className={`p-2 rounded-xl transition-all duration-300 ${
-                        isActive ? 'bg-brand-primary text-brand-bg scale-105' : 'bg-white/5 text-brand-muted'
-                      }`}>
+                      <div className={`p-2 rounded-xl transition-all duration-300 ${isActive ? 'bg-brand-primary text-brand-bg scale-105' : 'bg-white/5 text-brand-muted'
+                        }`}>
                         <TabIcon className="w-5 h-5" />
                       </div>
                       <span className="font-bold text-sm sm:text-base">{s.title}</span>
@@ -615,11 +650,10 @@ export default function Page() {
                     <button
                       key={size.id}
                       onClick={() => setProjectSize(size.id)}
-                      className={`p-3 rounded-2xl border text-center transition-all duration-300 flex flex-col gap-1 ${
-                        projectSize === size.id 
-                          ? 'bg-brand-primary/10 border-brand-primary text-white' 
-                          : 'bg-transparent border-brand-border text-brand-muted hover:text-white'
-                      }`}
+                      className={`p-3 rounded-2xl border text-center transition-all duration-300 flex flex-col gap-1 ${projectSize === size.id
+                        ? 'bg-brand-primary/10 border-brand-primary text-white'
+                        : 'bg-transparent border-brand-border text-brand-muted hover:text-white'
+                        }`}
                     >
                       <span className="font-extrabold text-sm">{size.label}</span>
                       <span className="text-[9px] font-mono opacity-80">{size.desc}</span>
@@ -647,11 +681,10 @@ export default function Page() {
                       className="w-full p-3.5 rounded-2xl bg-black/25 border border-brand-border hover:border-brand-border-hover transition-all duration-300 flex items-center justify-between text-left"
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`w-5 h-5 rounded border flex items-center justify-center transition-all duration-300 ${
-                          selectedServices[s.id] 
-                            ? 'bg-brand-primary border-brand-primary text-brand-bg' 
-                            : 'border-brand-border'
-                        }`}>
+                        <div className={`w-5 h-5 rounded border flex items-center justify-center transition-all duration-300 ${selectedServices[s.id]
+                          ? 'bg-brand-primary border-brand-primary text-brand-bg'
+                          : 'border-brand-border'
+                          }`}>
                           {selectedServices[s.id] && <CheckIcon className="w-3.5 h-3.5" />}
                         </div>
                         <span className="font-semibold text-sm sm:text-base text-white">{s.label}</span>
@@ -690,16 +723,16 @@ export default function Page() {
                     <span>{estimate.complexity}%</span>
                   </div>
                   <div className="w-full h-2.5 rounded-full bg-white/10 overflow-hidden">
-                    <div 
-                      className="h-full bg-brand-primary shadow-lg shadow-brand-glow transition-all duration-500 rounded-full" 
+                    <div
+                      className="h-full bg-brand-primary shadow-lg shadow-brand-glow transition-all duration-500 rounded-full"
                       style={{ width: `${estimate.complexity}%` }}
                     />
                   </div>
                   <span className="block text-[10px] text-brand-muted font-light mt-1.5 font-mono">
                     {estimate.complexity < 30 ? 'ENKEL: Snabbt genomförande, minimal risk.' :
-                     estimate.complexity < 60 ? 'MEDEL: Standardiserad databas och logik.' :
-                     estimate.complexity < 85 ? 'AVANCERAD: Flera integrationer och API-lager.' :
-                     'MYCKET KOMPLEX: Hårdvara/AI/Kryptering involverad.'}
+                      estimate.complexity < 60 ? 'MEDEL: Standardiserad databas och logik.' :
+                        estimate.complexity < 85 ? 'AVANCERAD: Flera integrationer och API-lager.' :
+                          'MYCKET KOMPLEX: Hårdvara/AI/Kryptering involverad.'}
                   </span>
                 </div>
 
@@ -723,13 +756,13 @@ export default function Page() {
                 <p className="text-[10px] text-brand-muted font-light leading-relaxed mb-4">
                   *Detta är en grov uppskattning baserad på typiska tidigare lösningar. Vi ger dig en exakt tidplan efter vår konsultation.
                 </p>
-                <a 
+                <a
                   href="#contact"
                   onClick={() => {
                     const checkedLabels = Object.keys(selectedServices)
                       .filter(k => selectedServices[k])
                       .map(k => k.charAt(0).toUpperCase() + k.slice(1));
-                    
+
                     const msg = `Hej! Jag har byggt en projektprofil via kalkylatorn. Jag är intresserad av ett ${projectSize}-projekt som innefattar: ${checkedLabels.join(', ') || 'inget valt än'}. Uppskattad tid var ${estimate.weeks} veckor. Låt oss diskutera!`;
                     setFormData(prev => ({
                       ...prev,
@@ -742,6 +775,110 @@ export default function Page() {
                 </a>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Website Creation Packages */}
+      <section id="website-packages" className="py-20 border-b border-brand-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl text-center mb-14">
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+              Hemsidor i olika nivåer
+            </h2>
+            <div className="w-16 h-1 bg-brand-primary mx-auto mt-4 rounded-full"></div>
+            <p className="mt-6 text-brand-muted leading-8">
+              Vi skapar moderna, snabba och mobilanpassade hemsidor beroende på behov.
+              Du kan börja enkelt och sedan bygga vidare med fler sidor, funktioner,
+              formulär, bokningslösningar, AI-chatbot eller löpande support.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+            {[
+              {
+                name: 'Starter hemsida',
+                price: 'från 2 990 kr',
+                text: 'För privatpersoner eller små företag som behöver en enkel men professionell närvaro online.',
+                features: [
+                  '1–3 sidor',
+                  'Mobilanpassad design',
+                  'Kontaktuppgifter och grundläggande innehåll',
+                  'Enklare kontaktformulär',
+                  'Publicering av hemsidan'
+                ]
+              },
+              {
+                name: 'Business hemsida',
+                price: 'från 6 990 kr',
+                text: 'För företag som vill ha en mer komplett hemsida med tydlig struktur och bättre presentation.',
+                features: [
+                  'Upp till 6 sidor',
+                  'Modern design anpassad efter företaget',
+                  'Tjänstesidor och startsida',
+                  'Kontaktformulär',
+                  'Grundläggande SEO',
+                  'Koppling till e-post eller externa länkar'
+                ]
+              },
+              {
+                name: 'Pro hemsida',
+                price: 'från 13 990 kr',
+                text: 'För företag som vill ha fler funktioner och en hemsida som kan användas aktivt i verksamheten.',
+                features: [
+                  'Upp till 10 sidor',
+                  'Bokningslänk eller enklare bokningsflöde',
+                  'Adminvänlig struktur',
+                  'Förbättrad SEO och prestanda',
+                  'AI-chatbot eller automation som tillval',
+                  'Mer avancerad design och animationer'
+                ],
+                highlighted: true
+              },
+              {
+                name: 'Custom system',
+                price: 'Offert',
+                text: 'För större lösningar där hemsidan behöver kopplas till system, databaser, kundportaler eller appar.',
+                features: [
+                  'Skräddarsydd design och funktionalitet',
+                  'Databas och inloggning',
+                  'Adminpanel eller dashboard',
+                  'API-integrationer',
+                  'AI, automation eller säkerhetslösningar',
+                  'Långsiktig vidareutveckling'
+                ]
+              }
+            ].map((pkg) => (
+              <div
+                key={pkg.name}
+                className={`rounded-3xl border p-6 transition duration-300 hover:-translate-y-1 ${pkg.highlighted
+                  ? 'border-brand-primary bg-brand-primary/10 shadow-xl shadow-brand-glow/10'
+                  : 'border-brand-border bg-slate-950/55'
+                  }`}
+              >
+                <h3 className="text-2xl font-black text-white">{pkg.name}</h3>
+                <p className="mt-3 text-3xl font-black text-brand-primary">{pkg.price}</p>
+                <p className="mt-4 text-sm leading-7 text-brand-muted">{pkg.text}</p>
+
+                <ul className="mt-6 space-y-3">
+                  {pkg.features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-3">
+                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-brand-border bg-brand-primary/10 text-brand-primary">
+                        <CheckIcon className="h-3 w-3" />
+                      </span>
+                      <span className="text-sm leading-6 text-brand-muted">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <a
+                  href="#contact"
+                  className="mt-6 block rounded-xl bg-brand-primary px-4 py-3 text-center text-sm font-black text-brand-bg transition hover:bg-brand-primary-hover"
+                >
+                  Be om offert
+                </a>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -769,94 +906,90 @@ export default function Page() {
               const isIncludedInSelectedLevel = planIndex <= selectedSubscriptionIndex;
 
               return (
-              <div
-                key={plan.name}
-                role="button"
-                tabIndex={0}
-                aria-pressed={isSelected}
-                onClick={() => setSelectedSubscriptionName(plan.name)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    setSelectedSubscriptionName(plan.name);
-                  }
-                }}
-                className={`group relative flex h-full cursor-pointer flex-col rounded-3xl border p-5 text-left outline-none transition duration-300 hover:-translate-y-1 hover:border-brand-primary hover:bg-brand-primary/10 focus-visible:border-brand-primary focus-visible:ring-2 focus-visible:ring-brand-primary/40 ${
-                  isSelected
+                <div
+                  key={plan.name}
+                  role="button"
+                  tabIndex={0}
+                  aria-pressed={isSelected}
+                  onClick={() => setSelectedSubscriptionName(plan.name)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      setSelectedSubscriptionName(plan.name);
+                    }
+                  }}
+                  className={`group relative flex h-full cursor-pointer flex-col rounded-3xl border p-5 text-left outline-none transition duration-300 hover:-translate-y-1 hover:border-brand-primary hover:bg-brand-primary/10 focus-visible:border-brand-primary focus-visible:ring-2 focus-visible:ring-brand-primary/40 ${isSelected
                     ? 'border-brand-primary bg-brand-primary/15 shadow-2xl shadow-brand-glow/25'
                     : plan.highlighted
                       ? 'border-brand-primary/50 bg-brand-primary/10 shadow-xl shadow-brand-glow/10'
                       : 'border-brand-border bg-slate-950/55'
-                }`}
-              >
-                <div className="mb-5 flex items-start justify-between gap-3">
-                  <div>
-                    <p className="mb-2 text-[10px] font-black uppercase tracking-[0.22em] text-brand-primary">
-                      Nivå {planIndex + 1}
-                    </p>
-                    <h3 className="text-2xl font-black text-white">{plan.name}</h3>
-                    <p className="mt-2 text-sm leading-6 text-brand-muted">{plan.audience}</p>
-                  </div>
-                  {(plan.highlighted || isSelected) && (
-                    <span className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-wider ${
-                      isSelected ? 'bg-white text-slate-950' : 'bg-brand-primary text-brand-bg'
-                    }`}>
-                      {isSelected ? 'Vald' : 'Populär'}
-                    </span>
-                  )}
-                </div>
-
-                <div className="mb-5">
-                  <span className="text-3xl font-black text-white">{plan.price}</span>
-                  <span className="ml-1 text-sm font-bold text-brand-muted">{plan.period}</span>
-                  <p className="mt-2 rounded-xl border border-brand-border bg-black/25 px-3 py-2 text-xs font-bold text-brand-primary">
-                    {plan.hours}
-                  </p>
-                  <p className="mt-2 text-xs font-bold text-brand-muted">
-                    {plan.useCaseCount} valbara hjälpområden
-                  </p>
-                </div>
-
-                <ul className="mb-6 space-y-3">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3">
-                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-brand-border bg-brand-primary/10 text-brand-primary">
-                        <CheckIcon className="h-3 w-3" />
+                    }`}
+                >
+                  <div className="mb-5 flex items-start justify-between gap-3">
+                    <div>
+                      <p className="mb-2 text-[10px] font-black uppercase tracking-[0.22em] text-brand-primary">
+                        Nivå {planIndex + 1}
+                      </p>
+                      <h3 className="text-2xl font-black text-white">{plan.name}</h3>
+                      <p className="mt-2 text-sm leading-6 text-brand-muted">{plan.audience}</p>
+                    </div>
+                    {(plan.highlighted || isSelected) && (
+                      <span className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-wider ${isSelected ? 'bg-white text-slate-950' : 'bg-brand-primary text-brand-bg'
+                        }`}>
+                        {isSelected ? 'Vald' : 'Populär'}
                       </span>
-                      <span className={`text-sm leading-6 ${isSelected ? 'text-white/90' : 'text-brand-muted'}`}>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="mt-auto">
-                  <div className="mb-5 rounded-2xl border border-brand-border bg-black/25 p-4">
-                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-brand-primary">
-                      Passar dig som
-                    </p>
-                    <p className="mt-2 text-sm leading-6 text-white/85">{plan.fit}</p>
+                    )}
                   </div>
-                  <a
-                    href="#contact"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      handleSubscriptionSelect(plan);
-                    }}
-                    className={`block w-full rounded-xl px-4 py-3 text-center text-sm font-black transition active:scale-95 ${
-                      isSelected || plan.highlighted
+
+                  <div className="mb-5">
+                    <span className="text-3xl font-black text-white">{plan.price}</span>
+                    <span className="ml-1 text-sm font-bold text-brand-muted">{plan.period}</span>
+                    <p className="mt-2 rounded-xl border border-brand-border bg-black/25 px-3 py-2 text-xs font-bold text-brand-primary">
+                      {plan.hours}
+                    </p>
+                    <p className="mt-2 text-xs font-bold text-brand-muted">
+                      {plan.useCaseCount} valbara hjälpområden
+                    </p>
+                  </div>
+
+                  <ul className="mb-6 space-y-3">
+                    {plan.features.map((feature) => (
+                      <li key={feature} className="flex items-start gap-3">
+                        <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-brand-border bg-brand-primary/10 text-brand-primary">
+                          <CheckIcon className="h-3 w-3" />
+                        </span>
+                        <span className={`text-sm leading-6 ${isSelected ? 'text-white/90' : 'text-brand-muted'}`}>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="mt-auto">
+                    <div className="mb-5 rounded-2xl border border-brand-border bg-black/25 p-4">
+                      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-brand-primary">
+                        Passar dig som
+                      </p>
+                      <p className="mt-2 text-sm leading-6 text-white/85">{plan.fit}</p>
+                    </div>
+                    <a
+                      href="#contact"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handleSubscriptionSelect(plan);
+                      }}
+                      className={`block w-full rounded-xl px-4 py-3 text-center text-sm font-black transition active:scale-95 ${isSelected || plan.highlighted
                         ? 'bg-brand-primary text-brand-bg hover:bg-brand-primary-hover'
                         : 'border border-brand-border text-white hover:border-brand-primary hover:bg-brand-primary/10'
-                    }`}
-                  >
-                    Välj {plan.name}
-                  </a>
-                  <p className={`mt-3 text-center text-[11px] font-bold ${
-                    isIncludedInSelectedLevel ? 'text-brand-primary' : 'text-brand-muted'
-                  }`}>
-                    {isIncludedInSelectedLevel ? 'Ingår i vald nivå eller lägre' : 'Klicka för att se fler val'}
-                  </p>
+                        }`}
+                    >
+                      Välj {plan.name}
+                    </a>
+                    <p className={`mt-3 text-center text-[11px] font-bold ${isIncludedInSelectedLevel ? 'text-brand-primary' : 'text-brand-muted'
+                      }`}>
+                      {isIncludedInSelectedLevel ? 'Ingår i vald nivå eller lägre' : 'Klicka för att se fler val'}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            );
+              );
             })}
           </div>
 
@@ -946,7 +1079,7 @@ export default function Page() {
               </p>
               <div className="mt-6 rounded-2xl border border-brand-border bg-black/30 p-5">
                 <p className="text-sm font-bold text-brand-muted">Extra utveckling</p>
-                <p className="mt-1 text-3xl font-black text-white">700 kr/timme</p>
+                <p className="mt-1 text-3xl font-black text-white">500 kr/timme</p>
               </div>
               <p className="mt-5 text-sm font-semibold leading-7 text-white/85">
                 Vi påbörjar aldrig extra arbete utan att först informera dig och få ditt godkännande.
@@ -1103,13 +1236,56 @@ export default function Page() {
           </div>
         </div>
 
-        <footer className="relative mx-auto mt-20 flex max-w-6xl flex-col items-center justify-between gap-6 border-t border-brand-border pt-8 text-brand-muted md:flex-row">
-          <LogoLink variant="footer" />
-     
-          <div className="text-center text-xs md:text-right">
-            <p>© 2026 Aegis – Secure by Design. Built for Tomorrow. All rights reserved.</p>
-          </div>
-        </footer>
+        <footer className="relative mx-auto mt-20 grid max-w-6xl grid-cols-1 gap-10 border-t border-brand-border pt-10 text-brand-muted md:grid-cols-3 md:items-start">
+
+  <div>
+    <LogoLink variant="footer" />
+  </div>
+
+  <div className="text-center">
+    <h3 className="text-sm font-black uppercase tracking-[0.22em] text-white">
+      Följ oss
+    </h3>
+
+    <div className="mt-6 flex items-center justify-center gap-5 text-brand-primary">
+      <a href="https://www.instagram.com/aegistechcore/" target="_blank" rel="noreferrer" className="text-3xl font-black transition hover:text-white">
+        ◉
+      </a>
+
+      <a href="https://linkedin.com/in/aegis-techcore-b4748741a" target="_blank" rel="noreferrer" className="text-3xl font-black transition hover:text-white">
+        in
+      </a>
+
+      <a href="https://web.facebook.com/profile.php?id=61591107347881" target="_blank" rel="noreferrer" className="text-3xl font-black transition hover:text-white">
+        f
+      </a>
+
+      <a href="https://x.com/aegistechcore?s=11" target="_blank" rel="noreferrer" className="text-3xl font-black transition hover:text-white">
+        X
+      </a>
+    </div>
+
+    <a
+      href="mailto:aegis.infon@gmail.com"
+      className="mt-10 block text-2xl font-black text-white transition hover:text-brand-primary sm:text-3xl"
+    >
+      aegis.infon@gmail.com
+    </a>
+
+    <a
+      href="tel:+46720202232"
+      className="mt-3 block text-lg font-bold text-brand-muted transition hover:text-brand-primary"
+    >
+      +46 72 020 22 32
+    </a>
+  </div>
+
+  <div className="text-center text-xs md:text-right md:self-end">
+    <p>© 2026 Aegis</p>
+    <p className="mt-1">Secure by Design. Built for Tomorrow.</p>
+  </div>
+
+</footer>
       </section>
 
       <ChatbotWidget />
