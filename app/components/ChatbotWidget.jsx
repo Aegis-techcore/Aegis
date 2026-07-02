@@ -24,7 +24,8 @@ const mailSuggestedPrompts = [
   'Öppna kontaktformuläret'
 ];
 
-const CHAT_REOPEN_DELAY_MS = 30000;
+const CHAT_FIRST_OPEN_DELAY_MS = 10000;
+const CHAT_AUTO_OPENED_STORAGE_KEY = 'aegis-chat-auto-opened';
 
 const sectionLabels = {
   top: 'startsidan',
@@ -155,8 +156,8 @@ export default function ChatbotWidget() {
   const [suggestedPrompts, setSuggestedPrompts] = useState(defaultSuggestedPrompts);
   const askedSectionsRef = useRef(new Set());
   const hasAutoOpenedRef = useRef(false);
-  const userDismissedRef = useRef(false);
-  const reopenTimerRef = useRef(null);
+  const isOpenRef = useRef(false);
+  const autoOpenTimerRef = useRef(null);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -166,63 +167,63 @@ export default function ChatbotWidget() {
   }, [messages, isOpen, isThinking]);
 
   useEffect(() => () => {
-    if (reopenTimerRef.current) {
-      window.clearTimeout(reopenTimerRef.current);
+    if (autoOpenTimerRef.current) {
+      window.clearTimeout(autoOpenTimerRef.current);
     }
   }, []);
 
-  const clearReopenTimer = () => {
-    if (reopenTimerRef.current) {
-      window.clearTimeout(reopenTimerRef.current);
-      reopenTimerRef.current = null;
+  useEffect(() => {
+    isOpenRef.current = isOpen;
+  }, [isOpen]);
+
+  const clearAutoOpenTimer = () => {
+    if (autoOpenTimerRef.current) {
+      window.clearTimeout(autoOpenTimerRef.current);
+      autoOpenTimerRef.current = null;
+    }
+  };
+
+  const markAutoOpenSeen = () => {
+    hasAutoOpenedRef.current = true;
+
+    try {
+      window.localStorage.setItem(CHAT_AUTO_OPENED_STORAGE_KEY, 'true');
+    } catch {
+      // localStorage can be unavailable in private or restricted browsing modes.
     }
   };
 
   const openChat = () => {
-    clearReopenTimer();
-    userDismissedRef.current = false;
-    hasAutoOpenedRef.current = true;
+    clearAutoOpenTimer();
+    markAutoOpenSeen();
     setIsOpen(true);
   };
 
   const closeChat = () => {
-    userDismissedRef.current = true;
     setIsOpen(false);
-    clearReopenTimer();
-
-    reopenTimerRef.current = window.setTimeout(() => {
-      userDismissedRef.current = false;
-      hasAutoOpenedRef.current = true;
-      setIsOpen(true);
-      reopenTimerRef.current = null;
-    }, CHAT_REOPEN_DELAY_MS);
+    clearAutoOpenTimer();
   };
 
   useEffect(() => {
-    const openOnActivity = () => {
-      if (hasAutoOpenedRef.current || userDismissedRef.current) {
-        return;
+    try {
+      if (window.localStorage.getItem(CHAT_AUTO_OPENED_STORAGE_KEY) === 'true') {
+        hasAutoOpenedRef.current = true;
+        return undefined;
       }
+    } catch {
+      if (hasAutoOpenedRef.current) {
+        return undefined;
+      }
+    }
 
-      hasAutoOpenedRef.current = true;
-      window.setTimeout(() => {
-        if (!userDismissedRef.current) {
-          openChat();
-        }
-      }, 250);
-    };
-
-    const listenerOptions = { passive: true };
-    window.addEventListener('pointermove', openOnActivity, listenerOptions);
-    window.addEventListener('wheel', openOnActivity, listenerOptions);
-    window.addEventListener('touchstart', openOnActivity, listenerOptions);
-    window.addEventListener('keydown', openOnActivity);
+    autoOpenTimerRef.current = window.setTimeout(() => {
+      markAutoOpenSeen();
+      setIsOpen(true);
+      autoOpenTimerRef.current = null;
+    }, CHAT_FIRST_OPEN_DELAY_MS);
 
     return () => {
-      window.removeEventListener('pointermove', openOnActivity, listenerOptions);
-      window.removeEventListener('wheel', openOnActivity, listenerOptions);
-      window.removeEventListener('touchstart', openOnActivity, listenerOptions);
-      window.removeEventListener('keydown', openOnActivity);
+      clearAutoOpenTimer();
     };
   }, []);
 
@@ -251,14 +252,12 @@ export default function ChatbotWidget() {
           return;
         }
 
-        askedSectionsRef.current.add(section);
-
         window.setTimeout(() => {
-          if (userDismissedRef.current) {
+          if (!isOpenRef.current || askedSectionsRef.current.has(section)) {
             return;
           }
 
-          openChat();
+          askedSectionsRef.current.add(section);
           setSuggestedPrompts(sectionSuggestedPrompts[section] || defaultSuggestedPrompts);
           setMessages((currentMessages) => [
             ...currentMessages,

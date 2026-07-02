@@ -12,6 +12,7 @@ import {
   mentionsSubscription,
   moneyReply,
   scopeReply,
+  serviceQuestionReply,
   subscriptionReply,
   withHumanHandoff
 } from '../../lib/chatRules';
@@ -77,6 +78,15 @@ export async function POST(request) {
 
   if (mentionsMailHelp(lastUserMessage)) {
     return Response.json({ reply: mailHelpReply(), source: 'guided' });
+  }
+
+  const guidedServiceReply = serviceQuestionReply(lastUserMessage);
+
+  if (guidedServiceReply) {
+    return Response.json({
+      reply: withHumanHandoff(guidedServiceReply, lastUserMessage),
+      source: 'guided'
+    });
   }
 
   if (asksForDirectWork(lastUserMessage)) {

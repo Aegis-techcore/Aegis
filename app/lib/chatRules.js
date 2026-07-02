@@ -54,7 +54,7 @@ export const mentionsSubscription = (message) => {
 
 export const mentionsCompanyInfo = (message) => {
   const normalized = normalize(message);
-  return /(vad erbjuder|vad gor aegis|vad kan ni|vilka tjanster|era tjanster|aegis hjalper|om aegis)/.test(normalized);
+  return /(vad erbjuder|vad gor aegis|vad kan ni|vilka tjanster|era tjanster|aegis hjalper|om aegis|om foretaget|vilka ar ni|vem ar ni|vad gor foretaget|foretagsfragor|foretagstjanster|kan ni hjalpa foretag|hjalper ni foretag)/.test(normalized);
 };
 
 export const needsHumanHelp = (message) => {
@@ -64,7 +64,7 @@ export const needsHumanHelp = (message) => {
 
 export const asksForDirectWork = (message) => {
   const normalized = normalize(message);
-  return /(gor|gora|skapa|bygg|bygga|koda|programmera|utveckla|designa|fixa|felsok|felsoka|installera|integrera|uppdatera|andra text|andra texter|andra bild|andra innehall|andra pa sidan|skriv kod|kan du gora|kan du skapa|kan du bygga|kan du koda|jag vill att du|jag vill bygga|jag vill skapa|jag vill utveckla|jag behover bygga|jag behover skapa|jag behover fixa)/.test(normalized);
+  return /(skriv kod|skriv koden|ge mig koden|skapa fil|skapa filer|leverera en fardig|bygg klart|gora klart|fixa min kod|felsok min kod|debugga min kod|ratta min kod|installera at mig|andra pa min sida|andra texten pa sidan|andra bilden pa sidan|jag vill att du (gor|gora|skapar|skapa|bygger|bygga|kodar|koda|programmerar|programmera|felsoker|felsoka|installerar|installera|uppdaterar|uppdatera|andrar|andra)|kan du (skriva kod|koda|programmera|bygga klart|gora klart|fixa min kod|felsoka min kod|installera|andra pa min sida))/.test(normalized);
 };
 
 export const isOutOfScope = (message) => {
@@ -94,10 +94,44 @@ export const humanHandoffText = () =>
   `Om du vill att en människa hjälper dig vidare med uppgiften kan du mejla ${CONTACT_EMAIL} eller använda kontaktformuläret på sidan.`;
 
 export const directWorkReply = () =>
-  `Chatboten kan inte skapa, bygga, koda, felsöka eller utföra arbete direkt i chatten. Den kan bara svara på frågor om Aegis, våra tjänster och hur du får hjälp. Aegis kan däremot hjälpa med hemsidor, appar, AI-chatbots, IT-support och andra digitala projekt. Om du vill gå vidare kan du mejla ${CONTACT_EMAIL} eller använda kontaktformuläret på sidan.`;
+  `Jag kan guida dig här och samla rätt underlag. Själva utvecklingen, felsökningen eller installationen gör Aegis efter kontakt. Berätta kort vad du vill bygga eller fixa, så hjälper jag dig beskriva behovet och välja rätt tjänst. Du kan också mejla ${CONTACT_EMAIL} eller använda kontaktformuläret på sidan.`;
 
 export const companyInfoReply = () =>
-  'Aegis hjälper privatpersoner och företag med programmering, hemsidor, appar, data/Excel, cybersäkerhet, nätverk, IoT, AI-chatbots, automation, spelutveckling, webbundehåll och IT-support. Chatboten kan förklara tjänsterna och hjälpa dig hitta rätt väg vidare, men den utför inte arbetet direkt i chatten.';
+  'Aegis är en teknikpartner för privatpersoner och företag som behöver digital hjälp. Vi kan hjälpa med programmering, hemsidor, appar, data/Excel, cybersäkerhet, nätverk, IoT, AI-chatbots, automation, spelutveckling, webbundehåll och IT-support. Skriv vad företaget behöver lösa, så kan jag guida dig till rätt tjänst och nästa steg.';
+
+export const serviceQuestionReply = (message) => {
+  const normalized = normalize(message);
+
+  if (!/(kan ni|hjalper ni|hjalpa|jag vill|jag behover|vi behover|erbjuder ni|jobbar ni med|har ni|tjanst|losning|foretag|projekt)/.test(normalized)) {
+    return '';
+  }
+
+  if (/(ai|chatbot|automation|automatisering|assistent|supportbot)/.test(normalized)) {
+    return 'Ja. Aegis kan hjälpa företag med AI-chatbots och automation som svarar på vanliga frågor, samlar in kundens behov, skickar vidare svåra ärenden och kan anpassas efter företagets eget innehåll. Bra nästa steg är att beskriva vilka frågor boten ska svara på och var den ska användas.';
+  }
+
+  if (/(webb|hemsida|app|system|fullstack|bokning|ehandel|portal|adminpanel)/.test(normalized)) {
+    return 'Ja. Aegis kan hjälpa med hemsidor, appar och system från struktur och design till frontend, backend, databaser, API:er, adminpaneler och lansering. Berätta om målet, vilka funktioner som behövs och om det redan finns en nuvarande webbplats eller app.';
+  }
+
+  if (/(excel|data|rapport|databas|dashboard|automatisera)/.test(normalized)) {
+    return 'Ja. Aegis kan hjälpa med data, Excel och automatisering genom att samla filer, bygga rapporter, skapa dashboards, strukturera databaser och minska manuellt arbete. Beskriv vilket arbete som tar tid idag och vilket resultat du vill få ut.';
+  }
+
+  if (/(sakerhet|cyber|gdpr|intrang|brandvagg|natverk|it-support|support|server)/.test(normalized)) {
+    return 'Ja. Aegis kan hjälpa med cybersäkerhet, nätverk och IT-support: granskning, felsökning, säkrare inloggning, serverhärdning, brandväggar, GDPR-nära arbetssätt och löpande teknisk hjälp. Skriv gärna vad som behöver skyddas eller vad som strular.';
+  }
+
+  if (/(iot|embedded|sensor|hardvara)/.test(normalized)) {
+    return 'Ja. Aegis kan hjälpa med IoT och embedded-projekt, till exempel sensordata, uppkopplade enheter, prototyper, integrationer och system som samlar in eller visar data. Beskriv enheten, datan och vad lösningen ska göra.';
+  }
+
+  if (/(spel|game|unity|unreal)/.test(normalized)) {
+    return 'Ja. Aegis kan hjälpa med spelutveckling, prototyper, webbaserade spel, gameplay-logik, UI och teknisk utveckling. Berätta vilken typ av spel eller interaktiv upplevelse du vill bygga.';
+  }
+
+  return '';
+};
 
 export const mailHelpReply = () =>
   `Absolut. Skicka gärna ett kort mejl till ${CONTACT_EMAIL} med: namn, företag eller privatperson, telefonnummer, vad du behöver hjälp med, vilken webbplats/app det gäller och om det är bråttom. Då kan vi snabbare förstå uppgiften och hjälpa dig vidare.`;
@@ -125,6 +159,12 @@ export const buildFallbackReply = (message) => {
 
   if (mentionsMailHelp(message)) {
     return mailHelpReply();
+  }
+
+  const guidedServiceReply = serviceQuestionReply(message);
+
+  if (guidedServiceReply) {
+    return guidedServiceReply;
   }
 
   if (asksForDirectWork(message)) {
@@ -183,8 +223,10 @@ Mål:
 - Håll svaren korta, konkreta och professionella.
 - Du är inte en generell ChatGPT. Svara inte på allmänna frågor utanför Aegis, webbplatsen, företagets tjänster, kundservice, projekt, IT, webbutveckling, AI-chatbots, abonnemang eller kontakt.
 - Om frågan ligger utanför Aegis område ska du artigt säga att du bara kan hjälpa med Aegis tjänster och be användaren beskriva sitt webb-, IT- eller projektbehov.
-- Du får aldrig utföra arbete i chatten. Du får inte skapa appar, bygga hemsidor, skriva kod, felsöka system, installera saker, ändra innehåll, skapa filer eller leverera färdiga lösningar.
-- Om användaren ber dig göra något praktiskt ska du säga att chatten bara kan informera om Aegis och hänvisa till ${CONTACT_EMAIL} eller kontaktformuläret.
+- När användaren skriver att de vill bygga, skapa, utveckla, fixa eller få hjälp med något inom Aegis områden ska du tolka det som ett kundbehov. Börja med vad Aegis kan hjälpa med och ställ en kort följdfråga.
+- Du ska inte leverera färdig kod, filer, installationer eller kompletta lösningar direkt i chatten.
+- Om användaren uttryckligen ber chatten utföra arbetet direkt ska du förklara att du kan guida och samla underlag, medan själva arbetet görs av Aegis efter kontakt via ${CONTACT_EMAIL} eller kontaktformuläret.
+- Du får gärna hjälpa användaren formulera ett tydligt kontaktmejl eller en kort projektbeskrivning.
 - Aegis hjälper med programmering, fullstack, hemsidor, appar, databaser, data/Excel, cybersäkerhet, nätverk, IoT, AI-chatbots, automation, spelutveckling, webbundehåll, löpande utveckling och IT-support.
 - Aegis abonnemang för webbundehåll och IT-support heter endast Privat, Start, Plus, Pro och Business.
 - Privat kostar 250 kr/månad och passar privatpersoner med personlig hemsida, portfolio eller mindre digital tjänst.
