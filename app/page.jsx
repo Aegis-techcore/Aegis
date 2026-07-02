@@ -434,7 +434,7 @@ export default function Page() {
     setFormData(prev => ({
       ...prev,
       service: 'maintenance',
-      message: `Hej! Jag är intresserad av abonnemanget ${plan.name} (${plan.price}${plan.period}) för webbundehåll, löpande utveckling eller IT-support. Jag vill gärna veta hur vi kan komma igång.`
+      message: `Hej! Jag vill bli medlem via abonnemanget ${plan.name} (${plan.price}${plan.period}) för webbundehåll, löpande utveckling eller IT-support. Skicka gärna avtal/signering och nästa steg.`
     }));
   };
 
@@ -448,6 +448,14 @@ export default function Page() {
       <div className="w-full bg-brand-bg/80 backdrop-blur-md border-b border-brand-border sticky top-0 z-50 transition-colors duration-500">
         <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <LogoLink showSlogan />
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <a href="#subscriptions" className="rounded-xl border border-brand-border px-4 py-2 text-sm font-bold text-white transition hover:border-brand-primary hover:text-brand-primary">
+              Bli medlem
+            </a>
+            <a href="/kund" className="rounded-xl bg-brand-primary px-4 py-2 text-sm font-black text-brand-bg shadow-lg shadow-brand-glow transition hover:bg-brand-primary-hover">
+              Kundlogin
+            </a>
+          </div>
         </div>
       </div>
 
@@ -898,6 +906,9 @@ export default function Page() {
             <p className="mt-6 text-brand-muted leading-8">
               En modern webbplats eller app behöver inte bara byggas en gång. Den behöver hållas uppdaterad, förbättras och anpassas efter dina behov. Med våra abonnemang får privatpersoner och företag löpande hjälp med ändringar, uppdateringar, vidareutveckling och teknisk support utan att anlita en utvecklare varje gång något behöver göras.
             </p>
+            <p className="mt-4 text-sm font-semibold leading-7 text-white/80">
+              När du väljer ett abonnemang skickar Aegis en digital signering med pris, krav och omfattning. Efter signering får du kundlogin där du kan chatta med oss och begära avslut när du vill.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-5">
@@ -981,7 +992,7 @@ export default function Page() {
                         : 'border border-brand-border text-white hover:border-brand-primary hover:bg-brand-primary/10'
                         }`}
                     >
-                      Välj {plan.name}
+                      Bli medlem
                     </a>
                     <p className={`mt-3 text-center text-[11px] font-bold ${isIncludedInSelectedLevel ? 'text-brand-primary' : 'text-brand-muted'
                       }`}>
@@ -1010,7 +1021,7 @@ export default function Page() {
                 onClick={() => handleSubscriptionSelect(selectedSubscriptionPlan)}
                 className="rounded-xl bg-brand-primary px-5 py-3 text-center text-sm font-black text-brand-bg shadow-lg shadow-brand-glow transition hover:bg-brand-primary-hover active:scale-95"
               >
-                Välj {selectedSubscriptionPlan.name}
+                Starta medlemskap
               </a>
             </div>
 

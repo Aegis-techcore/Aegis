@@ -25,7 +25,6 @@ export const moneyKeywords = [
   'vad tar',
   'hur mycket',
   'moms',
-  'avtal',
   'price',
   'cost',
   'quote',
@@ -49,7 +48,7 @@ export const mentionsMoney = (message) => {
 
 export const mentionsSubscription = (message) => {
   const normalized = normalize(message);
-  return /(abonnemang|webbunderhall|underhall|lopande|it-support|supportavtal|manad|serviceavtal|privatperson|privat hemsida)/.test(normalized);
+  return /(abonnemang|medlemskap|medlem|kundportal|kundlogin|signering|signera|avtal|webbunderhall|underhall|lopande|it-support|supportavtal|manad|serviceavtal|privatperson|privat hemsida|avsluta|sluta hos er)/.test(normalized);
 };
 
 export const mentionsCompanyInfo = (message) => {
@@ -69,7 +68,7 @@ export const asksForDirectWork = (message) => {
 
 export const isOutOfScope = (message) => {
   const normalized = normalize(message);
-  const allowedTopic = /(aegis|hemsida|webb|app|system|programmering|kod|java|python|api|databas|excel|data|rapport|cyber|sakerhet|gdpr|natverk|brandvagg|it-support|support|iot|embedded|ai|chatbot|automation|automatisering|spel|abonnemang|underhall|kontakt|mejl|mail|pris|offert|betalning|projekt|foretag|kund|tjanst|service|bokning|formular|design|bugg|felsok)/.test(normalized);
+  const allowedTopic = /(aegis|hemsida|webb|app|system|programmering|kod|java|python|api|databas|excel|data|rapport|cyber|sakerhet|gdpr|natverk|brandvagg|it-support|support|iot|embedded|ai|chatbot|automation|automatisering|spel|abonnemang|medlemskap|medlem|kundportal|kundlogin|signering|signera|avtal|underhall|kontakt|mejl|mail|pris|offert|betalning|projekt|foretag|kund|tjanst|service|bokning|formular|design|bugg|felsok|avsluta)/.test(normalized);
   const clearOffTopic = /(vader|vadret|recept|matlagning|fotboll|sport|politik|nyheter|horoskop|relation|dejting|medicin|diagnos|juridisk|advokat|skamt|dikt|roman|huvudstad|president|film|musik|traning|resa|hotell|flyg|aktier|krypto|lotto|matte|matematik|rakna|berakna|oversatt)/.test(normalized);
   const genericChatGptQuestion = /(vad ar|vem ar|nar ar|hur manga|forklara|skriv en|beratta om|\d+\s*[+\-*/]\s*\d+)/.test(normalized);
 
@@ -85,7 +84,7 @@ export const moneyReply = () =>
   `När det handlar om pris, offert, betalning, faktura, rabatt eller budget ska vi ta det via mejl så att du får rätt besked. Kontakta oss på ${CONTACT_EMAIL}.`;
 
 export const subscriptionReply = () =>
-  `Aegis har fem abonnemangsnivåer: Privat, Start, Plus, Pro och Business. Privat passar privatpersoner med personlig hemsida eller portfolio. Start passar enklare uppdateringar, Plus löpande förbättringar, Pro mer aktiv vidareutveckling och Business ett långsiktigt utvecklingspartnerskap. Klicka på en nivå i abonnemangssektionen så ser du fler valbara saker när nivån blir högre. För pris, offert eller betalning kontaktar du oss via ${CONTACT_EMAIL}.`;
+  `Aegis har fem abonnemangsnivåer: Privat, Start, Plus, Pro och Business. När du vill bli medlem skickar Aegis en digital signeringslänk med pris, krav och omfattning. Efter signering får du kundlogin där du kan skriva till Aegis och begära avslut när du vill. För pris, offert eller betalning kontaktar du oss via ${CONTACT_EMAIL}.`;
 
 export const scopeReply = () =>
   'Jag är Aegis AI-assistent och svarar bara på frågor om Aegis, våra tjänster, webbplatsen, projekt, webbutveckling, IT-support, abonnemang och kontakt. Berätta gärna vad du vill bygga, fixa eller få hjälp med.';
@@ -229,9 +228,11 @@ Mål:
 - Du får gärna hjälpa användaren formulera ett tydligt kontaktmejl eller en kort projektbeskrivning.
 - Aegis hjälper med programmering, fullstack, hemsidor, appar, databaser, data/Excel, cybersäkerhet, nätverk, IoT, AI-chatbots, automation, spelutveckling, webbundehåll, löpande utveckling och IT-support.
 - Aegis abonnemang för webbundehåll och IT-support heter endast Privat, Start, Plus, Pro och Business.
-- Privat kostar 250 kr/månad och passar privatpersoner med personlig hemsida, portfolio eller mindre digital tjänst.
+- Privat kostar 399 kr/månad och passar privatpersoner med personlig hemsida, portfolio eller mindre digital tjänst.
 - Start passar enklare uppdateringar. Plus passar löpande förbättringar. Pro passar mer aktiv vidareutveckling. Business passar långsiktigt utvecklingspartnerskap.
 - Abonnemang kan användas för text- och bildändringar, nya sidor, nya sektioner, designjusteringar, mobilanpassning, mindre funktioner, formulär, bokningslänkar, buggfixar, teknisk rådgivning och IT-support.
+- Medlemskap startar via digital signeringslänk där pris, krav och omfattning står med. Efter signering får kunden kundlogin till kundportalen.
+- I kundportalen kan medlemmar skriva till Aegis, se sitt avtal/status och begära avslut.
 - När någon frågar om abonnemang ska du alltid utgå från alla fem nivåer: Privat, Start, Plus, Pro och Business. Skriv aldrig att det bara finns tre nivåer och kalla dem aldrig tillfälliga.
 - Hitta aldrig på andra abonnemangstyper, årsavtal, livstidsavtal, övervakning eller tjänster som inte nämns här.
 - Aktuell sida/sektion: ${pageContext}.
