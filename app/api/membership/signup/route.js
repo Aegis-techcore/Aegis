@@ -6,11 +6,11 @@ import { addAdminNotification } from '../../../lib/notificationStore';
 export const runtime = 'nodejs';
 
 const planPrices = {
-  Privat: '399 kr',
-  Start: '899 kr',
-  Plus: '1 790 kr',
-  Pro: '3 490 kr',
-  Business: '6 990 kr'
+  Privat: '99 kr',
+  Start: '299 kr',
+  Plus: '699 kr',
+  Pro: '1 499 kr',
+  Business: '2 999 kr'
 };
 
 const sanitize = (value) => String(value || '').trim();
