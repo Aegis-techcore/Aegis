@@ -7,33 +7,33 @@ import { CheckIcon, ShieldIcon } from '../components/Icons';
 const plans = [
   {
     name: 'Privat',
-    price: '399 kr',
+    price: '99 kr',
     audience: 'Privatpersoner med personlig hemsida, portfolio eller mindre digital tjänst.',
-    hours: 'Upp till 30 minuter per månad'
+    hours: 'Upp till 30 minuter per vecka'
   },
   {
     name: 'Start',
-    price: '899 kr',
+    price: '299 kr',
     audience: 'Mindre företag som vill hålla sin webbplats uppdaterad.',
-    hours: 'Upp till 1,5 timme per månad'
+    hours: 'Upp till 1 timme per vecka'
   },
   {
     name: 'Plus',
-    price: '1 790 kr',
+    price: '699 kr',
     audience: 'Företag som vill förbättra webbplatsen löpande.',
-    hours: 'Upp till 3 timmar per månad'
+    hours: 'Upp till 2 timmar per vecka'
   },
   {
     name: 'Pro',
-    price: '3 490 kr',
+    price: '1 490 kr',
     audience: 'Företag med aktiv vidareutveckling och support.',
-    hours: 'Upp till 6 timmar per månad'
+    hours: 'Upp till 3 timmar per vecka'
   },
   {
     name: 'Business',
-    price: '6 990 kr',
+    price: '2 990 kr',
     audience: 'Långsiktigt partnerskap för utveckling, support och digital tillväxt.',
-    hours: 'Upp till 12 timmar per månad'
+    hours: 'Upp till 5 timmar per vecka'
   }
 ];
 

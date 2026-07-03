@@ -212,7 +212,7 @@ const subscriptionPlans = [
     price: '699 kr',
     period: '/månad',
     audience: 'För företag som vill förbättra sin webbplats löpande och utveckla nya delar utan stora engångskostnader.',
-    hours: 'Upp till 2 timmars arbete varje månad',
+    hours: 'Upp till 2 timmars arbete varje vecka',
     features: [
       'Allt som ingår i Start',
       'Skapande av nya sektioner på webbplatsen',
@@ -228,10 +228,10 @@ const subscriptionPlans = [
   },
   {
     name: 'Pro',
-    price: '1 490 kr',
+    price: '1 499 kr',
     period: '/månad',
     audience: 'För företag som vill ha löpande utveckling, förbättringar och teknisk support varje månad.',
-    hours: 'Upp till 3 timmars arbete varje månad',
+    hours: 'Upp till 3 timmars arbete varje vecka',
     features: [
       'Allt som ingår i Plus',
       'Löpande vidareutveckling av webbplats eller app',
@@ -247,10 +247,10 @@ const subscriptionPlans = [
   },
   {
     name: 'Business',
-    price: '2 990 kr',
+    price: '2 999 kr',
     period: '/månad',
     audience: 'För företag som vill ha en långsiktig teknikpartner för utveckling, förbättringar, support och digital tillväxt.',
-    hours: 'Upp till 5 timmars arbete varje månad',
+    hours: 'Upp till 5 timmars arbete varje vecka',
     features: [
       'Allt som ingår i Pro',
       'Kontinuerlig utveckling av webbplats, app eller digital tjänst',
