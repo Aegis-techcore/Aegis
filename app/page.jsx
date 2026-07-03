@@ -176,10 +176,10 @@ const services = [
 const subscriptionPlans = [
   {
     name: 'Privat',
-    price: '399 kr',
+    price: '99 kr',
     period: '/månad',
     audience: 'För privatpersoner som vill ha hjälp med en personlig hemsida, portfolio eller mindre digital tjänst utan stora kostnader.',
-    hours: 'Upp till 30 minuters hjälp varje månad',
+    hours: 'Upp till 30 minuters hjälp varje vecka',
     features: [
       'Ändring av enklare texter och bilder',
       'Uppdatering av kontaktuppgifter eller länkar',
@@ -192,10 +192,10 @@ const subscriptionPlans = [
   },
   {
     name: 'Start',
-    price: '899 kr',
+    price: '299 kr',
     period: '/månad',
     audience: 'För mindre företag som vill hålla sin webbplats uppdaterad, professionell och fungerande över tid.',
-    hours: 'Upp till 1,5 timmes arbete varje månad',
+    hours: 'Upp till 1 timmes arbete varje vecka',
     features: [
       'Ändring av texter, bilder och innehåll',
       'Uppdatering av kontaktuppgifter, öppettider och företagsinformation',
@@ -209,10 +209,10 @@ const subscriptionPlans = [
   },
   {
     name: 'Plus',
-    price: '1 790 kr',
+    price: '699 kr',
     period: '/månad',
     audience: 'För företag som vill förbättra sin webbplats löpande och utveckla nya delar utan stora engångskostnader.',
-    hours: 'Upp till 3 timmars arbete varje månad',
+    hours: 'Upp till 2 timmars arbete varje månad',
     features: [
       'Allt som ingår i Start',
       'Skapande av nya sektioner på webbplatsen',
@@ -228,10 +228,10 @@ const subscriptionPlans = [
   },
   {
     name: 'Pro',
-    price: '3 490 kr',
+    price: '1 490 kr',
     period: '/månad',
     audience: 'För företag som vill ha löpande utveckling, förbättringar och teknisk support varje månad.',
-    hours: 'Upp till 6 timmars arbete varje månad',
+    hours: 'Upp till 3 timmars arbete varje månad',
     features: [
       'Allt som ingår i Plus',
       'Löpande vidareutveckling av webbplats eller app',
@@ -247,10 +247,10 @@ const subscriptionPlans = [
   },
   {
     name: 'Business',
-    price: '6 990 kr',
+    price: '2 990 kr',
     period: '/månad',
     audience: 'För företag som vill ha en långsiktig teknikpartner för utveckling, förbättringar, support och digital tillväxt.',
-    hours: 'Upp till 12 timmars arbete varje månad',
+    hours: 'Upp till 5 timmars arbete varje månad',
     features: [
       'Allt som ingår i Pro',
       'Kontinuerlig utveckling av webbplats, app eller digital tjänst',
@@ -848,6 +848,7 @@ export default function Page() {
                 ]
               }
             ].map((pkg) => (
+              
               <div
                 key={pkg.name}
                 className={`rounded-3xl border p-6 transition duration-300 hover:-translate-y-1 ${pkg.highlighted
@@ -878,6 +879,31 @@ export default function Page() {
                 </a>
               </div>
             ))}
+          </div>
+          
+          {/* Betalningsinformation */}
+          <div className="mt-12 rounded-3xl border border-brand-primary/30 bg-gradient-to-r from-brand-primary/10 to-cyan-500/5 p-8 shadow-xl shadow-brand-glow/10">
+            <div className="max-w-4xl mx-auto text-center">
+              <h3 className="text-2xl font-black text-white">
+                Trygg betalningsmodell
+              </h3>
+
+              <p className="mt-5 text-base leading-8 text-brand-muted">
+                För alla <span className="font-bold text-white">projekt och engångstjänster</span> betalas endast <span className="font-bold text-brand-primary">25&nbsp;% av det överenskomna priset</span> när offerten har godkänts och projektet påbörjas.
+              </p>
+
+              <p className="mt-4 text-base leading-8 text-brand-muted">
+                Resterande <span className="font-bold text-white">75&nbsp;%</span> faktureras först när projektet är
+                färdigutvecklat, levererat och godkänt av dig som kund. På så sätt får du möjlighet att följa arbetet
+                genom hela processen och känna dig trygg med resultatet innan slutbetalningen sker.
+              </p>
+
+              <div className="mt-6 inline-flex rounded-full border border-brand-primary/30 bg-brand-primary/10 px-5 py-2">
+                <span className="text-sm font-bold tracking-wide text-brand-primary">
+                  Gäller alla projekt • Gäller ej abonnemang
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -1076,8 +1102,8 @@ export default function Page() {
                 Om arbetet tar mer tid än vad som ingår i ditt abonnemang debiteras extra tid separat.
               </p>
               <div className="mt-6 rounded-2xl border border-brand-border bg-black/30 p-5">
-                <p className="text-sm font-bold text-brand-muted">Extra utveckling</p>
-                <p className="mt-1 text-3xl font-black text-white">500 kr/timme</p>
+                <p className="text-sm font-bold text-brand-muted">Extra utveckling (Gäller för Pro och Business paket)</p>
+                <p className="mt-1 text-3xl font-black text-white">249 kr/timme</p>
               </div>
               <p className="mt-5 text-sm font-semibold leading-7 text-white/85">
                 Vi påbörjar aldrig extra arbete utan att först informera dig och få ditt godkännande.
@@ -1236,54 +1262,54 @@ export default function Page() {
 
         <footer className="relative mx-auto mt-20 grid max-w-6xl grid-cols-1 gap-10 border-t border-brand-border pt-10 text-brand-muted md:grid-cols-3 md:items-start">
 
-  <div>
-    <LogoLink variant="footer" />
-  </div>
+          <div>
+            <LogoLink variant="footer" />
+          </div>
 
-  <div className="text-center">
-    <h3 className="text-sm font-black uppercase tracking-[0.22em] text-white">
-      Följ oss
-    </h3>
+          <div className="text-center">
+            <h3 className="text-sm font-black uppercase tracking-[0.22em] text-white">
+              Följ oss
+            </h3>
 
-    <div className="mt-6 flex items-center justify-center gap-5 text-brand-primary">
-      <a href="https://www.instagram.com/aegistechcore/" target="_blank" rel="noreferrer" className="text-3xl font-black transition hover:text-white">
-        ◉
-      </a>
+            <div className="mt-6 flex items-center justify-center gap-5 text-brand-primary">
+              <a href="https://www.instagram.com/aegistechcore/" target="_blank" rel="noreferrer" className="text-3xl font-black transition hover:text-white">
+                ◉
+              </a>
 
-      <a href="https://linkedin.com/in/aegis-techcore-b4748741a" target="_blank" rel="noreferrer" className="text-3xl font-black transition hover:text-white">
-        in
-      </a>
+              <a href="https://linkedin.com/in/aegis-techcore-b4748741a" target="_blank" rel="noreferrer" className="text-3xl font-black transition hover:text-white">
+                in
+              </a>
 
-      <a href="https://web.facebook.com/profile.php?id=61591107347881" target="_blank" rel="noreferrer" className="text-3xl font-black transition hover:text-white">
-        f
-      </a>
+              <a href="https://web.facebook.com/profile.php?id=61591107347881" target="_blank" rel="noreferrer" className="text-3xl font-black transition hover:text-white">
+                f
+              </a>
 
-      <a href="https://x.com/aegistechcore?s=11" target="_blank" rel="noreferrer" className="text-3xl font-black transition hover:text-white">
-        X
-      </a>
-    </div>
+              <a href="https://x.com/aegistechcore?s=11" target="_blank" rel="noreferrer" className="text-3xl font-black transition hover:text-white">
+                X
+              </a>
+            </div>
 
-    <a
-      href="mailto:aegis.infon@gmail.com"
-      className="mt-10 block text-2xl font-black text-white transition hover:text-brand-primary sm:text-3xl"
-    >
-      aegis.infon@gmail.com
-    </a>
+            <a
+              href="mailto:aegis.infon@gmail.com"
+              className="mt-10 block text-2xl font-black text-white transition hover:text-brand-primary sm:text-3xl"
+            >
+              aegis.infon@gmail.com
+            </a>
 
-    <a
-      href="tel:+46720202232"
-      className="mt-3 block text-lg font-bold text-brand-muted transition hover:text-brand-primary"
-    >
-      +46 72 020 22 32
-    </a>
-  </div>
+            <a
+              href="tel:+46720202232"
+              className="mt-3 block text-lg font-bold text-brand-muted transition hover:text-brand-primary"
+            >
+              +46 72 020 22 32
+            </a>
+          </div>
 
-  <div className="text-center text-xs md:text-right md:self-end">
-    <p>© 2026 Aegis</p>
-    <p className="mt-1">Secure by Design. Built for Tomorrow.</p>
-  </div>
+          <div className="text-center text-xs md:text-right md:self-end">
+            <p>© 2026 Aegis</p>
+            <p className="mt-1">Secure by Design. Built for Tomorrow.</p>
+          </div>
 
-</footer>
+        </footer>
       </section>
 
       <ChatbotWidget />
