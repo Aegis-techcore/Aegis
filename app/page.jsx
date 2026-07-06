@@ -1,5 +1,6 @@
 "use client";
 
+import CookieBanner from './components/CookieBanner';
 import { useState } from 'react';
 import ChatbotWidget from './components/ChatbotWidget';
 import LogoLink from './components/LogoLink';
@@ -848,7 +849,7 @@ export default function Page() {
                 ]
               }
             ].map((pkg) => (
-              
+
               <div
                 key={pkg.name}
                 className={`rounded-3xl border p-6 transition duration-300 hover:-translate-y-1 ${pkg.highlighted
@@ -880,7 +881,7 @@ export default function Page() {
               </div>
             ))}
           </div>
-          
+
           {/* Betalningsinformation */}
           <div className="mt-12 rounded-3xl border border-brand-primary/30 bg-gradient-to-r from-brand-primary/10 to-cyan-500/5 p-8 shadow-xl shadow-brand-glow/10">
             <div className="max-w-4xl mx-auto text-center">
@@ -1260,59 +1261,103 @@ export default function Page() {
           </div>
         </div>
 
-        <footer className="relative mx-auto mt-20 grid max-w-6xl grid-cols-1 gap-10 border-t border-brand-border pt-10 text-brand-muted md:grid-cols-3 md:items-start">
+        <footer className="relative mx-auto mt-20 max-w-6xl border-t border-brand-border pt-10 text-brand-muted">
+          <div className="grid grid-cols-1 gap-10 md:grid-cols-4">
 
-          <div>
-            <LogoLink variant="footer" />
-          </div>
-
-          <div className="text-center">
-            <h3 className="text-sm font-black uppercase tracking-[0.22em] text-white">
-              Följ oss
-            </h3>
-
-            <div className="mt-6 flex items-center justify-center gap-5 text-brand-primary">
-              <a href="https://www.instagram.com/aegistechcore/" target="_blank" rel="noreferrer" className="text-3xl font-black transition hover:text-white">
-                ◉
-              </a>
-
-              <a href="https://linkedin.com/in/aegis-techcore-b4748741a" target="_blank" rel="noreferrer" className="text-3xl font-black transition hover:text-white">
-                in
-              </a>
-
-              <a href="https://web.facebook.com/profile.php?id=61591107347881" target="_blank" rel="noreferrer" className="text-3xl font-black transition hover:text-white">
-                f
-              </a>
-
-              <a href="https://x.com/aegistechcore?s=11" target="_blank" rel="noreferrer" className="text-3xl font-black transition hover:text-white">
-                X
-              </a>
+            <div>
+              <LogoLink variant="footer" />
+              <p className="mt-4 max-w-xs text-sm leading-6">
+                Secure by Design. Built for Tomorrow.
+              </p>
             </div>
 
-            <a
-              href="mailto:aegis.infon@gmail.com"
-              className="mt-10 block text-2xl font-black text-white transition hover:text-brand-primary sm:text-3xl"
-            >
-              aegis.infon@gmail.com
-            </a>
+            <div>
+              <h3 className="mb-4 text-xs font-black uppercase tracking-[0.22em] text-brand-primary">
+                Följ oss
+              </h3>
+              <div className="flex flex-col gap-3 text-sm">
+                <a href="https://instagram.com/" target="_blank" rel="noreferrer" className="transition hover:text-brand-primary">
+                  Instagram
+                </a>
+                <a href="https://linkedin.com/" target="_blank" rel="noreferrer" className="transition hover:text-brand-primary">
+                  LinkedIn
+                </a>
+                <a href="https://facebook.com/" target="_blank" rel="noreferrer" className="transition hover:text-brand-primary">
+                  Facebook
+                </a>
+                <a href="https://x.com/" target="_blank" rel="noreferrer" className="transition hover:text-brand-primary">
+                  X
+                </a>
+              </div>
+            </div>
 
-            <a
-              href="tel:+46720202232"
-              className="mt-3 block text-lg font-bold text-brand-muted transition hover:text-brand-primary"
-            >
-              +46 72 020 22 32
-            </a>
+            <div>
+              <h3 className="mb-4 text-xs font-black uppercase tracking-[0.22em] text-brand-primary">
+                Kontakt
+              </h3>
+
+              <div className="flex flex-col gap-3 text-sm">
+
+                <a
+                  href="mailto:aegis.infon@gmail.com"
+                  className="transition hover:text-brand-primary"
+                >
+                  📧 aegis.infon@gmail.com
+                </a>
+
+                <a
+                  href="tel:+46720202232"
+                  className="transition hover:text-brand-primary"
+                >
+                  📞 +46 72 020 22 32
+                </a>
+
+                <div className="pt-2 border-t border-brand-border">
+                  <p className="font-bold text-white">
+                    Kundtjänst
+                  </p>
+
+                  <p>
+                    Måndag – Fredag
+                  </p>
+
+                  <p className="text-brand-primary font-semibold">
+                    09:00 – 18:00
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <div>
+              <h3 className="mb-4 text-xs font-black uppercase tracking-[0.22em] text-brand-primary">
+                Juridiskt
+              </h3>
+              <div className="flex flex-col gap-3 text-sm">
+                <a href="/privacy" className="transition hover:text-brand-primary">
+                  Integritetspolicy
+                </a>
+                <a href="/cookies" className="transition hover:text-brand-primary">
+                  Cookiepolicy
+                </a>
+                <a href="/terms" className="transition hover:text-brand-primary">
+                  Allmänna villkor
+                </a>
+              </div>
+            </div>
+
           </div>
 
-          <div className="text-center text-xs md:text-right md:self-end">
-            <p>© 2026 Aegis</p>
-            <p className="mt-1">Secure by Design. Built for Tomorrow.</p>
+          <div className="mt-10 border-t border-brand-border pt-6 text-center text-xs md:text-left">
+            <p>
+              © 2026 Aegis Core – Secure by Design. Built for Tomorrow. All rights reserved.
+            </p>
           </div>
-
         </footer>
       </section>
 
       <ChatbotWidget />
+      <CookieBanner />
 
     </div>
   );
