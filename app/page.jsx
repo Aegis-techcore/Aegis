@@ -285,6 +285,7 @@ const subscriptionUseCases = [
 
 export default function Page() {
   const [activeTab, setActiveTab] = useState('programming');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedSubscriptionName, setSelectedSubscriptionName] = useState('Privat');
 
   // Calculator State
@@ -436,20 +437,79 @@ export default function Page() {
   return (
     <div className="min-h-screen flex flex-col font-display text-white selection:bg-brand-primary selection:text-brand-bg transition-colors duration-500">
 
-      {/* Brand Switcher / Top Panel */}
-      <div className="w-full bg-brand-bg/80 backdrop-blur-md border-b border-brand-border sticky top-0 z-50 transition-colors duration-500">
-        <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <LogoLink showSlogan />
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <a href="/bli-medlem" className="rounded-xl border border-brand-border px-4 py-2 text-sm font-bold text-white transition hover:border-brand-primary hover:text-brand-primary">
-              Bli medlem
-            </a>
-            <a href="/kund" className="rounded-xl bg-brand-primary px-4 py-2 text-sm font-black text-brand-bg shadow-lg shadow-brand-glow transition hover:bg-brand-primary-hover">
-              Kundlogin
-            </a>
+      {/* Header / Navigation */}
+      <header className="w-full bg-brand-bg/85 backdrop-blur-md border-b border-brand-border sticky top-0 z-50 transition-colors duration-500">
+        <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between gap-4">
+            <LogoLink showSlogan />
+
+            <nav className="hidden xl:flex items-center gap-2 text-sm font-bold">
+              <a href="#services" className="px-3 py-2 rounded-xl text-brand-muted hover:text-white hover:bg-white/5 transition">
+                Tjänster
+              </a>
+              <a href="#calculator" className="px-3 py-2 rounded-xl text-brand-muted hover:text-white hover:bg-white/5 transition">
+                Kalkylator
+              </a>
+              <a href="#website-packages" className="px-3 py-2 rounded-xl text-brand-muted hover:text-white hover:bg-white/5 transition">
+                Hemsidor
+              </a>
+              <a href="#subscriptions" className="px-3 py-2 rounded-xl text-brand-muted hover:text-white hover:bg-white/5 transition">
+                Abonnemang
+              </a>
+              <a href="#contact" className="px-4 py-2 rounded-xl bg-brand-primary text-brand-bg hover:bg-brand-primary-hover shadow-md shadow-brand-glow transition">
+                Boka samtal
+              </a>
+            </nav>
+
+            <div className="hidden xl:flex items-center gap-3">
+              <a href="/bli-medlem" className="rounded-xl border border-brand-border px-4 py-2 text-sm font-bold text-white transition hover:border-brand-primary hover:text-brand-primary">
+                Bli medlem
+              </a>
+              <a href="/kund" className="rounded-xl bg-white px-4 py-2 text-sm font-black text-slate-950 transition hover:bg-brand-primary">
+                Kundlogin
+              </a>
+            </div>
+
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="xl:hidden rounded-xl border border-brand-border px-4 py-3 text-sm font-black text-white hover:border-brand-primary hover:text-brand-primary transition"
+            >
+              {isMenuOpen ? 'Stäng' : 'Meny'}
+            </button>
           </div>
+
+          {isMenuOpen && (
+            <nav className="xl:hidden mt-4 rounded-2xl border border-brand-border bg-slate-950/95 p-4 shadow-xl shadow-brand-glow/10">
+              <div className="flex flex-col gap-2 text-sm font-bold">
+                <a href="#services" onClick={() => setIsMenuOpen(false)} className="rounded-xl px-4 py-3 text-brand-muted hover:bg-white/5 hover:text-white transition">
+                  Tjänster
+                </a>
+                <a href="#calculator" onClick={() => setIsMenuOpen(false)} className="rounded-xl px-4 py-3 text-brand-muted hover:bg-white/5 hover:text-white transition">
+                  Projektkalkylator
+                </a>
+                <a href="#website-packages" onClick={() => setIsMenuOpen(false)} className="rounded-xl px-4 py-3 text-brand-muted hover:bg-white/5 hover:text-white transition">
+                  Hemsidor
+                </a>
+                <a href="#subscriptions" onClick={() => setIsMenuOpen(false)} className="rounded-xl px-4 py-3 text-brand-muted hover:bg-white/5 hover:text-white transition">
+                  Abonnemang
+                </a>
+                <a href="#contact" onClick={() => setIsMenuOpen(false)} className="rounded-xl px-4 py-3 text-brand-muted hover:bg-white/5 hover:text-white transition">
+                  Boka samtal
+                </a>
+
+                <div className="my-2 border-t border-brand-border"></div>
+
+                <a href="/bli-medlem" onClick={() => setIsMenuOpen(false)} className="rounded-xl border border-brand-border px-4 py-3 text-center text-white hover:border-brand-primary hover:text-brand-primary transition">
+                  Bli medlem
+                </a>
+                <a href="/kund" onClick={() => setIsMenuOpen(false)} className="rounded-xl bg-brand-primary px-4 py-3 text-center text-brand-bg hover:bg-brand-primary-hover transition">
+                  Kundlogin
+                </a>
+              </div>
+            </nav>
+          )}
         </div>
-      </div>
+      </header>
 
       {/* Hero Section */}
       <section
@@ -779,6 +839,190 @@ export default function Page() {
         </div>
       </section>
 
+      {/* Why Choose Aegis */}
+      <section id="why-aegis" className="py-20 border-b border-brand-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl text-center mb-14">
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+              Varför välja Aegis?
+            </h2>
+
+            <div className="w-16 h-1 bg-brand-primary mx-auto mt-4 rounded-full"></div>
+
+            <p className="mt-6 text-brand-muted leading-8">
+              Vi kombinerar modern teknik, säker utveckling och personlig service
+              för att skapa digitala lösningar som är byggda för att hålla över tid.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {[
+              {
+                icon: '🛡️',
+                title: 'Säker utveckling',
+                text: 'Vi bygger med fokus på säkerhet, stabilitet och framtidssäkra lösningar från start.'
+              },
+              {
+                icon: '⚡',
+                title: 'Snabb leverans',
+                text: 'Vi arbetar effektivt, håller tydlig kommunikation och uppdaterar dig under hela projektet.'
+              },
+              {
+                icon: '📱',
+                title: 'Mobilanpassat',
+                text: 'Alla våra lösningar fungerar lika bra på mobil, surfplatta och dator.'
+              },
+              {
+                icon: '🤖',
+                title: 'AI & Automation',
+                text: 'Vi kan integrera AI-chatbots, smarta arbetsflöden och automatiseringar som sparar tid.'
+              },
+              {
+                icon: '💬',
+                title: 'Personlig support',
+                text: 'Du får direkt kontakt med utvecklarna och enkel kommunikation genom hela processen.'
+              },
+              {
+                icon: '🚀',
+                title: 'Skalbara lösningar',
+                text: 'Vi bygger system och webbplatser som kan växa tillsammans med ditt företag.'
+              }
+            ].map((item) => (
+              <div
+                key={item.title}
+                className="group rounded-3xl border border-brand-border bg-slate-950/55 p-6 transition duration-300 hover:-translate-y-1 hover:border-brand-primary hover:bg-brand-primary/10 hover:shadow-xl hover:shadow-brand-glow/10"
+              >
+                <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-brand-border bg-brand-primary/10 text-3xl transition duration-300 group-hover:scale-110 group-hover:border-brand-primary">
+                  {item.icon}
+                </div>
+
+                <h3 className="text-xl font-black text-white">
+                  {item.title}
+                </h3>
+
+                <p className="mt-3 text-sm leading-7 text-brand-muted">
+                  {item.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Project Process */}
+      <section id="process" className="py-20 border-b border-brand-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+          <div className="mx-auto max-w-3xl text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+              Så går ett projekt till
+            </h2>
+
+            <div className="w-16 h-1 bg-brand-primary mx-auto mt-4 rounded-full"></div>
+
+            <p className="mt-6 text-brand-muted leading-8">
+              Vi arbetar med en tydlig process där du alltid vet vad nästa steg är – från första kontakt till färdig leverans.
+            </p>
+          </div>
+
+          <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-4">
+
+            {[
+              {
+                number: "01",
+                title: "Skicka förfrågan",
+                text: "Fyll i kontaktformuläret och berätta kort om ditt projekt. Att skicka en förfrågan är alltid kostnadsfritt och inte bindande."
+              },
+              {
+                number: "02",
+                title: "Konsultation",
+                text: "Vi kontaktar dig för att gå igenom dina behov och rekommendera den bästa lösningen."
+              },
+              {
+                number: "03",
+                title: "Offert",
+                text: "Du får en tydlig offert med pris, omfattning, leveranstid och vad som ingår."
+              },
+              {
+                number: "04",
+                title: "Startbetalning",
+                text: "När offerten godkänts betalas 25 % av projektets totala pris innan utvecklingen påbörjas."
+              },
+              {
+                number: "05",
+                title: "Utveckling",
+                text: "Vi utvecklar lösningen och håller dig uppdaterad under hela projektets gång."
+              },
+              {
+                number: "06",
+                title: "Testning",
+                text: "Du får möjlighet att testa projektet och lämna synpunkter innan slutleverans."
+              },
+              {
+                number: "07",
+                title: "Leverans",
+                text: "När allt är godkänt levereras projektet och resterande 75 % faktureras."
+              },
+              {
+                number: "08",
+                title: "Support",
+                text: "Vi finns kvar även efter leverans och hjälper till med support, förbättringar och vidareutveckling."
+              }
+            ].map((step) => (
+
+              <div
+                key={step.number}
+                className="group rounded-3xl border border-brand-border bg-slate-950/55 p-6 transition duration-300 hover:-translate-y-1 hover:border-brand-primary hover:bg-brand-primary/10 hover:shadow-xl hover:shadow-brand-glow/10"
+              >
+
+                <div className="text-4xl font-black text-brand-primary">
+                  {step.number}
+                </div>
+
+                <h3 className="mt-4 text-xl font-black text-white">
+                  {step.title}
+                </h3>
+
+                <p className="mt-4 text-sm leading-7 text-brand-muted">
+                  {step.text}
+                </p>
+
+              </div>
+
+            ))}
+
+          </div>
+
+          <div className="mt-14 rounded-3xl border border-brand-primary/30 bg-brand-primary/10 p-8">
+
+            <h3 className="text-2xl font-black text-white">
+              Viktig information
+            </h3>
+
+            <div className="mt-6 space-y-4 text-brand-muted leading-8">
+
+              <p>
+                ✅ Att skicka en förfrågan är alltid kostnadsfritt och inte bindande.
+              </p>
+
+              <p>
+                ✅ Alla projekt inleds med en kostnadsfri konsultation och en tydlig offert.
+              </p>
+
+              <p>
+                ✅ För att påbörja utvecklingen betalas endast <span className="font-bold text-white">25 %</span> av projektets totala pris.
+              </p>
+
+              <p>
+                ✅ Slutbetalning sker först när projektet är färdigutvecklat och godkänt av kunden.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+      </section>
       {/* Website Creation Packages */}
       <section id="website-packages" className="py-20 border-b border-brand-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
