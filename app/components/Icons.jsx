@@ -61,6 +61,26 @@ export const ChatBubbleIcon = ({ className = "w-6 h-6", ...props }) => (
   </svg>
 );
 
+export const BoltIcon = ({ className = "w-6 h-6", ...props }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className} {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 3L4.5 14.25h6L9.75 21l9.75-12.75h-6L13.5 3z" />
+  </svg>
+);
+
+export const DevicePhoneIcon = ({ className = "w-6 h-6", ...props }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className} {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 3.75h6A2.25 2.25 0 0117.25 6v12A2.25 2.25 0 0115 20.25H9A2.25 2.25 0 016.75 18V6A2.25 2.25 0 019 3.75z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h3M11.25 17.25h1.5" />
+  </svg>
+);
+
+export const RocketIcon = ({ className = "w-6 h-6", ...props }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className} {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 4.5c1.5-.75 3-.75 3.75-.75 0 .75 0 2.25-.75 3.75a13.3 13.3 0 01-3.9 4.8l-3.6 3.6-3.15-3.15 3.6-3.6a13.3 13.3 0 014.05-4.65z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 15l-1.5 4.5 4.5-1.5M8.25 12.75H4.5l2.25-3.75h4.5m0 6.75v3.75L15 17.25v-4.5M16.5 7.5h.008v.008H16.5V7.5z" />
+  </svg>
+);
+
 export const GamepadIcon = ({ className = "w-6 h-6", ...props }) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className} {...props}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5h.008v.008h-.008V10.5zm.008 2.25h-.008v.008h.008v-.008zm-3.25-1.125h.008v.008h-.008v-.008zm0 2.25h-.008v.008h.008v-.008zM12 18.75l-3-3m0 0l-3 3m3-3v-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

@@ -13,6 +13,11 @@ import {
   CpuIcon,
   SparklesIcon,
   GamepadIcon,
+  BrainIcon,
+  BoltIcon,
+  DevicePhoneIcon,
+  ChatBubbleIcon,
+  RocketIcon,
   ChevronIcon,
   CheckIcon
 } from './components/Icons';
@@ -887,14 +892,24 @@ export default function Page() {
                 title: 'Skalbara lösningar',
                 text: 'Vi bygger system och webbplatser som kan växa tillsammans med ditt företag.'
               }
-            ].map((item) => (
-              <div
-                key={item.title}
-                className="group rounded-3xl border border-brand-border bg-slate-950/55 p-6 transition duration-300 hover:-translate-y-1 hover:border-brand-primary hover:bg-brand-primary/10 hover:shadow-xl hover:shadow-brand-glow/10"
-              >
-                <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-brand-border bg-brand-primary/10 text-3xl transition duration-300 group-hover:scale-110 group-hover:border-brand-primary">
-                  {item.icon}
-                </div>
+            ].map((item, index) => {
+              const ItemIcon = [
+                ShieldIcon,
+                BoltIcon,
+                DevicePhoneIcon,
+                BrainIcon,
+                ChatBubbleIcon,
+                RocketIcon
+              ][index];
+
+              return (
+                <div
+                  key={item.title}
+                  className="group rounded-3xl border border-brand-border bg-slate-950/55 p-6 transition duration-300 hover:-translate-y-1 hover:border-brand-primary hover:bg-brand-primary/10 hover:shadow-xl hover:shadow-brand-glow/10"
+                >
+                  <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-brand-border bg-brand-primary/10 text-brand-primary ring-1 ring-white/5 transition duration-300 group-hover:scale-110 group-hover:border-brand-primary group-hover:bg-brand-primary group-hover:text-brand-bg group-hover:shadow-lg group-hover:shadow-brand-glow/25">
+                    <ItemIcon className="h-7 w-7" />
+                  </div>
 
                 <h3 className="text-xl font-black text-white">
                   {item.title}
@@ -903,8 +918,9 @@ export default function Page() {
                 <p className="mt-3 text-sm leading-7 text-brand-muted">
                   {item.text}
                 </p>
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
