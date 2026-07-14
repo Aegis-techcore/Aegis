@@ -1,5 +1,5 @@
 "use client";
-
+import Footer from "../components/Footer";
 import { useEffect, useMemo, useState } from 'react';
 import LogoLink from '../components/LogoLink';
 import { CheckIcon, ShieldIcon } from '../components/Icons';
@@ -314,6 +314,7 @@ export default function JoinMembershipPage() {
           </form>
         </section>
       </div>
+      <Footer />
     </main>
   );
 }
