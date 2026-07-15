@@ -1,6 +1,5 @@
 "use client";
 import Header from "./components/Header";
-import CookieBanner from './components/CookieBanner';
 import { useState } from 'react';
 import ChatbotWidget from './components/ChatbotWidget';
 import LogoLink from './components/LogoLink';
@@ -813,8 +812,6 @@ export default function Page() {
       </section>
       
       <ChatbotWidget />
-      <CookieBanner />
-
     </div>
   );
 }
