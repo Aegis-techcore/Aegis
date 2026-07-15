@@ -35,13 +35,6 @@ export default function Header() {
             </a>
 
             <a
-              href="/hemsidor"
-              className="rounded-xl px-3 py-2 text-brand-muted transition hover:bg-white/5 hover:text-white"
-            >
-              Hemsidor
-            </a>
-
-            <a
               href="/abonnemang"
               className="rounded-xl px-3 py-2 text-brand-muted transition hover:bg-white/5 hover:text-white"
             >

@@ -11,11 +11,11 @@ import {
 const subscriptionPlans = [
   {
     name: "Privat",
-    price: "399 kr",
+    price: "99 kr",
     period: "/månad",
     audience:
       "För privatpersoner som vill ha hjälp med en personlig hemsida, portfolio eller mindre digital tjänst utan stora kostnader.",
-    hours: "Upp till 30 minuters hjälp varje månad",
+    hours: "Upp till 30 minuters hjälp varje vecka",
     features: [
       "Ändring av enklare texter och bilder",
       "Uppdatering av kontaktuppgifter eller länkar",
@@ -29,11 +29,11 @@ const subscriptionPlans = [
   },
   {
     name: "Start",
-    price: "899 kr",
+    price: "299 kr",
     period: "/månad",
     audience:
       "För mindre företag som vill hålla sin webbplats uppdaterad, professionell och fungerande över tid.",
-    hours: "Upp till 1,5 timmes arbete varje månad",
+    hours: "Upp till 1 timmes arbete varje vecka",
     features: [
       "Ändring av texter, bilder och innehåll",
       "Uppdatering av kontaktuppgifter, öppettider och företagsinformation",
@@ -48,11 +48,11 @@ const subscriptionPlans = [
   },
   {
     name: "Plus",
-    price: "1 790 kr",
+    price: "699 kr",
     period: "/månad",
     audience:
       "För företag som vill förbättra sin webbplats löpande och utveckla nya delar utan stora engångskostnader.",
-    hours: "Upp till 3 timmars arbete varje månad",
+    hours: "Upp till 2 timmars arbete varje vecka",
     features: [
       "Allt som ingår i Start",
       "Skapande av nya sektioner på webbplatsen",
@@ -69,11 +69,11 @@ const subscriptionPlans = [
   },
   {
     name: "Pro",
-    price: "3 490 kr",
+    price: "1 490 kr",
     period: "/månad",
     audience:
       "För företag som vill ha löpande utveckling, förbättringar och teknisk support varje månad.",
-    hours: "Upp till 6 timmars arbete varje månad",
+    hours: "Upp till 3 timmars arbete varje vecka",
     features: [
       "Allt som ingår i Plus",
       "Löpande vidareutveckling av webbplats eller app",
@@ -90,11 +90,11 @@ const subscriptionPlans = [
   },
   {
     name: "Business",
-    price: "6 990 kr",
+    price: "2 990 kr",
     period: "/månad",
     audience:
       "För företag som vill ha en långsiktig teknikpartner för utveckling, förbättringar, support och digital tillväxt.",
-    hours: "Upp till 12 timmars arbete varje månad",
+    hours: "Upp till 5 timmars arbete varje vecka",
     features: [
       "Allt som ingår i Pro",
       "Kontinuerlig utveckling av webbplats, app eller digital tjänst",

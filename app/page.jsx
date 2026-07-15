@@ -328,7 +328,7 @@ export default function Page() {
 
               <div className="mt-10 flex flex-wrap justify-center lg:justify-start gap-4">
                 <a
-                  href="#calculator"
+                  href="/kalkylator"
                   className="px-8 py-4 rounded-xl font-bold bg-brand-primary text-brand-bg hover:bg-brand-primary-hover shadow-lg shadow-brand-glow transition-all duration-300 hover:scale-[1.03] active:scale-95"
                 >
                   Beräkna ditt projekt
@@ -342,7 +342,7 @@ export default function Page() {
                 </a>
 
                 <a
-                  href="#subscriptions"
+                  href="/abonnemang"
                   className="px-8 py-4 rounded-xl font-bold border border-brand-border text-brand-primary hover:border-brand-primary hover:bg-brand-primary/10 transition-all duration-300"
                 >
                   Se abonnemang
