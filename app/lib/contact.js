@@ -2,8 +2,11 @@ import { Resend } from 'resend';
 import { addAdminNotification } from './notificationStore';
 import { saveContactRequest } from './requestStore';
 
-const OWNER_EMAIL = 'aegis.infon@gmail.com';
-const FROM_EMAIL = 'onboarding@resend.dev';
+const OWNER_EMAIL =
+  process.env.OWNER_EMAIL || 'aegis.infon@gmail.com';
+
+const FROM_EMAIL =
+  process.env.RESEND_FROM_EMAIL || 'Aegis Core <onboarding@resend.dev>';
 
 const SERVICE_LABELS = {
   programming: 'Programmering & Utveckling',

@@ -48,14 +48,6 @@ const defaultRequirements = (plan) => [
 const formatCardNumber = (value) =>
   value.replace(/\D/g, '').slice(0, 19).replace(/(.{4})/g, '$1 ').trim();
 
-const testCard = {
-  cardHolder: 'Aegis Testkund',
-  cardNumber: '4242 4242 4242 4242',
-  expMonth: '12',
-  expYear: '2030',
-  cvc: '123'
-};
-
 export default function JoinMembershipPage() {
   const [selectedPlanName, setSelectedPlanName] = useState('Plus');
   const [formData, setFormData] = useState({
@@ -64,17 +56,12 @@ export default function JoinMembershipPage() {
     email: '',
     phone: '',
     signatureTitle: '',
-    accessCode: '',
-    cardHolder: '',
-    cardNumber: '',
-    expMonth: '',
-    expYear: '',
-    cvc: ''
+    accessCode: ''
   });
+
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(null);
 
   const selectedPlan = useMemo(
     () => plans.find((plan) => plan.name === selectedPlanName) || plans[2],
@@ -93,14 +80,9 @@ export default function JoinMembershipPage() {
   const updateField = (field, value) => {
     setFormData((current) => ({
       ...current,
-      [field]: field === 'cardNumber' ? formatCardNumber(value) : field === 'accessCode' ? value.toUpperCase() : value
-    }));
-  };
-
-  const fillTestCard = () => {
-    setFormData((current) => ({
-      ...current,
-      ...testCard
+      [field]: field === 'accessCode'
+        ? value.toUpperCase()
+        : value
     }));
   };
 
@@ -108,11 +90,13 @@ export default function JoinMembershipPage() {
     event.preventDefault();
     setIsSubmitting(true);
     setError('');
-
+  
     try {
-      const response = await fetch('/api/membership/signup', {
+      const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
           ...formData,
           plan: selectedPlan.name,
@@ -120,51 +104,27 @@ export default function JoinMembershipPage() {
           requirements: defaultRequirements(selectedPlan)
         })
       });
+  
       const data = await response.json().catch(() => null);
-
+  
       if (!response.ok) {
-        throw new Error(data?.message || 'Kunde inte skapa medlemskapet.');
+        throw new Error(
+          data?.message || 'Kunde inte starta betalningen.'
+        );
       }
-
-      setSuccess(data.customer);
-    } catch (signupError) {
-      setError(signupError.message || 'Kunde inte skapa medlemskapet.');
-    } finally {
+  
+      if (!data?.url) {
+        throw new Error('Stripe returnerade ingen betalningslänk.');
+      }
+  
+      window.location.href = data.url;
+    } catch (checkoutError) {
+      setError(
+        checkoutError.message || 'Kunde inte starta betalningen.'
+      );
       setIsSubmitting(false);
     }
   };
-
-  if (success) {
-    return (
-      <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(6,182,212,0.18),transparent_34%),#020617] px-4 py-10 text-white sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl">
-          <LogoLink showSlogan />
-          <section className="mt-10 rounded-3xl border border-emerald-500/30 bg-emerald-500/10 p-8 shadow-2xl shadow-black/25">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-200">
-              <CheckIcon className="h-7 w-7" />
-            </div>
-            <h1 className="mt-6 text-4xl font-black tracking-tight">Medlemskapet är aktivt</h1>
-            <p className="mt-4 text-sm leading-7 text-brand-muted">
-              Du är inloggad automatiskt och kan gå direkt till kundportalen. Kundkoden du valde används när du vill logga in igen senare.
-            </p>
-            <div className="mt-6 rounded-2xl border border-brand-border bg-black/25 p-5">
-              <p className="text-xs font-black uppercase tracking-widest text-brand-muted">Kundkod</p>
-              <p className="mt-2 text-2xl font-black text-white">{success.accessCode}</p>
-              <p className="mt-1 text-sm text-brand-muted">{success.email}</p>
-              {success.paymentMethod?.last4 && (
-                <p className="mt-3 text-sm text-brand-muted">
-                  Testkort: {success.paymentMethod.brand} **** {success.paymentMethod.last4}
-                </p>
-              )}
-            </div>
-            <a href="/kund" className="mt-6 inline-flex rounded-xl bg-brand-primary px-5 py-3 text-sm font-black text-brand-bg shadow-lg shadow-brand-glow transition hover:bg-brand-primary-hover">
-              Gå till kundportalen
-            </a>
-          </section>
-        </div>
-      </main>
-    );
-  }
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(6,182,212,0.18),transparent_34%),#020617] px-4 py-10 text-white sm:px-6 lg:px-8">
@@ -261,43 +221,6 @@ export default function JoinMembershipPage() {
               </label>
             </div>
 
-            <div className="mt-7 rounded-2xl border border-brand-border bg-black/25 p-5">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                <div>
-                  <p className="text-sm font-black text-white">Kortuppgifter i testläge</p>
-                  <p className="mt-1 text-xs leading-5 text-brand-muted">Fullständigt kortnummer och CVC sparas inte i kundarkivet.</p>
-                </div>
-                <button type="button" onClick={fillTestCard} className="rounded-xl border border-brand-primary/40 px-3 py-2 text-xs font-black uppercase tracking-widest text-brand-primary transition hover:bg-brand-primary/10">
-                  Använd testkort
-                </button>
-              </div>
-              <div className="mt-4 rounded-xl border border-brand-primary/30 bg-brand-primary/10 p-3 text-xs leading-6 text-brand-muted">
-                <span className="font-black text-white">Testkort:</span> 4242 4242 4242 4242 · 12/2030 · CVC 123
-              </div>
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                <label className="block text-sm font-bold sm:col-span-2">
-                  Namn på kort
-                  <input value={formData.cardHolder} onChange={(event) => updateField('cardHolder', event.target.value)} className="mt-2 w-full rounded-xl border border-brand-border bg-white px-4 py-3 text-slate-950 outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/30" required />
-                </label>
-                <label className="block text-sm font-bold sm:col-span-2">
-                  Kortnummer
-                  <input inputMode="numeric" value={formData.cardNumber} onChange={(event) => updateField('cardNumber', event.target.value)} placeholder="4242 4242 4242 4242" className="mt-2 w-full rounded-xl border border-brand-border bg-white px-4 py-3 text-slate-950 outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/30" required />
-                </label>
-                <label className="block text-sm font-bold">
-                  Månad
-                  <input inputMode="numeric" value={formData.expMonth} onChange={(event) => updateField('expMonth', event.target.value.replace(/\D/g, '').slice(0, 2))} placeholder="MM" className="mt-2 w-full rounded-xl border border-brand-border bg-white px-4 py-3 text-slate-950 outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/30" required />
-                </label>
-                <label className="block text-sm font-bold">
-                  År
-                  <input inputMode="numeric" value={formData.expYear} onChange={(event) => updateField('expYear', event.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="ÅÅÅÅ" className="mt-2 w-full rounded-xl border border-brand-border bg-white px-4 py-3 text-slate-950 outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/30" required />
-                </label>
-                <label className="block text-sm font-bold">
-                  CVC
-                  <input inputMode="numeric" value={formData.cvc} onChange={(event) => updateField('cvc', event.target.value.replace(/\D/g, '').slice(0, 4))} className="mt-2 w-full rounded-xl border border-brand-border bg-white px-4 py-3 text-slate-950 outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/30" required />
-                </label>
-              </div>
-            </div>
-
             <div className="mt-7 rounded-2xl border border-brand-primary/30 bg-brand-primary/10 p-5">
               <p className="text-sm font-black text-white">Krav som godkänns</p>
               <pre className="mt-3 whitespace-pre-wrap font-display text-sm leading-7 text-brand-muted">{defaultRequirements(selectedPlan)}</pre>
@@ -309,7 +232,7 @@ export default function JoinMembershipPage() {
             </label>
 
             <button disabled={isSubmitting} className="mt-6 w-full rounded-xl bg-brand-primary px-5 py-4 font-black text-brand-bg shadow-lg shadow-brand-glow transition hover:bg-brand-primary-hover disabled:cursor-not-allowed disabled:opacity-60">
-              {isSubmitting ? 'Aktiverar...' : 'Bli medlem nu'}
+            {isSubmitting ? 'Öppnar Stripe...' : 'Fortsätt till säker betalning'}
             </button>
           </form>
         </section>
