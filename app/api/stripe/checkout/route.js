@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { stripe } from '../../../lib/stripe';
+import { getStripe } from '../../../lib/stripe';
 import { getStripePlan } from '../../../lib/stripePlans';
 
 export async function POST(request) {
@@ -78,6 +78,7 @@ export async function POST(request) {
       requirements: requirements || ''
     };
 
+    const stripe = getStripe();
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
 

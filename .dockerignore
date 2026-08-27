@@ -1,0 +1,16 @@
+.git
+.github
+.next
+node_modules
+data
+docs
+helm
+tests
+*.log
+aegis-*.tar
+.env
+.env.*
+!.env.example
+Dockerfile*
+compose*.yaml
+README.md

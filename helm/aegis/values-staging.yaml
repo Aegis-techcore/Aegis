@@ -1,0 +1,30 @@
+replicaCount: 1
+
+image:
+  pullPolicy: Always
+
+ingress:
+  enabled: true
+  hosts:
+    - host: staging.aegis.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: aegis-staging-tls
+      hosts:
+        - staging.aegis.example.com
+
+config:
+  NEXT_PUBLIC_SITE_URL: https://staging.aegis.example.com
+  SITE_URL: https://staging.aegis.example.com
+
+existingSecret: aegis-staging-secrets
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 192Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

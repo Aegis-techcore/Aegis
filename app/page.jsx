@@ -5,19 +5,11 @@ import ChatbotWidget from './components/ChatbotWidget';
 import LogoLink from './components/LogoLink';
 import {
   ShieldIcon,
-  CodeIcon,
-  LayoutIcon,
-  TableIcon,
-  ServerIcon,
-  CpuIcon,
-  SparklesIcon,
-  GamepadIcon,
   BrainIcon,
   BoltIcon,
   DevicePhoneIcon,
   ChatBubbleIcon,
   RocketIcon,
-  ChevronIcon,
   CheckIcon
 } from './components/Icons';
 
@@ -29,132 +21,7 @@ const brand = {
   icon: ShieldIcon
 };
 
-const subscriptionPlans = [
-  {
-    name: 'Privat',
-    price: '99 kr',
-    period: '/månad',
-    audience: 'För privatpersoner som vill ha hjälp med en personlig hemsida, portfolio eller mindre digital tjänst utan stora kostnader.',
-    hours: 'Upp till 30 minuters hjälp varje vecka',
-    features: [
-      'Ändring av enklare texter och bilder',
-      'Uppdatering av kontaktuppgifter eller länkar',
-      'Mindre justeringar på personlig hemsida eller portfolio',
-      'Hjälp med enklare publicering',
-      'Support via e-post'
-    ],
-    fit: 'Har en mindre privat webbplats och vill kunna få enkel hjälp vid behov.',
-    useCaseCount: 4
-  },
-  {
-    name: 'Start',
-    price: '299 kr',
-    period: '/månad',
-    audience: 'För mindre företag som vill hålla sin webbplats uppdaterad, professionell och fungerande över tid.',
-    hours: 'Upp till 1 timmes arbete varje vecka',
-    features: [
-      'Ändring av texter, bilder och innehåll',
-      'Uppdatering av kontaktuppgifter, öppettider och företagsinformation',
-      'Mindre designjusteringar',
-      'Felsökning av mindre problem',
-      'Enklare teknisk rådgivning',
-      'Support via e-post'
-    ],
-    fit: 'Vill ha hjälp då och då för att hålla webbplatsen aktuell och professionell.',
-    useCaseCount: 6
-  },
-  {
-    name: 'Plus',
-    price: '699 kr',
-    period: '/månad',
-    audience: 'För företag som vill förbättra sin webbplats löpande och utveckla nya delar utan stora engångskostnader.',
-    hours: 'Upp till 2 timmars arbete varje vecka',
-    features: [
-      'Allt som ingår i Start',
-      'Skapande av nya sektioner på webbplatsen',
-      'Uppdatering av menyer, knappar och layout',
-      'Mindre förbättringar av design och struktur',
-      'Hjälp med mobilanpassning',
-      'Mindre funktioner, till exempel formulär, knappar eller bokningslänkar',
-      'Prioriterad e-postsupport'
-    ],
-    fit: 'Vill kunna utveckla webbplatsen lite varje månad med tillgång till teknisk hjälp.',
-    highlighted: true,
-    useCaseCount: 8
-  },
-  {
-    name: 'Pro',
-    price: '1 499 kr',
-    period: '/månad',
-    audience: 'För företag som vill ha löpande utveckling, förbättringar och teknisk support varje månad.',
-    hours: 'Upp till 3 timmars arbete varje vecka',
-    features: [
-      'Allt som ingår i Plus',
-      'Löpande vidareutveckling av webbplats eller app',
-      'Nya sidor och landningssidor',
-      'Förbättringar av användarupplevelse och design',
-      'Felsökning och buggfixar',
-      'Teknisk rådgivning kring förbättringar',
-      'Enklare API- och automationshjälp',
-      'Support via e-post och telefon'
-    ],
-    fit: 'Vill ha en flexibel utvecklingspartner tillgänglig varje månad.',
-    useCaseCount: 11
-  },
-  {
-    name: 'Business',
-    price: '2 999 kr',
-    period: '/månad',
-    audience: 'För företag som vill ha en långsiktig teknikpartner för utveckling, förbättringar, support och digital tillväxt.',
-    hours: 'Upp till 5 timmars arbete varje vecka',
-    features: [
-      'Allt som ingår i Pro',
-      'Kontinuerlig utveckling av webbplats, app eller digital tjänst',
-      'Planering och genomförande av nya funktioner',
-      'Större design- och strukturförbättringar',
-      'Hjälp med kampanjsidor och nya tjänstesidor',
-      'AI-, automation- och API-förbättringar vid behov',
-      'Regelbundna avstämningar',
-      'Prioriterad support och snabbare hantering'
-    ],
-    fit: 'Vill ha en pålitlig teknikpartner som aktivt hjälper företaget att växa digitalt.',
-    useCaseCount: 13
-  }
-];
-
-const subscriptionUseCases = [
-  'Ändra texter och bilder',
-  'Lägga till nya sidor',
-  'Skapa nya sektioner',
-  'Uppdatera produkter eller tjänster',
-  'Lägga till kontaktformulär',
-  'Förbättra design och layout',
-  'Göra webbplatsen mer mobilanpassad',
-  'Fixa buggar och tekniska problem',
-  'Lägga till bokningslänkar eller externa tjänster',
-  'Skapa kampanjsidor',
-  'Göra mindre ändringar i appar',
-  'Förbättra användarupplevelsen',
-  'IT-support och teknisk rådgivning'
-];
-
 export default function Page() {
-  const [activeTab, setActiveTab] = useState('programming');
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [selectedSubscriptionName, setSelectedSubscriptionName] = useState('Privat');
-
-  // Calculator State
-  const [selectedServices, setSelectedServices] = useState({
-    frontend: false,
-    backend: false,
-    database: false,
-    security: false,
-    iot: false,
-    ai: false,
-    game: false
-  });
-  const [projectSize, setProjectSize] = useState('medium');
-
   // Contact Form State
   const [formData, setFormData] = useState({
     name: '',
@@ -167,84 +34,6 @@ export default function Page() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
-
-  const toggleCalculatorService = (service) => {
-    setSelectedServices(prev => ({ ...prev, [service]: !prev[service] }));
-  };
-
-  // Calculator logic
-  const calculateEstimate = () => {
-    let baseWeeks = 1;
-    let complexity = 10;
-    let stack = [];
-
-    // Base variables depending on size
-    if (projectSize === 'small') {
-      baseWeeks = 0.5;
-      complexity = 15;
-    } else if (projectSize === 'medium') {
-      baseWeeks = 2;
-      complexity = 40;
-    } else if (projectSize === 'large') {
-      baseWeeks = 5;
-      complexity = 75;
-    }
-
-    // Accumulate weeks and complexity based on checks
-    if (selectedServices.frontend) {
-      baseWeeks += 0.5;
-      complexity += 10;
-      stack.push("Next.js", "Tailwind CSS v4");
-    }
-    if (selectedServices.backend) {
-      baseWeeks += 1;
-      complexity += 15;
-      stack.push("Node.js", "Python / FastAPI");
-    }
-    if (selectedServices.database) {
-      baseWeeks += 0.5;
-      complexity += 10;
-      stack.push("PostgreSQL / SQLite");
-    }
-    if (selectedServices.security) {
-      baseWeeks += 1;
-      complexity += 15;
-      stack.push("Säkerhetsgranskning", "HTTPS / SSL");
-    }
-    if (selectedServices.iot) {
-      baseWeeks += 2;
-      complexity += 25;
-      stack.push("ESP32 (C++)", "MQTT Protocol");
-    }
-    if (selectedServices.ai) {
-      baseWeeks += 1;
-      complexity += 20;
-      stack.push("OpenAI API", "Vektordatabaser");
-    }
-    if (selectedServices.game) {
-      baseWeeks += 2;
-      complexity += 25;
-      stack.push("Unity / C#", "Godot / GDScript");
-    }
-
-    if (stack.length === 0) {
-      stack.push("Diskuteras vid konsultation");
-    }
-
-    // Limit complexity to 100%
-    complexity = Math.min(complexity, 100);
-
-    return {
-      weeks: baseWeeks.toFixed(1),
-      complexity,
-      stack: [...new Set(stack)]
-    };
-  };
-
-  const estimate = calculateEstimate();
-  const selectedSubscriptionIndex = subscriptionPlans.findIndex((plan) => plan.name === selectedSubscriptionName);
-  const selectedSubscriptionPlan = subscriptionPlans[selectedSubscriptionIndex] || subscriptionPlans[0];
-  const selectedSubscriptionUseCases = subscriptionUseCases.slice(0, selectedSubscriptionPlan.useCaseCount);
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();

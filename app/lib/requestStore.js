@@ -1,59 +1,57 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { randomUUID } from 'node:crypto';
-import path from 'node:path';
+import { desc, eq } from 'drizzle-orm';
 
-const DATA_DIR = path.join(process.cwd(), 'data');
-const REQUESTS_FILE = path.join(DATA_DIR, 'contact-requests.json');
+import { db } from './db/index.js';
+import { contactRequests } from './db/schema.ts';
 
-const readRequests = async () => {
-  try {
-    const content = await readFile(REQUESTS_FILE, 'utf8');
-    return JSON.parse(content);
-  } catch (error) {
-    if (error.code === 'ENOENT') {
-      return [];
-    }
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-    throw error;
-  }
-};
-
-const writeRequests = async (requests) => {
-  await mkdir(DATA_DIR, { recursive: true });
-  await writeFile(REQUESTS_FILE, JSON.stringify(requests, null, 2), 'utf8');
-};
+const formatRequest = (row) => ({
+  ...row.payload,
+  id: row.id,
+  createdAt: row.createdAt.toISOString()
+});
 
 export async function saveContactRequest(request) {
-  const requests = await readRequests();
-  const record = {
-    id: randomUUID(),
-    createdAt: new Date().toISOString(),
-    ...request,
-  };
+  const [record] = await db
+    .insert(contactRequests)
+    .values({ payload: request })
+    .returning();
 
-  requests.unshift(record);
-  await writeRequests(requests);
-
-  return record;
+  return formatRequest(record);
 }
 
 export async function listContactRequests() {
-  return readRequests();
+  const rows = await db
+    .select()
+    .from(contactRequests)
+    .orderBy(desc(contactRequests.createdAt));
+
+  return rows.map(formatRequest);
 }
 
 export async function deleteContactRequest(id) {
-  const requests = await readRequests();
-  const nextRequests = requests.filter((request) => request.id !== id);
-
-  if (nextRequests.length === requests.length) {
+  if (!UUID_PATTERN.test(id)) {
     return false;
   }
 
-  await writeRequests(nextRequests);
-  return true;
+  const rows = await db
+    .delete(contactRequests)
+    .where(eq(contactRequests.id, id))
+    .returning({ id: contactRequests.id });
+
+  return rows.length > 0;
 }
 
 export async function getContactRequest(id) {
-  const requests = await readRequests();
-  return requests.find((request) => request.id === id) || null;
+  if (!UUID_PATTERN.test(id)) {
+    return null;
+  }
+
+  const [row] = await db
+    .select()
+    .from(contactRequests)
+    .where(eq(contactRequests.id, id))
+    .limit(1);
+
+  return row ? formatRequest(row) : null;
 }

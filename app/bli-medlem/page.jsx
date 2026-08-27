@@ -2,7 +2,7 @@
 import Footer from "../components/Footer";
 import { useEffect, useMemo, useState } from 'react';
 import LogoLink from '../components/LogoLink';
-import { CheckIcon, ShieldIcon } from '../components/Icons';
+import { ShieldIcon } from '../components/Icons';
 
 const plans = [
   {
@@ -44,9 +44,6 @@ const defaultRequirements = (plan) => [
   'Kunden ansvarar för att lämna korrekt information, inloggningar och material som behövs för arbetet.',
   'Medlemskapet kan avslutas när som helst via kundportalen och avslutas direkt.'
 ].join('\n');
-
-const formatCardNumber = (value) =>
-  value.replace(/\D/g, '').slice(0, 19).replace(/(.{4})/g, '$1 ').trim();
 
 export default function JoinMembershipPage() {
   const [selectedPlanName, setSelectedPlanName] = useState('Plus');

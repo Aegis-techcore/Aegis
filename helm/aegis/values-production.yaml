@@ -1,0 +1,31 @@
+replicaCount: 2
+
+ingress:
+  enabled: true
+  hosts:
+    - host: aegis.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: aegis-production-tls
+      hosts:
+        - aegis.example.com
+
+existingSecret: aegis-production-secrets
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 384Mi
+  limits:
+    cpu: 1500m
+    memory: 1Gi
+
+podDisruptionBudget:
+  enabled: true
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6

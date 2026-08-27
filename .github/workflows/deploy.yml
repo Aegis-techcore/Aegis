@@ -1,0 +1,112 @@
+name: Deploy reusable workflow
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: GitHub Environment to deploy to
+        required: true
+        type: string
+      namespace:
+        description: Kubernetes namespace
+        required: true
+        type: string
+      values_file:
+        description: Helm values file
+        required: true
+        type: string
+      image_sha:
+        description: Git commit SHA used as the immutable image tag
+        required: true
+        type: string
+    secrets:
+      KUBE_CONFIG_B64:
+        required: true
+      DATABASE_URL:
+        required: true
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  deploy:
+    name: Deploy ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: ${{ inputs.environment }}
+    concurrency:
+      group: deploy-${{ inputs.environment }}
+      cancel-in-progress: false
+    steps:
+      - name: Check out deployed revision
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.image_sha }}
+
+      - name: Set lowercase migration image name
+        if: ${{ hashFiles('drizzle/meta/_journal.json') != '' }}
+        id: migration-image
+        shell: bash
+        run: echo "name=ghcr.io/${GITHUB_REPOSITORY,,}-tooling" >> "${GITHUB_OUTPUT}"
+
+      - name: Log in to GitHub Container Registry
+        if: ${{ hashFiles('drizzle/meta/_journal.json') != '' }}
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Apply migrations from published image
+        if: ${{ hashFiles('drizzle/meta/_journal.json') != '' }}
+        run: >-
+          docker run --rm
+          --read-only
+          --tmpfs /tmp
+          --cap-drop ALL
+          --security-opt no-new-privileges
+          --env DATABASE_URL
+          "${{ steps.migration-image.outputs.name }}:sha-${{ inputs.image_sha }}"
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4.3.1
+        with:
+          version: v3.18.6
+
+      - name: Configure Kubernetes access
+        shell: bash
+        run: |
+          mkdir -p "${RUNNER_TEMP}/aegis-kube"
+          echo "${KUBE_CONFIG_B64}" | base64 --decode > "${RUNNER_TEMP}/aegis-kube/config"
+          chmod 600 "${RUNNER_TEMP}/aegis-kube/config"
+          echo "KUBECONFIG=${RUNNER_TEMP}/aegis-kube/config" >> "${GITHUB_ENV}"
+        env:
+          KUBE_CONFIG_B64: ${{ secrets.KUBE_CONFIG_B64 }}
+
+      - name: Deploy immutable image with automatic rollback
+        run: >-
+          helm upgrade --install aegis helm/aegis
+          --namespace "${{ inputs.namespace }}"
+          --create-namespace
+          --values "${{ inputs.values_file }}"
+          --set-string image.tag="sha-${{ inputs.image_sha }}"
+          --atomic
+          --wait
+          --timeout 8m
+
+      - name: Run Helm smoke test
+        run: >-
+          helm test aegis
+          --namespace "${{ inputs.namespace }}"
+          --logs
+          --timeout 3m
+
+      - name: Show rollout diagnostics on failure
+        if: failure()
+        run: |
+          kubectl get pods,deployments,services,ingresses -n "${{ inputs.namespace }}" -o wide
+          kubectl describe deployment aegis -n "${{ inputs.namespace }}"

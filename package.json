@@ -17,8 +17,15 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test tests/production-contract.test.mjs",
     "lint": "eslint .",
-    "start": "next start"
+    "start": "next start",
+    "verify": "npm run lint && npm run typecheck && npm run test && npm run build",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "node scripts/run-migrations.mjs",
+    "db:check": "node scripts/check-database.mjs",
+    "db:import-json": "node scripts/import-json-data.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
@@ -26,6 +33,7 @@
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "next": "^16.2.9",
+    "postgres": "^3.4.9",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "resend": "^6.16.0",

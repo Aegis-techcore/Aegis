@@ -1,61 +1,57 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { randomUUID } from 'node:crypto';
-import path from 'node:path';
+import { desc, eq, inArray } from 'drizzle-orm';
 
-const DATA_DIR = path.join(process.cwd(), 'data');
-const NOTIFICATIONS_FILE = path.join(DATA_DIR, 'admin-notifications.json');
+import { db } from './db/index.js';
+import { adminNotifications } from './db/schema.ts';
 
-const readNotifications = async () => {
-  try {
-    const content = await readFile(NOTIFICATIONS_FILE, 'utf8');
-    const parsed = JSON.parse(content);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (error) {
-    if (error.code === 'ENOENT') {
-      return [];
-    }
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-    throw error;
-  }
-};
-
-const writeNotifications = async (notifications) => {
-  await mkdir(DATA_DIR, { recursive: true });
-  await writeFile(NOTIFICATIONS_FILE, JSON.stringify(notifications, null, 2), 'utf8');
-};
+const formatNotification = (notification) => ({
+  ...notification,
+  customerId: notification.customerId || '',
+  createdAt: notification.createdAt.toISOString(),
+  readAt: notification.readAt?.toISOString() || ''
+});
 
 export async function addAdminNotification(notification) {
-  const notifications = await readNotifications();
-  const record = {
-    id: randomUUID(),
-    read: false,
-    createdAt: new Date().toISOString(),
-    type: String(notification?.type || 'info'),
-    title: String(notification?.title || 'Ny notis'),
-    message: String(notification?.message || ''),
-    requestId: String(notification?.requestId || ''),
-    customerId: String(notification?.customerId || '')
-  };
+  const customerId = String(notification?.customerId || '');
+  const [record] = await db
+    .insert(adminNotifications)
+    .values({
+      type: String(notification?.type || 'info'),
+      title: String(notification?.title || 'Ny notis'),
+      message: String(notification?.message || ''),
+      requestId: String(notification?.requestId || ''),
+      customerId: UUID_PATTERN.test(customerId) ? customerId : null
+    })
+    .returning();
 
-  notifications.unshift(record);
-  await writeNotifications(notifications);
-  return record;
+  return formatNotification(record);
 }
 
 export async function listAdminNotifications() {
-  const notifications = await readNotifications();
-  return notifications.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const notifications = await db
+    .select()
+    .from(adminNotifications)
+    .orderBy(desc(adminNotifications.createdAt));
+
+  return notifications.map(formatNotification);
 }
 
 export async function markAdminNotificationsRead(ids = []) {
-  const notifications = await readNotifications();
-  const idSet = new Set(ids);
-  const nextNotifications = notifications.map((notification) => (
-    idSet.size === 0 || idSet.has(notification.id)
-      ? { ...notification, read: true, readAt: notification.readAt || new Date().toISOString() }
-      : notification
-  ));
+  const validIds = ids.filter((id) => UUID_PATTERN.test(id));
 
-  await writeNotifications(nextNotifications);
-  return nextNotifications;
+  if (ids.length > 0 && validIds.length === 0) {
+    return listAdminNotifications();
+  }
+
+  const condition = ids.length > 0
+    ? inArray(adminNotifications.id, validIds)
+    : eq(adminNotifications.read, false);
+
+  await db
+    .update(adminNotifications)
+    .set({ read: true, readAt: new Date() })
+    .where(condition);
+
+  return listAdminNotifications();
 }

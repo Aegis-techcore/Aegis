@@ -1,0 +1,53 @@
+name: aegis-production
+
+services:
+  migrate:
+    image: ${AEGIS_TOOLING_IMAGE:-ghcr.io/sharbel0022/aegis-tooling}:${AEGIS_IMAGE_TAG:-main}
+    pull_policy: always
+    env_file:
+      - path: ${AEGIS_ENV_FILE:-.env.production}
+        required: true
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: "no"
+
+  web:
+    image: ${AEGIS_IMAGE:-ghcr.io/sharbel0022/aegis}:${AEGIS_IMAGE_TAG:-main}
+    pull_policy: always
+    init: true
+    restart: unless-stopped
+    env_file:
+      - path: ${AEGIS_ENV_FILE:-.env.production}
+        required: true
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+    ports:
+      - "${AEGIS_BIND_ADDRESS:-127.0.0.1}:${AEGIS_PORT:-3000}:3000"
+    read_only: true
+    tmpfs:
+      - /tmp:uid=1001,gid=1001,mode=1777
+      - /app/.next/cache:uid=1001,gid=1001,mode=0755
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/api/ready').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+    depends_on:
+      migrate:
+        condition: service_completed_successfully

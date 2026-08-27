@@ -1,6 +1,7 @@
 # Logs
 logs
 *.log
+*.tsbuildinfo
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -14,6 +15,15 @@ out
 dist
 dist-ssr
 *.local
+.env
+.env.*
+!.env.example
+!.env.production.example
+
+# Local Kubernetes secrets and generated Helm output
+*-secret.yaml
+helm-rendered*.yaml
+aegis-*.tar
 
 # Editor directories and files
 .vscode/*

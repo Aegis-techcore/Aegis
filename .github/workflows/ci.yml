@@ -1,0 +1,176 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+env:
+  NODE_VERSION: "24"
+  DATABASE_URL: postgresql://ci:ci@example.invalid/aegis?sslmode=require
+
+jobs:
+  application:
+    name: Application checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Verify application
+        run: npm run verify
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
+  container:
+    name: Container checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Validate Compose configuration
+        run: docker compose -f compose.yaml -f compose.ci.yaml config --quiet
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+
+      - name: Validate production pull configuration
+        run: docker compose --env-file .env.production.example -f compose.production.yaml config --quiet
+        env:
+          AEGIS_ENV_FILE: .env.production.example
+
+      - name: Validate Linux update script
+        shell: bash
+        run: bash -n scripts/update-production.sh
+
+      - name: Validate PowerShell update script
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            'scripts/update-production.ps1',
+            [ref]$tokens,
+            [ref]$errors
+          ) | Out-Null
+          if ($errors.Count) {
+            $errors | ForEach-Object { Write-Error $_ }
+            exit 1
+          }
+
+      - name: Start database, migrations and production image
+        run: >-
+          docker compose
+          -f compose.yaml
+          -f compose.ci.yaml
+          --project-name aegis-ci
+          up --build --detach web
+        env:
+          AEGIS_IMAGE_TAG: ci
+
+      - name: Smoke-test running container
+        run: node scripts/smoke-test.mjs http://127.0.0.1:3100
+        env:
+          SMOKE_TEST_READINESS: "true"
+
+      - name: Show container logs on failure
+        if: failure()
+        run: >-
+          docker compose
+          -f compose.yaml
+          -f compose.ci.yaml
+          --project-name aegis-ci
+          logs --no-color
+
+      - name: Scan image for high-severity vulnerabilities
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: aegis:ci
+          format: table
+          exit-code: "1"
+          ignore-unfixed: true
+          severity: HIGH,CRITICAL
+
+      - name: Scan migration image for high-severity vulnerabilities
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: aegis-tooling:ci
+          format: table
+          exit-code: "1"
+          ignore-unfixed: true
+          severity: HIGH,CRITICAL
+
+      - name: Stop integration stack
+        if: always()
+        run: >-
+          docker compose
+          -f compose.yaml
+          -f compose.ci.yaml
+          --project-name aegis-ci
+          down --volumes --remove-orphans
+
+  kubernetes:
+    name: Kubernetes checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4.3.1
+        with:
+          version: v3.18.6
+
+      - name: Lint chart
+        run: helm lint helm/aegis --strict
+
+      - name: Render staging manifests
+        run: >-
+          helm template aegis helm/aegis
+          --namespace aegis-staging
+          --values helm/aegis/values-staging.yaml
+          --set-string image.tag=ci
+          > helm-rendered.yaml
+
+      - name: Validate Kubernetes schemas
+        run: >-
+          docker run --rm
+          --volume "${PWD}:/work"
+          ghcr.io/yannh/kubeconform:v0.7.0
+          -strict -summary -ignore-missing-schemas
+          /work/helm-rendered.yaml
+
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Scan repository for secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

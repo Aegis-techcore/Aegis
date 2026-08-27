@@ -105,6 +105,16 @@ export const customerMessages = pgTable('customer_messages', {
     .defaultNow()
 });
 
+export const contactRequests = pgTable('contact_requests', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  payload: jsonb('payload').notNull(),
+  createdAt: timestamp('created_at', {
+    withTimezone: true
+  })
+    .notNull()
+    .defaultNow()
+});
+
 export const adminNotifications = pgTable('admin_notifications', {
   id: uuid('id').defaultRandom().primaryKey(),
 
