@@ -21,7 +21,8 @@ test('the environment template documents required production settings', async ()
     'CUSTOMER_SESSION_SECRET',
     'NEXT_PUBLIC_SITE_URL',
     'RESEND_API_KEY',
-    'STRIPE_SECRET_KEY'
+    'STRIPE_SECRET_KEY',
+    'STRIPE_WEBHOOK_SECRET'
   ];
 
   for (const variable of requiredVariables) {
