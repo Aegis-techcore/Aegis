@@ -1,8 +1,41 @@
 import { NextResponse } from 'next/server';
+import { createPendingMembershipCustomer } from '../../../lib/customerStore';
+import { getClientIp, checkRateLimit, rateLimitResponse } from '../../../lib/rateLimit';
 import { getStripe } from '../../../lib/stripe';
 import { getStripePlan } from '../../../lib/stripePlans';
 
+export const runtime = 'nodejs';
+
+const getSiteUrl = (request) => {
+  const configured =
+    process.env.SITE_URL ||
+    process.env.NEXT_PUBLIC_SITE_URL;
+
+  if (configured) {
+    return configured.replace(/\/$/, '');
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    return (
+      request.headers.get('origin') ||
+      'http://localhost:3000'
+    ).replace(/\/$/, '');
+  }
+
+  throw new Error('SITE_URL saknas i produktion.');
+};
+
 export async function POST(request) {
+  const rateLimit = checkRateLimit(request, {
+    key: 'stripe-checkout',
+    limit: 8,
+    windowMs: 60_000
+  });
+
+  if (!rateLimit.allowed) {
+    return rateLimitResponse(rateLimit);
+  }
+
   try {
     const body = await request.json();
 
@@ -62,51 +95,53 @@ export async function POST(request) {
       );
     }
 
-    const origin =
-      request.headers.get('origin') ||
-      process.env.NEXT_PUBLIC_SITE_URL ||
-      'http://localhost:3000';
-
-    const metadata = {
-      name: name.trim(),
-      company: company?.trim() || '',
-      email: email.trim().toLowerCase(),
-      phone: phone.trim(),
-      signatureTitle: signatureTitle?.trim() || '',
-      accessCode: accessCode.trim().toUpperCase(),
-      plan: stripePlan.name,
-      requirements: requirements || ''
-    };
+    const pendingCustomer =
+      await createPendingMembershipCustomer(
+        {
+          name,
+          company,
+          email,
+          phone,
+          signatureTitle,
+          accessCode,
+          plan: stripePlan.name,
+          price: stripePlan.displayPrice,
+          requirements,
+          stripePriceId: stripePlan.priceId
+        },
+        { ip: getClientIp(request) }
+      );
 
     const stripe = getStripe();
-    const session = await stripe.checkout.sessions.create({
-      mode: 'subscription',
+    const siteUrl = getSiteUrl(request);
 
-      line_items: [
-        {
-          price: stripePlan.priceId,
-          quantity: 1
-        }
-      ],
-
-      customer_email: email.trim().toLowerCase(),
-
-      success_url: `${origin}/bli-medlem/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/bli-medlem?plan=${encodeURIComponent(
-        stripePlan.name
-      )}&cancelled=true`,
-
-      metadata,
-
-      subscription_data: {
+    const session =
+      await stripe.checkout.sessions.create({
+        mode: 'subscription',
+        line_items: [
+          {
+            price: stripePlan.priceId,
+            quantity: 1
+          }
+        ],
+        customer_email: email.trim().toLowerCase(),
+        success_url:
+          `${siteUrl}/bli-medlem/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url:
+          `${siteUrl}/bli-medlem?plan=${encodeURIComponent(stripePlan.name)}&cancelled=true`,
+        client_reference_id: pendingCustomer.id,
         metadata: {
-          plan: stripePlan.name,
-          email: email.trim().toLowerCase()
-        }
-      },
-
-      allow_promotion_codes: true
-    });
+          customerId: pendingCustomer.id,
+          plan: stripePlan.name
+        },
+        subscription_data: {
+          metadata: {
+            customerId: pendingCustomer.id,
+            plan: stripePlan.name
+          }
+        },
+        allow_promotion_codes: true
+      });
 
     if (!session.url) {
       return NextResponse.json(
@@ -115,10 +150,18 @@ export async function POST(request) {
       );
     }
 
-    return NextResponse.json({
-      url: session.url
-    });
+    return NextResponse.json({ url: session.url });
   } catch (error) {
+    if (error?.message === 'CUSTOMER_EMAIL_EXISTS') {
+      return NextResponse.json(
+        {
+          message:
+            'Det finns redan ett konto med denna e-post. Logga in i kundportalen eller kontakta Aegis.'
+        },
+        { status: 409 }
+      );
+    }
+
     console.error('Stripe Checkout error:', error);
 
     return NextResponse.json(
