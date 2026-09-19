@@ -1,22 +1,48 @@
 import { NextResponse } from 'next/server';
-import { CUSTOMER_COOKIE_NAME, createCustomerToken } from '../../../lib/customerAuth';
+import {
+  CUSTOMER_COOKIE_NAME,
+  createCustomerToken
+} from '../../../lib/customerAuth';
 import { findCustomerByLogin } from '../../../lib/customerStore';
+import {
+  checkRateLimit,
+  rateLimitResponse
+} from '../../../lib/rateLimit';
 
 export const runtime = 'nodejs';
 
 export async function POST(request) {
+  const rateLimit = checkRateLimit(request, {
+    key: 'customer-login',
+    limit: 8,
+    windowMs: 5 * 60_000
+  });
+
+  if (!rateLimit.allowed) {
+    return rateLimitResponse(rateLimit);
+  }
+
   let payload;
 
   try {
     payload = await request.json();
   } catch {
-    return NextResponse.json({ message: 'Ogiltig data.' }, { status: 400 });
+    return NextResponse.json(
+      { message: 'Ogiltig data.' },
+      { status: 400 }
+    );
   }
 
-  const customer = await findCustomerByLogin(payload?.email, payload?.accessCode);
+  const customer = await findCustomerByLogin(
+    payload?.email,
+    payload?.accessCode
+  );
 
   if (!customer) {
-    return NextResponse.json({ message: 'Fel e-post eller kundkod.' }, { status: 401 });
+    return NextResponse.json(
+      { message: 'Fel e-post eller kundkod.' },
+      { status: 401 }
+    );
   }
 
   const response = NextResponse.json({
