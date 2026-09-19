@@ -36,3 +36,22 @@ test('real environment files are ignored while the template is tracked', async (
   assert.match(gitignore, /^\.env\.\*$/m);
   assert.match(gitignore, /^!\.env\.example$/m);
 });
+
+
+test('local build has a safe database fallback without weakening runtime checks', async () => {
+  const buildScript = await readProjectFile('scripts/build.mjs');
+  const dbModule = await readProjectFile('app/lib/db/index.js');
+
+  assert.match(
+    buildScript,
+    /example\.invalid/
+  );
+  assert.match(
+    buildScript,
+    /process\.env\.DATABASE_URL/
+  );
+  assert.match(
+    dbModule,
+    /DATABASE_URL saknas/
+  );
+});
