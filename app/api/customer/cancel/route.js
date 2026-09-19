@@ -1,5 +1,11 @@
-import { getCustomerIdFromRequest } from '../../../lib/customerAuth';
-import { requestCustomerCancellation } from '../../../lib/customerStore';
+import {
+  getCustomerIdFromRequest
+} from '../../../lib/customerAuth';
+import {
+  getCustomer,
+  requestCustomerCancellation
+} from '../../../lib/customerStore';
+import { getStripe } from '../../../lib/stripe';
 
 export const runtime = 'nodejs';
 
@@ -17,17 +23,23 @@ const publicCustomer = (customer) => ({
   projectTitle: customer.projectTitle,
   requirements: customer.requirements,
   signedAt: customer.signedAt,
-  cancellationRequestedAt: customer.cancellationRequestedAt,
+  cancellationRequestedAt:
+    customer.cancellationRequestedAt,
   cancelledAt: customer.cancelledAt,
-  cancellationReason: customer.cancellationReason,
+  cancellationReason:
+    customer.cancellationReason,
   messages: customer.messages || []
 });
 
 export async function POST(request) {
-  const customerId = getCustomerIdFromRequest(request);
+  const customerId =
+    getCustomerIdFromRequest(request);
 
   if (!customerId) {
-    return Response.json({ message: 'Inte inloggad.' }, { status: 401 });
+    return Response.json(
+      { message: 'Inte inloggad.' },
+      { status: 401 }
+    );
   }
 
   let payload;
@@ -38,11 +50,47 @@ export async function POST(request) {
     payload = {};
   }
 
-  const customer = await requestCustomerCancellation(customerId, payload?.reason);
+  const current = await getCustomer(customerId);
 
-  if (!customer) {
-    return Response.json({ message: 'Kunden hittades inte.' }, { status: 404 });
+  if (!current) {
+    return Response.json(
+      { message: 'Kunden hittades inte.' },
+      { status: 404 }
+    );
   }
 
-  return Response.json({ customer: publicCustomer(customer) });
+  if (
+    current.stripeSubscriptionId &&
+    current.subscriptionStatus !== 'canceled'
+  ) {
+    try {
+      const stripe = getStripe();
+      await stripe.subscriptions.cancel(
+        current.stripeSubscriptionId
+      );
+    } catch (error) {
+      console.error(
+        'Stripe cancellation error:',
+        error
+      );
+
+      return Response.json(
+        {
+          message:
+            'Prenumerationen kunde inte avslutas hos Stripe. Inga lokala uppgifter ändrades.'
+        },
+        { status: 502 }
+      );
+    }
+  }
+
+  const customer =
+    await requestCustomerCancellation(
+      customerId,
+      payload?.reason
+    );
+
+  return Response.json({
+    customer: publicCustomer(customer)
+  });
 }
