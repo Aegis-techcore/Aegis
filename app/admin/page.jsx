@@ -5,6 +5,7 @@ import LogoLink from '../components/LogoLink';
 
 const statusLabels = {
   pending_signature: 'Väntar signering',
+  pending_payment: 'Väntar betalning',
   active: 'Aktiv',
   cancel_requested: 'Avslut begärt',
   cancelled: 'Avslutad',
@@ -40,7 +41,7 @@ const getDraftValue = (drafts, requestId, field, fallback = '') => drafts[reques
 const getStats = (customers) => ({
   total: customers.length,
   active: customers.filter((customer) => customer.status === 'active').length,
-  pending: customers.filter((customer) => customer.status === 'pending_signature').length,
+  pending: customers.filter((customer) => ['pending_signature', 'pending_payment'].includes(customer.status)).length,
   archive: customers.filter((customer) => ['cancel_requested', 'cancelled', 'completed'].includes(customer.status)).length
 });
 
@@ -69,7 +70,7 @@ export default function AdminPage() {
       const matchesView =
         activeView === 'all' ||
         (activeView === 'active' && customer.status === 'active') ||
-        (activeView === 'pending' && customer.status === 'pending_signature') ||
+        (activeView === 'pending' && ['pending_signature', 'pending_payment'].includes(customer.status)) ||
         (activeView === 'archive' && ['cancel_requested', 'cancelled', 'completed'].includes(customer.status));
 
       const searchable = [
@@ -601,7 +602,7 @@ function CustomersView({ customers, busyId, handleAdminMessage, handleUpdateCust
                 <p className="mt-2">Pris: {customer.price || 'Enligt överenskommelse'} {customer.billingCycle}</p>
                 <p>Skapad: {formatDate(customer.createdAt)}</p>
                 <p>Signerad: {customer.signedAt ? formatDate(customer.signedAt) : 'Inte signerad'}</p>
-                <p>Kundkod: {customer.status === 'pending_signature' ? 'Skapas av kunden vid signering' : customer.accessCode}</p>
+                <p>Kundkod: {customer.status === 'pending_signature' ? 'Skapas av kunden vid signering' : 'Skyddad'}</p>
                 {customer.paymentMethod?.last4 && (
                   <p>
                     Kort: {customer.paymentMethod.brand} **** {customer.paymentMethod.last4}
