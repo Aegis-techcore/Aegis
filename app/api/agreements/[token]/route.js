@@ -1,4 +1,12 @@
-import { getCustomerBySignToken, listCustomers, signAgreement } from '../../../lib/customerStore';
+import {
+  getCustomerBySignToken,
+  signAgreement
+} from '../../../lib/customerStore';
+import {
+  checkRateLimit,
+  getClientIp,
+  rateLimitResponse
+} from '../../../lib/rateLimit';
 
 export const runtime = 'nodejs';
 
@@ -20,71 +28,97 @@ const publicAgreement = (customer) => ({
   signatureName: customer.signatureName
 });
 
-const getIp = (request) =>
-  request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-  request.headers.get('x-real-ip') ||
-  '';
+export async function GET(request, { params }) {
+  const rateLimit = checkRateLimit(request, {
+    key: 'agreement-read',
+    limit: 30,
+    windowMs: 60_000
+  });
 
-export async function GET(_request, { params }) {
+  if (!rateLimit.allowed) {
+    return rateLimitResponse(rateLimit);
+  }
+
   const { token } = await params;
   const customer = await getCustomerBySignToken(token);
 
   if (!customer) {
-    return Response.json({ message: 'Avtalet hittades inte.' }, { status: 404 });
+    return Response.json(
+      { message: 'Avtalet hittades inte.' },
+      { status: 404 }
+    );
   }
 
-  return Response.json({ agreement: publicAgreement(customer) });
+  return Response.json({
+    agreement: publicAgreement(customer)
+  });
 }
 
 export async function POST(request, { params }) {
+  const rateLimit = checkRateLimit(request, {
+    key: 'agreement-sign',
+    limit: 8,
+    windowMs: 10 * 60_000
+  });
+
+  if (!rateLimit.allowed) {
+    return rateLimitResponse(rateLimit);
+  }
+
   const { token } = await params;
   let payload;
 
   try {
     payload = await request.json();
   } catch {
-    return Response.json({ message: 'Ogiltig data.' }, { status: 400 });
+    return Response.json(
+      { message: 'Ogiltig data.' },
+      { status: 400 }
+    );
   }
 
   if (!payload?.accepted) {
-    return Response.json({ message: 'Du behöver godkänna avtalet först.' }, { status: 400 });
+    return Response.json(
+      {
+        message:
+          'Du behöver godkänna avtalet först.'
+      },
+      { status: 400 }
+    );
   }
 
-  const accessCode = String(payload?.accessCode || '').trim();
+  const accessCode = String(
+    payload?.accessCode || ''
+  ).trim();
 
   if (accessCode.length < 8) {
-    return Response.json({ message: 'Skapa en kundkod med minst 8 tecken.' }, { status: 400 });
+    return Response.json(
+      {
+        message:
+          'Skapa en kundkod med minst 8 tecken.'
+      },
+      { status: 400 }
+    );
   }
 
-  const existingCustomer = await getCustomerBySignToken(token);
-
-  if (!existingCustomer) {
-    return Response.json({ message: 'Avtalet hittades inte.' }, { status: 404 });
-  }
-
-  const customers = await listCustomers();
-  const normalizedAccessCode = accessCode.toUpperCase();
-  const loginAlreadyExists = customers.some((customer) =>
-    customer.id !== existingCustomer.id &&
-    String(customer.email || '').toLowerCase() === String(existingCustomer.email || '').toLowerCase() &&
-    String(customer.accessCode || '').toUpperCase() === normalizedAccessCode
+  const customer = await signAgreement(
+    token,
+    payload,
+    { ip: getClientIp(request) }
   );
 
-  if (loginAlreadyExists) {
-    return Response.json({ message: 'Den kundkoden används redan för denna e-post.' }, { status: 409 });
-  }
-
-  const customer = await signAgreement(token, payload, { ip: getIp(request) });
-
   if (!customer) {
-    return Response.json({ message: 'Avtalet hittades inte.' }, { status: 404 });
+    return Response.json(
+      { message: 'Avtalet hittades inte.' },
+      { status: 404 }
+    );
   }
 
   return Response.json({
     agreement: publicAgreement(customer),
     login: {
       email: customer.email,
-      accessCode: customer.accessCode
+      accessCode
     }
   });
 }
