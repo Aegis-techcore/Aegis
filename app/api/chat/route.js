@@ -16,6 +16,7 @@ import {
   subscriptionReply,
   withHumanHandoff
 } from '../../lib/chatRules';
+import { checkRateLimit, rateLimitResponse } from '../../lib/rateLimit';
 
 export const runtime = 'nodejs';
 
@@ -56,6 +57,16 @@ const toOllamaMessages = (messages) =>
     .slice(-10);
 
 export async function POST(request) {
+  const rateLimit = checkRateLimit(request, {
+    key: 'chat',
+    limit: 20,
+    windowMs: 60_000
+  });
+
+  if (!rateLimit.allowed) {
+    return rateLimitResponse(rateLimit);
+  }
+
   let payload;
 
   try {
