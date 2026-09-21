@@ -80,3 +80,29 @@ test('local build has a safe database fallback without weakening runtime checks'
     /DATABASE_URL saknas/
   );
 });
+
+
+test('production readiness validates critical secrets and public URL', async () => {
+  const runtimeConfig = await readProjectFile(
+    'app/lib/runtimeConfig.js'
+  );
+  const readyRoute = await readProjectFile(
+    'app/api/ready/route.js'
+  );
+
+  assert.match(runtimeConfig, /STRIPE_WEBHOOK_SECRET/);
+  assert.match(runtimeConfig, /ADMIN_SESSION_SECRET/);
+  assert.match(runtimeConfig, /CUSTOMER_SESSION_SECRET/);
+  assert.match(runtimeConfig, /SITE_URL måste använda https/);
+  assert.match(readyRoute, /getProductionConfigErrors/);
+});
+
+test('deployment refuses placeholder domains', async () => {
+  const deployment = await readProjectFile(
+    '.github/workflows/deploy.yml'
+  );
+
+  assert.match(deployment, /vars\.SITE_URL/);
+  assert.match(deployment, /vars\.INGRESS_HOST/);
+  assert.match(deployment, /placeholder domain/);
+});
