@@ -1,5 +1,7 @@
 import {
   activateMembershipFromStripe,
+  getCustomer,
+  markMembershipPaymentFailed,
   syncMembershipSubscription
 } from '../../../lib/customerStore';
 import { getStripe } from '../../../lib/stripe';
@@ -11,6 +13,72 @@ const stripeId = (value) =>
 
 const unixToIso = (value) =>
   value ? new Date(value * 1000).toISOString() : '';
+
+const checkoutIsPaid = (session) =>
+  session?.mode === 'subscription' &&
+  session?.status === 'complete' &&
+  ['paid', 'no_payment_required'].includes(
+    session?.payment_status
+  );
+
+async function activateCheckoutSession(stripe, session) {
+  const customerId =
+    session.metadata?.customerId ||
+    session.client_reference_id;
+
+  if (!customerId || !checkoutIsPaid(session)) {
+    return;
+  }
+
+  const subscriptionId = stripeId(session.subscription);
+
+  if (!subscriptionId) {
+    return;
+  }
+
+  const subscription =
+    await stripe.subscriptions.retrieve(subscriptionId);
+
+  if (!['active', 'trialing'].includes(subscription.status)) {
+    return;
+  }
+
+  const stripePriceId =
+    subscription.items?.data?.[0]?.price?.id || '';
+  const current = await getCustomer(customerId);
+
+  if (
+    !current ||
+    current.source !== 'stripe-checkout' ||
+    (
+      current.stripePriceId &&
+      current.stripePriceId !== stripePriceId
+    )
+  ) {
+    console.error(
+      'Stripe checkout did not match the pending Aegis membership.',
+      { customerId, sessionId: session.id }
+    );
+    return;
+  }
+
+  await activateMembershipFromStripe(
+    customerId,
+    {
+      stripeCustomerId:
+        stripeId(session.customer),
+      stripeSubscriptionId: subscription.id,
+      stripeCheckoutSessionId: session.id,
+      stripePriceId,
+      subscriptionStatus: subscription.status,
+      currentPeriodEnd: unixToIso(
+        subscription.current_period_end
+      ),
+      cancelAtPeriodEnd:
+        Boolean(subscription.cancel_at_period_end)
+    }
+  );
+}
 
 export async function POST(request) {
   const signature =
@@ -44,43 +112,26 @@ export async function POST(request) {
   }
 
   try {
-    if (event.type === 'checkout.session.completed') {
+    if (
+      event.type === 'checkout.session.completed' ||
+      event.type === 'checkout.session.async_payment_succeeded'
+    ) {
+      await activateCheckoutSession(
+        stripe,
+        event.data.object
+      );
+    }
+
+    if (event.type === 'checkout.session.async_payment_failed') {
       const session = event.data.object;
       const customerId =
         session.metadata?.customerId ||
         session.client_reference_id;
 
       if (customerId) {
-        let subscription = null;
-
-        if (session.subscription) {
-          subscription =
-            await stripe.subscriptions.retrieve(
-              stripeId(session.subscription)
-            );
-        }
-
-        await activateMembershipFromStripe(
+        await markMembershipPaymentFailed(
           customerId,
-          {
-            stripeCustomerId:
-              stripeId(session.customer),
-            stripeSubscriptionId:
-              stripeId(session.subscription),
-            stripeCheckoutSessionId: session.id,
-            stripePriceId:
-              subscription?.items?.data?.[0]?.price?.id ||
-              '',
-            subscriptionStatus:
-              subscription?.status || 'active',
-            currentPeriodEnd: unixToIso(
-              subscription?.current_period_end
-            ),
-            cancelAtPeriodEnd:
-              Boolean(
-                subscription?.cancel_at_period_end
-              )
-          }
+          session.id
         );
       }
     }
