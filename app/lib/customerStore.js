@@ -3,6 +3,7 @@ import { desc, eq, inArray } from 'drizzle-orm';
 
 import {
   hashAccessCode,
+  isValidAccessCode,
   normalizeAccessCode,
   verifyAccessCode
 } from './customerAuth.js';
@@ -28,11 +29,31 @@ export const CUSTOMER_TYPES = {
 
 const sanitize = (value) => String(value ?? '').trim();
 const normalizeEmail = (value) => sanitize(value).toLowerCase();
+const AGREEMENT_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+const MAX_MESSAGE_LENGTH = 5000;
 
 const generateAccessCode = () =>
   `AEGIS-${randomBytes(3).toString('hex').toUpperCase()}-${randomBytes(2).toString('hex').toUpperCase()}`;
 
-const generateToken = () => randomBytes(24).toString('hex');
+const generateToken = () =>
+  `${randomBytes(24).toString('hex')}.${Date.now() + AGREEMENT_TOKEN_TTL_MS}`;
+
+const isAgreementTokenExpired = (token, customer) => {
+  const [, encodedExpiry] = String(token || '').split('.');
+  const explicitExpiry = Number(encodedExpiry);
+
+  if (Number.isFinite(explicitExpiry) && explicitExpiry > 0) {
+    return explicitExpiry < Date.now();
+  }
+
+  const legacyBase = customer?.updatedAt || customer?.createdAt;
+
+  if (!legacyBase) {
+    return true;
+  }
+
+  return new Date(legacyBase).getTime() + AGREEMENT_TOKEN_TTL_MS < Date.now();
+};
 
 const toIso = (value) => {
   if (!value) return '';
@@ -148,6 +169,14 @@ export async function getCustomerBySignToken(token) {
     .from(customers)
     .where(eq(customers.signToken, cleanToken))
     .limit(1);
+
+  if (
+    !customer ||
+    customer.status !== 'pending_signature' ||
+    isAgreementTokenExpired(cleanToken, customer)
+  ) {
+    return null;
+  }
 
   return hydrateCustomer(customer);
 }
@@ -291,7 +320,7 @@ export async function createPendingMembershipCustomer(
   const email = normalizeEmail(input.email);
   const accessCode = normalizeAccessCode(input.accessCode);
 
-  if (!email || !accessCode) {
+  if (!email || !isValidAccessCode(accessCode)) {
     throw new Error('INVALID_MEMBERSHIP_DATA');
   }
 
@@ -387,6 +416,23 @@ export async function activateMembershipFromStripe(
     return null;
   }
 
+  const incomingPriceId = sanitize(stripeData.stripePriceId);
+  const incomingSubscriptionStatus =
+    sanitize(stripeData.subscriptionStatus);
+
+  if (
+    current.source !== 'stripe-checkout' ||
+    current.type !== 'membership' ||
+    !['active', 'trialing'].includes(incomingSubscriptionStatus) ||
+    (
+      current.stripePriceId &&
+      incomingPriceId &&
+      current.stripePriceId !== incomingPriceId
+    )
+  ) {
+    return null;
+  }
+
   const now = new Date();
   const currentPeriodEnd = stripeData.currentPeriodEnd
     ? new Date(stripeData.currentPeriodEnd)
@@ -407,10 +453,10 @@ export async function activateMembershipFromStripe(
         sanitize(stripeData.stripeCheckoutSessionId) ||
         current.stripeCheckoutSessionId,
       stripePriceId:
-        sanitize(stripeData.stripePriceId) ||
+        incomingPriceId ||
         current.stripePriceId,
       subscriptionStatus:
-        sanitize(stripeData.subscriptionStatus) || 'active',
+        incomingSubscriptionStatus,
       currentPeriodEnd,
       cancelAtPeriodEnd:
         Boolean(stripeData.cancelAtPeriodEnd),
@@ -460,9 +506,25 @@ export async function syncMembershipSubscription(
     sanitize(stripeData.subscriptionStatus) ||
     current.subscriptionStatus;
 
-  const cancelled =
+  const terminal =
     subscriptionStatus === 'canceled' ||
-    subscriptionStatus === 'unpaid';
+    subscriptionStatus === 'unpaid' ||
+    subscriptionStatus === 'incomplete_expired';
+
+  let localStatus = current.status;
+
+  if (terminal) {
+    localStatus = 'cancelled';
+  } else if (stripeData.cancelAtPeriodEnd) {
+    localStatus = 'cancel_requested';
+  } else if (['active', 'trialing'].includes(subscriptionStatus)) {
+    localStatus = 'active';
+  } else if (
+    current.status === 'pending_payment' &&
+    subscriptionStatus === 'incomplete'
+  ) {
+    localStatus = 'pending_payment';
+  }
 
   const currentPeriodEnd = stripeData.currentPeriodEnd
     ? new Date(stripeData.currentPeriodEnd)
@@ -471,20 +533,55 @@ export async function syncMembershipSubscription(
   const [updated] = await db
     .update(customers)
     .set({
-      status: cancelled ? 'cancelled' : current.status,
+      status: localStatus,
       subscriptionStatus,
       currentPeriodEnd,
       cancelAtPeriodEnd:
         stripeData.cancelAtPeriodEnd ??
         current.cancelAtPeriodEnd,
       cancelledAt:
-        cancelled && !current.cancelledAt
+        terminal && !current.cancelledAt
           ? new Date()
           : current.cancelledAt,
       updatedAt: new Date()
     })
     .where(eq(customers.id, current.id))
     .returning();
+
+  return hydrateCustomer(updated);
+}
+
+export async function markMembershipPaymentFailed(
+  customerId,
+  stripeCheckoutSessionId = ''
+) {
+  const [current] = await db
+    .select()
+    .from(customers)
+    .where(eq(customers.id, customerId))
+    .limit(1);
+
+  if (!current || current.source !== 'stripe-checkout') {
+    return null;
+  }
+
+  const [updated] = await db
+    .update(customers)
+    .set({
+      status: 'pending_payment',
+      subscriptionStatus: 'payment_failed',
+      stripeCheckoutSessionId:
+        sanitize(stripeCheckoutSessionId) ||
+        current.stripeCheckoutSessionId,
+      updatedAt: new Date()
+    })
+    .where(eq(customers.id, customerId))
+    .returning();
+
+  await insertSystemMessage(
+    customerId,
+    'Stripe kunde inte slutföra betalningen. Medlemskapet aktiverades inte.'
+  );
 
   return hydrateCustomer(updated);
 }
@@ -500,12 +597,12 @@ export async function signAgreement(
     .where(eq(customers.signToken, token))
     .limit(1);
 
-  if (!customer) {
+  if (
+    !customer ||
+    customer.status !== 'pending_signature' ||
+    isAgreementTokenExpired(token, customer)
+  ) {
     return null;
-  }
-
-  if (customer.status !== 'pending_signature') {
-    return hydrateCustomer(customer);
   }
 
   const signedAt = new Date();
@@ -585,7 +682,7 @@ export async function addCustomerMessage(
   author,
   text
 ) {
-  const cleanText = sanitize(text);
+  const cleanText = sanitize(text).slice(0, MAX_MESSAGE_LENGTH);
 
   if (!cleanText) {
     return null;
@@ -633,7 +730,7 @@ export async function requestCustomerCancellation(
   }
 
   const cancellationText =
-    sanitize(reason) ||
+    sanitize(reason).slice(0, 1000) ||
     'Kunden avslutade medlemskapet utan extra kommentar.';
   const now = new Date();
 
