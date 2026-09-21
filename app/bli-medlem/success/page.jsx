@@ -33,7 +33,7 @@ export default function MembershipSuccessPage() {
         const data =
           await response.json().catch(() => null);
 
-        if (!response.ok) {
+        if (!response.ok || !data?.verified) {
           throw new Error(
             data?.message ||
               'Betalningen kunde inte verifieras.'
@@ -44,7 +44,7 @@ export default function MembershipSuccessPage() {
           loading: false,
           verified: true,
           message:
-            'Betalningen är verifierad och medlemskapet är aktiverat.'
+            'Betalningen är verifierad och medlemskapet är aktiverat. Logga in med din e-post och kundkoden du valde.'
         });
       })
       .catch((error) => {
@@ -78,7 +78,7 @@ export default function MembershipSuccessPage() {
             href="/kund"
             className="mt-8 inline-block rounded-xl bg-brand-primary px-5 py-3 font-black text-brand-bg"
           >
-            Öppna kundportalen
+            Logga in i kundportalen
           </a>
         )}
 
