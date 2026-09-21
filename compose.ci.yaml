@@ -1,5 +1,18 @@
 services:
   web:
     env_file: !reset []
+    environment:
+      ADMIN_PASSWORD: ci-admin-password-only
+      ADMIN_SESSION_SECRET: ci-admin-session-secret-32-characters-minimum
+      CUSTOMER_SESSION_SECRET: ci-customer-session-secret-32-characters-minimum
+      SITE_URL: https://aegis-ci.example.invalid
+      RESEND_API_KEY: re_ci_placeholder
+      STRIPE_SECRET_KEY: sk_test_ci_placeholder
+      STRIPE_WEBHOOK_SECRET: whsec_ci_placeholder
+      STRIPE_PRICE_PRIVATE: price_ci_private
+      STRIPE_PRICE_START: price_ci_start
+      STRIPE_PRICE_PLUS: price_ci_plus
+      STRIPE_PRICE_PRO: price_ci_pro
+      STRIPE_PRICE_BUSINESS: price_ci_business
     ports: !override
       - "127.0.0.1:3100:3000"
