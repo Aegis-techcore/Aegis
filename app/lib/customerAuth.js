@@ -11,23 +11,22 @@ export const CUSTOMER_COOKIE_NAME = 'aegis_customer_session';
 const scrypt = promisify(scryptCallback);
 const ACCESS_CODE_PREFIX = 'scrypt';
 const ACCESS_CODE_KEY_LENGTH = 64;
+const MIN_SECRET_LENGTH = 32;
 
 const getCustomerSecret = () => {
-  const secret =
-    process.env.CUSTOMER_SESSION_SECRET ||
-    process.env.ADMIN_SESSION_SECRET;
+  const secret = process.env.CUSTOMER_SESSION_SECRET;
 
-  if (!secret) {
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error(
-        'CUSTOMER_SESSION_SECRET måste vara konfigurerad i produktion.'
-      );
-    }
-
-    return 'aegis-customer-local-development-secret';
+  if (secret?.length >= MIN_SECRET_LENGTH) {
+    return secret;
   }
 
-  return secret;
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'CUSTOMER_SESSION_SECRET måste vara minst 32 tecken i produktion.'
+    );
+  }
+
+  return 'aegis-customer-local-development-secret';
 };
 
 const sign = (value) =>
@@ -40,14 +39,24 @@ export function normalizeAccessCode(value) {
     .trim()
     .toUpperCase()
     .replace(/\s+/g, '-')
-    .replace(/[^A-Z0-9-]/g, '');
+    .replace(/[^A-Z0-9-]/g, '')
+    .slice(0, 64);
+}
+
+export function isValidAccessCode(value) {
+  const normalized = normalizeAccessCode(value);
+
+  return (
+    normalized.length >= 8 &&
+    normalized.length <= 64
+  );
 }
 
 export async function hashAccessCode(value) {
   const normalized = normalizeAccessCode(value);
 
-  if (!normalized) {
-    throw new Error('Kundkod saknas.');
+  if (!isValidAccessCode(normalized)) {
+    throw new Error('Kundkoden måste innehålla 8–64 giltiga tecken.');
   }
 
   const salt = randomBytes(16).toString('hex');
@@ -71,7 +80,7 @@ export async function verifyAccessCode(
   const normalized = normalizeAccessCode(value);
   const stored = String(storedValue || '');
 
-  if (!normalized || !stored) {
+  if (!isValidAccessCode(normalized) || !stored) {
     return {
       valid: false,
       needsUpgrade: false
@@ -168,7 +177,6 @@ export function verifyCustomerToken(token) {
   }
 
   const expectedSignature = sign(payload);
-
   const signatureBuffer = Buffer.from(
     signature,
     'utf8'
