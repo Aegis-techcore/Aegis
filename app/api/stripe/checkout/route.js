@@ -1,29 +1,24 @@
 import { NextResponse } from 'next/server';
+import {
+  isValidAccessCode,
+  normalizeAccessCode
+} from '../../../lib/customerAuth';
 import { createPendingMembershipCustomer } from '../../../lib/customerStore';
-import { getClientIp, checkRateLimit, rateLimitResponse } from '../../../lib/rateLimit';
+import {
+  getClientIp,
+  checkRateLimit,
+  rateLimitResponse
+} from '../../../lib/rateLimit';
+import { getPublicBaseUrl } from '../../../lib/publicUrl';
 import { getStripe } from '../../../lib/stripe';
 import { getStripePlan } from '../../../lib/stripePlans';
 
 export const runtime = 'nodejs';
 
-const getSiteUrl = (request) => {
-  const configured =
-    process.env.SITE_URL ||
-    process.env.NEXT_PUBLIC_SITE_URL;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  if (configured) {
-    return configured.replace(/\/$/, '');
-  }
-
-  if (process.env.NODE_ENV !== 'production') {
-    return (
-      request.headers.get('origin') ||
-      'http://localhost:3000'
-    ).replace(/\/$/, '');
-  }
-
-  throw new Error('SITE_URL saknas i produktion.');
-};
+const clean = (value, maxLength) =>
+  String(value ?? '').trim().slice(0, maxLength);
 
 export async function POST(request) {
   const rateLimit = checkRateLimit(request, {
@@ -39,47 +34,47 @@ export async function POST(request) {
   try {
     const body = await request.json();
 
-    const {
-      name,
-      company,
-      email,
-      phone,
-      signatureTitle,
-      accessCode,
-      plan,
-      acceptedTerms,
-      requirements
-    } = body;
+    const name = clean(body?.name, 120);
+    const company = clean(body?.company, 160);
+    const email = clean(body?.email, 254).toLowerCase();
+    const phone = clean(body?.phone, 40);
+    const signatureTitle = clean(body?.signatureTitle, 120);
+    const accessCode = normalizeAccessCode(body?.accessCode);
+    const plan = clean(body?.plan, 40);
+    const requirements = clean(body?.requirements, 5000);
 
-    if (!name?.trim()) {
+    if (!name) {
       return NextResponse.json(
         { message: 'Namn saknas.' },
         { status: 400 }
       );
     }
 
-    if (!email?.trim()) {
+    if (!EMAIL_PATTERN.test(email)) {
       return NextResponse.json(
-        { message: 'E-post saknas.' },
+        { message: 'Ange en giltig e-postadress.' },
         { status: 400 }
       );
     }
 
-    if (!phone?.trim()) {
+    if (!phone) {
       return NextResponse.json(
         { message: 'Telefonnummer saknas.' },
         { status: 400 }
       );
     }
 
-    if (!accessCode || accessCode.trim().length < 8) {
+    if (!isValidAccessCode(accessCode)) {
       return NextResponse.json(
-        { message: 'Kundkoden måste innehålla minst 8 tecken.' },
+        {
+          message:
+            'Kundkoden måste innehålla 8–64 bokstäver, siffror eller bindestreck.'
+        },
         { status: 400 }
       );
     }
 
-    if (!acceptedTerms) {
+    if (body?.acceptedTerms !== true) {
       return NextResponse.json(
         { message: 'Du måste godkänna medlemskraven.' },
         { status: 400 }
@@ -113,7 +108,7 @@ export async function POST(request) {
       );
 
     const stripe = getStripe();
-    const siteUrl = getSiteUrl(request);
+    const siteUrl = getPublicBaseUrl(request);
 
     const session =
       await stripe.checkout.sessions.create({
@@ -124,7 +119,7 @@ export async function POST(request) {
             quantity: 1
           }
         ],
-        customer_email: email.trim().toLowerCase(),
+        customer_email: email,
         success_url:
           `${siteUrl}/bli-medlem/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url:
@@ -150,7 +145,9 @@ export async function POST(request) {
       );
     }
 
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({
+      url: session.url
+    });
   } catch (error) {
     if (error?.message === 'CUSTOMER_EMAIL_EXISTS') {
       return NextResponse.json(
@@ -159,6 +156,13 @@ export async function POST(request) {
             'Det finns redan ett konto med denna e-post. Logga in i kundportalen eller kontakta Aegis.'
         },
         { status: 409 }
+      );
+    }
+
+    if (error?.message === 'INVALID_MEMBERSHIP_DATA') {
+      return NextResponse.json(
+        { message: 'Medlemsuppgifterna är ogiltiga.' },
+        { status: 400 }
       );
     }
 
