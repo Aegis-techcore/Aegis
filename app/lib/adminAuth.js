@@ -6,16 +6,18 @@ import {
 export const ADMIN_COOKIE_NAME =
   'aegis_admin_session';
 
+const MIN_SECRET_LENGTH = 32;
+
 const getAdminSecret = () => {
   const secret = process.env.ADMIN_SESSION_SECRET;
 
-  if (secret) {
+  if (secret?.length >= MIN_SECRET_LENGTH) {
     return secret;
   }
 
   if (process.env.NODE_ENV === 'production') {
     throw new Error(
-      'ADMIN_SESSION_SECRET måste vara konfigurerad i produktion.'
+      'ADMIN_SESSION_SECRET måste vara minst 32 tecken i produktion.'
     );
   }
 
@@ -64,23 +66,32 @@ export function verifyAdminToken(token) {
     return false;
   }
 
-  const [role, expiresAt, signature] =
-    token.split(/[.:]/);
-  const payload = `${role}:${expiresAt}`;
-  const expectedSignature = sign(payload);
+  const separatorIndex = token.lastIndexOf('.');
+
+  if (separatorIndex < 1) {
+    return false;
+  }
+
+  const payload = token.slice(0, separatorIndex);
+  const signature = token.slice(separatorIndex + 1);
+  const [role, expiresAt] = payload.split(':');
 
   if (
     role !== 'admin' ||
+    !expiresAt ||
     Number(expiresAt) < Date.now()
   ) {
     return false;
   }
 
+  const expectedSignature = sign(payload);
   const signatureBuffer = Buffer.from(
-    signature || ''
+    signature,
+    'utf8'
   );
   const expectedBuffer = Buffer.from(
-    expectedSignature
+    expectedSignature,
+    'utf8'
   );
 
   if (
