@@ -10,6 +10,24 @@ import { getStripe } from '../../../../lib/stripe';
 
 export const runtime = 'nodejs';
 
+const subscriptionAllowsActivation = (status) =>
+  ['active', 'trialing'].includes(status);
+
+const cancelStripeSubscriptionIfNeeded = async (customer) => {
+  if (
+    !customer?.stripeSubscriptionId ||
+    customer.subscriptionStatus === 'canceled'
+  ) {
+    return;
+  }
+
+  const stripe = getStripe();
+
+  await stripe.subscriptions.cancel(
+    customer.stripeSubscriptionId
+  );
+};
+
 export async function PATCH(request, { params }) {
   if (!isAdminRequest(request)) {
     return Response.json(
@@ -30,14 +48,55 @@ export async function PATCH(request, { params }) {
     );
   }
 
-  const customer = await updateCustomer(id, payload);
+  const current = await getCustomer(id);
 
-  if (!customer) {
+  if (!current) {
     return Response.json(
       { message: 'Kunden hittades inte.' },
       { status: 404 }
     );
   }
+
+  if (
+    payload?.status === 'active' &&
+    current.source === 'stripe-checkout' &&
+    !subscriptionAllowsActivation(
+      current.subscriptionStatus
+    )
+  ) {
+    return Response.json(
+      {
+        message:
+          'Stripe-medlemskapet kan inte aktiveras manuellt innan Stripe har verifierat prenumerationen.'
+      },
+      { status: 409 }
+    );
+  }
+
+  if (
+    payload?.status === 'cancelled' &&
+    current.stripeSubscriptionId &&
+    current.subscriptionStatus !== 'canceled'
+  ) {
+    try {
+      await cancelStripeSubscriptionIfNeeded(current);
+    } catch (error) {
+      console.error(
+        'Stripe admin cancellation error:',
+        error
+      );
+
+      return Response.json(
+        {
+          message:
+            'Kunden kunde inte avslutas eftersom Stripe-prenumerationen inte kunde stoppas.'
+        },
+        { status: 502 }
+      );
+    }
+  }
+
+  const customer = await updateCustomer(id, payload);
 
   return Response.json({ customer });
 }
@@ -60,29 +119,21 @@ export async function DELETE(request, { params }) {
     );
   }
 
-  if (
-    customer.stripeSubscriptionId &&
-    customer.subscriptionStatus !== 'canceled'
-  ) {
-    try {
-      const stripe = getStripe();
-      await stripe.subscriptions.cancel(
-        customer.stripeSubscriptionId
-      );
-    } catch (error) {
-      console.error(
-        'Stripe admin cancellation error:',
-        error
-      );
+  try {
+    await cancelStripeSubscriptionIfNeeded(customer);
+  } catch (error) {
+    console.error(
+      'Stripe admin cancellation error:',
+      error
+    );
 
-      return Response.json(
-        {
-          message:
-            'Kunden kunde inte tas bort eftersom Stripe-prenumerationen inte kunde avslutas.'
-        },
-        { status: 502 }
-      );
-    }
+    return Response.json(
+      {
+        message:
+          'Kunden kunde inte tas bort eftersom Stripe-prenumerationen inte kunde avslutas.'
+      },
+      { status: 502 }
+    );
   }
 
   const deleted = await deleteCustomer(id);
