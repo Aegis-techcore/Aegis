@@ -45,6 +45,36 @@ jobs:
         with:
           ref: ${{ inputs.image_sha }}
 
+      - name: Validate deployment URLs
+        shell: bash
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+          INGRESS_HOST: ${{ vars.INGRESS_HOST }}
+        run: |
+          if [[ -z "${SITE_URL}" || "${SITE_URL}" != https://* ]]; then
+            echo "SITE_URL must be a configured HTTPS GitHub Environment variable."
+            exit 1
+          fi
+
+          if [[ -z "${INGRESS_HOST}" ]]; then
+            echo "INGRESS_HOST must be configured as a GitHub Environment variable."
+            exit 1
+          fi
+
+          case "${SITE_URL}" in
+            *example.com*|*example.invalid*)
+              echo "SITE_URL still contains a placeholder domain."
+              exit 1
+              ;;
+          esac
+
+          case "${INGRESS_HOST}" in
+            *example.com*|*example.invalid*)
+              echo "INGRESS_HOST still contains a placeholder domain."
+              exit 1
+              ;;
+          esac
+
       - name: Set lowercase migration image name
         if: ${{ hashFiles('drizzle/meta/_journal.json') != '' }}
         id: migration-image
@@ -88,12 +118,19 @@ jobs:
           KUBE_CONFIG_B64: ${{ secrets.KUBE_CONFIG_B64 }}
 
       - name: Deploy immutable image with automatic rollback
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+          INGRESS_HOST: ${{ vars.INGRESS_HOST }}
         run: >-
           helm upgrade --install aegis helm/aegis
           --namespace "${{ inputs.namespace }}"
           --create-namespace
           --values "${{ inputs.values_file }}"
           --set-string image.tag="sha-${{ inputs.image_sha }}"
+          --set-string config.SITE_URL="${SITE_URL}"
+          --set-string config.NEXT_PUBLIC_SITE_URL="${SITE_URL}"
+          --set-string ingress.hosts[0].host="${INGRESS_HOST}"
+          --set-string ingress.tls[0].hosts[0]="${INGRESS_HOST}"
           --atomic
           --wait
           --timeout 8m
