@@ -1,4 +1,8 @@
 import {
+  isValidAccessCode,
+  normalizeAccessCode
+} from '../../../lib/customerAuth';
+import {
   getCustomerBySignToken,
   signAgreement
 } from '../../../lib/customerStore';
@@ -44,7 +48,7 @@ export async function GET(request, { params }) {
 
   if (!customer) {
     return Response.json(
-      { message: 'Avtalet hittades inte.' },
+      { message: 'Avtalet hittades inte eller har gått ut.' },
       { status: 404 }
     );
   }
@@ -77,7 +81,7 @@ export async function POST(request, { params }) {
     );
   }
 
-  if (!payload?.accepted) {
+  if (payload?.accepted !== true) {
     return Response.json(
       {
         message:
@@ -87,15 +91,15 @@ export async function POST(request, { params }) {
     );
   }
 
-  const accessCode = String(
-    payload?.accessCode || ''
-  ).trim();
+  const accessCode = normalizeAccessCode(
+    payload?.accessCode
+  );
 
-  if (accessCode.length < 8) {
+  if (!isValidAccessCode(accessCode)) {
     return Response.json(
       {
         message:
-          'Skapa en kundkod med minst 8 tecken.'
+          'Kundkoden måste innehålla 8–64 bokstäver, siffror eller bindestreck.'
       },
       { status: 400 }
     );
@@ -103,13 +107,22 @@ export async function POST(request, { params }) {
 
   const customer = await signAgreement(
     token,
-    payload,
+    {
+      ...payload,
+      signatureName: String(
+        payload?.signatureName || ''
+      ).trim().slice(0, 120),
+      signatureTitle: String(
+        payload?.signatureTitle || ''
+      ).trim().slice(0, 120),
+      accessCode
+    },
     { ip: getClientIp(request) }
   );
 
   if (!customer) {
     return Response.json(
-      { message: 'Avtalet hittades inte.' },
+      { message: 'Avtalet hittades inte eller har gått ut.' },
       { status: 404 }
     );
   }
