@@ -2,8 +2,8 @@ import './globals.css';
 import CookieBanner from './components/CookieBanner';
 
 export const metadata = {
-  title: 'Aegis | Secure by Design',
-  description: 'Vi utvecklar säkra, intelligenta och framtidssäkra tekniska lösningar inom cybersäkerhet, inbyggda system, mjukvaruutveckling och digital innovation.',
+  title: 'Aegis by Cedrus KB | Secure by Design',
+  description: 'Aegis drivs av Cedrus kommanditbolag, ett svenskt företag inom mjukvaruutveckling, AI, IT-konsulttjänster och cybersäkerhet.',
 };
 
 export default function RootLayout({ children }) {
