@@ -368,7 +368,7 @@ export async function createPendingMembershipCustomer(
     adminNotes: '',
     signToken: null,
     accessCode: await hashAccessCode(accessCode),
-    signedAt: null,
+    signedAt: now,
     signatureName: sanitize(input.name),
     signatureTitle: sanitize(input.signatureTitle),
     signatureIp: sanitize(requestMeta.ip),
