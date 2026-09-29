@@ -187,3 +187,19 @@ test('Stripe membership terms are server-authoritative and versioned', async () 
   assert.match(checkout, /startServiceImmediately/);
   assert.match(store, /signedAt:\s*now/);
 });
+
+
+test('consumer withdrawal requests persist independently of email delivery', async () => {
+  const withdrawal = await readProjectFile(
+    'app/api/withdrawal/route.js'
+  );
+  const footer = await readProjectFile(
+    'app/components/Footer.jsx'
+  );
+
+  assert.match(withdrawal, /saveContactRequest/);
+  assert.match(withdrawal, /addAdminNotification/);
+  assert.match(withdrawal, /checkRateLimit/);
+  assert.match(withdrawal, /confirmWithdrawal !== true/);
+  assert.match(footer, /href="\/angra"/);
+});
