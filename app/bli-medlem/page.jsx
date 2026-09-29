@@ -39,7 +39,7 @@ const plans = [
 
 const defaultRequirements = (plan) => [
   `Medlemskapet gäller abonnemanget ${plan.name} för ${plan.price}/månad.`,
-  'Aegis hjälper med webbundehåll, mindre utveckling, teknisk rådgivning och IT-support inom vald nivå.',
+  'Aegis hjälper med webbunderhåll, mindre utveckling, teknisk rådgivning och IT-support inom vald nivå.',
   'Extra arbete utöver abonnemangets omfattning startar först efter separat godkännande.',
   'Kunden ansvarar för att lämna korrekt information, inloggningar och material som behövs för arbetet.',
   'Medlemskapet kan avslutas när som helst via kundportalen och avslutas direkt.'
@@ -57,6 +57,7 @@ export default function JoinMembershipPage() {
   });
 
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [startServiceImmediately, setStartServiceImmediately] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -98,7 +99,9 @@ export default function JoinMembershipPage() {
           ...formData,
           plan: selectedPlan.name,
           acceptedTerms,
-          requirements: defaultRequirements(selectedPlan)
+          startServiceImmediately:
+            selectedPlan.name !== 'Privat' ||
+            startServiceImmediately
         })
       });
   
@@ -225,10 +228,26 @@ export default function JoinMembershipPage() {
 
             <label className="mt-5 flex items-start gap-3 rounded-2xl border border-brand-border bg-black/25 p-4 text-sm leading-6 text-brand-muted">
               <input type="checkbox" checked={acceptedTerms} onChange={(event) => setAcceptedTerms(event.target.checked)} className="mt-1 h-4 w-4" />
-              <span>Jag godkänner medlemskraven och att Aegis aktiverar medlemskapet direkt.</span>
+              <span>
+                Jag godkänner medlemskraven och <a href="/terms" target="_blank" rel="noreferrer" className="font-bold text-brand-primary underline">Aegis allmänna villkor</a>.
+              </span>
             </label>
 
-            <button disabled={isSubmitting} className="mt-6 w-full rounded-xl bg-brand-primary px-5 py-4 font-black text-brand-bg shadow-lg shadow-brand-glow transition hover:bg-brand-primary-hover disabled:cursor-not-allowed disabled:opacity-60">
+            {selectedPlan.name === 'Privat' && (
+              <label className="mt-3 flex items-start gap-3 rounded-2xl border border-brand-border bg-black/25 p-4 text-sm leading-6 text-brand-muted">
+                <input
+                  type="checkbox"
+                  checked={startServiceImmediately}
+                  onChange={(event) => setStartServiceImmediately(event.target.checked)}
+                  className="mt-1 h-4 w-4"
+                />
+                <span>
+                  Jag begär att tjänsten börjar direkt under 14-dagars ångerfristen. Jag förstår att jag vid ånger kan behöva betala för den del av tjänsten som redan har utförts enligt tillämplig lag.
+                </span>
+              </label>
+            )}
+
+            <button disabled={isSubmitting || !acceptedTerms || (selectedPlan.name === 'Privat' && !startServiceImmediately)} className="mt-6 w-full rounded-xl bg-brand-primary px-5 py-4 font-black text-brand-bg shadow-lg shadow-brand-glow transition hover:bg-brand-primary-hover disabled:cursor-not-allowed disabled:opacity-60">
             {isSubmitting ? 'Öppnar Stripe...' : 'Fortsätt till säker betalning'}
             </button>
           </form>
