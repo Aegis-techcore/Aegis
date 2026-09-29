@@ -48,7 +48,7 @@ const sectionsSv = [
   },
   {
     title: '11. Ångerrätt för konsumenter',
-    text: 'Om du är konsument och ingår avtalet på distans har du som huvudregel 14 dagars ångerrätt från dagen efter att avtalet ingås. Du kan meddela Aegis skriftligen via kontaktvägen på webbplatsen eller använda Konsumentverkets standardformulär för ångerrätt. Om du uttryckligen begär att tjänsten börjar under ångerfristen kan du enligt tillämplig lag behöva betala en skälig proportionell ersättning för arbete som redan har utförts. Om tjänsten fullgörs helt under ångerfristen kan ångerrätten upphöra när lagens krav för detta är uppfyllda.'
+    text: 'Om du är konsument och ingår avtalet på distans har du som huvudregel 14 dagars ångerrätt från dagen efter att avtalet ingås. Du kan använda Aegis ångerfunktion på /angra, meddela Aegis skriftligen via kontaktvägen på webbplatsen eller använda Konsumentverkets standardformulär för ångerrätt. Om du uttryckligen begär att tjänsten börjar under ångerfristen kan du enligt tillämplig lag behöva betala en skälig proportionell ersättning för arbete som redan har utförts. Om tjänsten fullgörs helt under ångerfristen kan ångerrätten upphöra när lagens krav för detta är uppfyllda.'
   }
 ];
 
@@ -95,7 +95,7 @@ const sectionsEn = [
   },
   {
     title: '11. Consumer right of withdrawal',
-    text: 'If you are a consumer entering into the agreement at a distance, you generally have a 14-day right of withdrawal starting the day after the agreement is concluded. You can notify Aegis in writing through the contact option on the website or use the Swedish Consumer Agency standard withdrawal form. If you expressly request that the service starts during the withdrawal period, applicable law may allow a reasonable proportionate charge for work already performed. The right of withdrawal may end when a service has been fully performed during the withdrawal period if the legal requirements for that exception are met.'
+    text: 'If you are a consumer entering into the agreement at a distance, you generally have a 14-day right of withdrawal starting the day after the agreement is concluded. You can use the Aegis withdrawal function at /angra, notify Aegis in writing through the contact option on the website, or use the Swedish Consumer Agency standard withdrawal form. If you expressly request that the service starts during the withdrawal period, applicable law may allow a reasonable proportionate charge for work already performed. The right of withdrawal may end when a service has been fully performed during the withdrawal period if the legal requirements for that exception are met.'
   }
 ];
 
