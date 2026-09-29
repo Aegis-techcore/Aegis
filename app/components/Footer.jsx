@@ -11,6 +11,17 @@ export default function Footer() {
             <p className="mt-4 max-w-xs text-sm leading-6">
               Secure by Design. Built for Tomorrow.
             </p>
+
+            <p className="mt-3 max-w-xs text-xs leading-6 text-brand-muted">
+              Aegis drivs av Cedrus kommanditbolag, Sverige.
+            </p>
+
+            <a
+              href="/cedrus"
+              className="mt-2 inline-block text-xs font-bold text-brand-primary transition hover:underline"
+            >
+              Företagsinformation
+            </a>
           </div>
 
           <div>
@@ -96,6 +107,13 @@ export default function Footer() {
 
             <div className="flex flex-col gap-3 text-sm">
               <a
+                href="/cedrus"
+                className="transition hover:text-brand-primary"
+              >
+                Cedrus kommanditbolag
+              </a>
+
+              <a
                 href="/privacy"
                 className="transition hover:text-brand-primary"
               >
@@ -121,8 +139,8 @@ export default function Footer() {
 
         <div className="mt-10 border-t border-brand-border pt-6 text-center text-xs md:text-left">
           <p>
-            © 2026 Aegis Core – Secure by Design. Built for Tomorrow. All rights
-            reserved.
+            © 2026 Cedrus kommanditbolag. Aegis drivs av Cedrus kommanditbolag.
+            All rights reserved.
           </p>
         </div>
       </div>
