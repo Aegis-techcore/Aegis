@@ -31,4 +31,6 @@ podDisruptionBudget:
   enabled: true
 ```
 
+Den inbyggda API-rate-limitern använder minne i varje Node-process. Vid flera repliker eller flera instanser är den därför ett lokalt skydd, inte en global kvot. Lägg global rate limiting vid CDN/ingress eller byt till ett delat lager (t.ex. Redis) innan hög trafik eller horisontell skalning.
+
 Varje release identifieras av `sha-<full git SHA>`. Använd digest eller SHA-tagg vid felsökning och rollback, aldrig `latest` i produktion.

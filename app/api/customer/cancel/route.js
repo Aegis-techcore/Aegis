@@ -59,6 +59,19 @@ export async function POST(request) {
     );
   }
 
+  if (current.type !== 'membership') {
+    return Response.json(
+      { message: 'Endast medlemskap kan avslutas via detta flöde.' },
+      { status: 409 }
+    );
+  }
+
+  if (current.status === 'cancelled') {
+    return Response.json({
+      customer: publicCustomer(current)
+    });
+  }
+
   if (
     current.stripeSubscriptionId &&
     current.subscriptionStatus !== 'canceled'

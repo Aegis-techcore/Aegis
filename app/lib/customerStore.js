@@ -30,6 +30,7 @@ export const CUSTOMER_TYPES = {
 const sanitize = (value) => String(value ?? '').trim();
 const normalizeEmail = (value) => sanitize(value).toLowerCase();
 const AGREEMENT_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+const AGREEMENT_TOKEN_PATTERN = /^[0-9a-f]{48}\.\d{13,}$/i;
 const MAX_MESSAGE_LENGTH = 5000;
 
 const generateAccessCode = () =>
@@ -160,7 +161,10 @@ export async function getCustomer(id) {
 export async function getCustomerBySignToken(token) {
   const cleanToken = sanitize(token);
 
-  if (!cleanToken) {
+  if (
+    !cleanToken ||
+    !AGREEMENT_TOKEN_PATTERN.test(cleanToken)
+  ) {
     return null;
   }
 
@@ -565,23 +569,34 @@ export async function markMembershipPaymentFailed(
     return null;
   }
 
+  const sessionId = sanitize(stripeCheckoutSessionId);
+  const alreadyRecorded =
+    current.status === 'pending_payment' &&
+    current.subscriptionStatus === 'payment_failed' &&
+    (
+      !sessionId ||
+      current.stripeCheckoutSessionId === sessionId
+    );
+
   const [updated] = await db
     .update(customers)
     .set({
       status: 'pending_payment',
       subscriptionStatus: 'payment_failed',
       stripeCheckoutSessionId:
-        sanitize(stripeCheckoutSessionId) ||
+        sessionId ||
         current.stripeCheckoutSessionId,
       updatedAt: new Date()
     })
     .where(eq(customers.id, customerId))
     .returning();
 
-  await insertSystemMessage(
-    customerId,
-    'Stripe kunde inte slutföra betalningen. Medlemskapet aktiverades inte.'
-  );
+  if (!alreadyRecorded) {
+    await insertSystemMessage(
+      customerId,
+      'Stripe kunde inte slutföra betalningen. Medlemskapet aktiverades inte.'
+    );
+  }
 
   return hydrateCustomer(updated);
 }
@@ -591,16 +606,22 @@ export async function signAgreement(
   input = {},
   requestMeta = {}
 ) {
+  const cleanToken = sanitize(token);
+
+  if (!AGREEMENT_TOKEN_PATTERN.test(cleanToken)) {
+    return null;
+  }
+
   const [customer] = await db
     .select()
     .from(customers)
-    .where(eq(customers.signToken, token))
+    .where(eq(customers.signToken, cleanToken))
     .limit(1);
 
   if (
     !customer ||
     customer.status !== 'pending_signature' ||
-    isAgreementTokenExpired(token, customer)
+    isAgreementTokenExpired(cleanToken, customer)
   ) {
     return null;
   }

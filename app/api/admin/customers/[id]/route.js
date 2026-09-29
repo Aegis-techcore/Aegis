@@ -73,6 +73,46 @@ export async function PATCH(request, { params }) {
     );
   }
 
+  if (current.source === 'stripe-checkout') {
+    const billingFieldsChanged =
+      (
+        payload?.plan !== undefined &&
+        String(payload.plan).trim() !== current.plan
+      ) ||
+      (
+        payload?.price !== undefined &&
+        String(payload.price).trim() !== current.price
+      ) ||
+      (
+        payload?.billingCycle !== undefined &&
+        String(payload.billingCycle).trim() !== current.billingCycle
+      );
+
+    if (billingFieldsChanged) {
+      return Response.json(
+        {
+          message:
+            'Plan, pris och faktureringsperiod för Stripe-medlemskap måste ändras genom ett separat Stripe-planflöde.'
+        },
+        { status: 409 }
+      );
+    }
+
+    if (
+      payload?.status &&
+      payload.status !== current.status &&
+      payload.status !== 'cancelled'
+    ) {
+      return Response.json(
+        {
+          message:
+            'Status för Stripe-medlemskap synkas från Stripe och kan inte ändras manuellt.'
+        },
+        { status: 409 }
+      );
+    }
+  }
+
   if (
     payload?.status === 'cancelled' &&
     current.stripeSubscriptionId &&

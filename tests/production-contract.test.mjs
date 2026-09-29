@@ -36,6 +36,8 @@ test('the environment template documents required production settings', async ()
     'NEXT_PUBLIC_SITE_URL',
     'SITE_URL',
     'RESEND_API_KEY',
+    'RESEND_FROM_EMAIL',
+    'OWNER_EMAIL',
     'STRIPE_SECRET_KEY',
     'STRIPE_WEBHOOK_SECRET'
   ];
@@ -94,6 +96,10 @@ test('production readiness validates critical secrets and public URL', async () 
   assert.match(runtimeConfig, /ADMIN_SESSION_SECRET/);
   assert.match(runtimeConfig, /CUSTOMER_SESSION_SECRET/);
   assert.match(runtimeConfig, /SITE_URL måste använda https/);
+  assert.match(runtimeConfig, /NEXT_PUBLIC_SITE_URL/);
+  assert.match(runtimeConfig, /samma origin/);
+  assert.match(runtimeConfig, /resend\.dev/);
+  assert.match(runtimeConfig, /OWNER_EMAIL/);
   assert.match(readyRoute, /getProductionConfigErrors/);
 });
 

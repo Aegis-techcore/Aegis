@@ -281,7 +281,8 @@ export default function CustomerPortalPage() {
               )}
             </article>
 
-            <form onSubmit={handleCancel} className="rounded-3xl border border-brand-border bg-slate-950/75 p-6 shadow-xl shadow-black/20">
+            {customer.type === 'membership' && (
+              <form onSubmit={handleCancel} className="rounded-3xl border border-brand-border bg-slate-950/75 p-6 shadow-xl shadow-black/20">
               <h2 className="text-xl font-black">Avsluta medlemskap</h2>
               <p className="mt-2 text-sm leading-6 text-brand-muted">
                 Du kan avsluta när du vill. Kontot markeras som avslutat direkt.
@@ -295,7 +296,8 @@ export default function CustomerPortalPage() {
               <button disabled={isSubmitting || customer.status === 'cancelled'} className="mt-4 w-full rounded-xl border border-rose-500/40 px-4 py-3 text-sm font-black text-rose-200 transition hover:bg-rose-500/10 disabled:cursor-not-allowed disabled:opacity-60">
                 {customer.status === 'cancelled' ? 'Medlemskapet är avslutat' : 'Avsluta direkt'}
               </button>
-            </form>
+              </form>
+            )}
           </div>
 
           <section className="rounded-3xl border border-brand-border bg-slate-950/75 p-6 shadow-xl shadow-black/20">

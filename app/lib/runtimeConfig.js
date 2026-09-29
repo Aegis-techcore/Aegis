@@ -3,7 +3,11 @@ const REQUIRED_KEYS = [
   'ADMIN_PASSWORD',
   'ADMIN_SESSION_SECRET',
   'CUSTOMER_SESSION_SECRET',
+  'SITE_URL',
+  'NEXT_PUBLIC_SITE_URL',
   'RESEND_API_KEY',
+  'RESEND_FROM_EMAIL',
+  'OWNER_EMAIL',
   'STRIPE_SECRET_KEY',
   'STRIPE_WEBHOOK_SECRET',
   'STRIPE_PRICE_PRIVATE',
@@ -17,6 +21,39 @@ const SESSION_SECRET_KEYS = [
   'ADMIN_SESSION_SECRET',
   'CUSTOMER_SESSION_SECRET'
 ];
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const extractEmail = (value) => {
+  const cleaned = String(value || '').trim();
+  const bracketMatch = cleaned.match(/<([^<>]+)>$/);
+  return (bracketMatch?.[1] || cleaned).trim().toLowerCase();
+};
+
+const validateSiteUrl = (key, value, errors) => {
+  try {
+    const parsed = new URL(String(value || '').trim());
+
+    if (parsed.protocol !== 'https:') {
+      errors.push(`${key} måste använda https i produktion`);
+    }
+
+    if (
+      parsed.username ||
+      parsed.password ||
+      parsed.search ||
+      parsed.hash ||
+      (parsed.pathname && parsed.pathname !== '/')
+    ) {
+      errors.push(`${key} måste vara en ren origin utan credentials, path, query eller fragment`);
+    }
+
+    return parsed.origin;
+  } catch {
+    errors.push(`${key} är ogiltig`);
+    return '';
+  }
+};
 
 export function getProductionConfigErrors(
   env = process.env
@@ -47,23 +84,45 @@ export function getProductionConfigErrors(
     );
   }
 
-  const siteUrl =
-    String(env.SITE_URL || '').trim();
+  const siteUrl = validateSiteUrl(
+    'SITE_URL',
+    env.SITE_URL,
+    errors
+  );
+  const publicSiteUrl = validateSiteUrl(
+    'NEXT_PUBLIC_SITE_URL',
+    env.NEXT_PUBLIC_SITE_URL,
+    errors
+  );
 
-  if (!siteUrl) {
-    errors.push('SITE_URL saknas');
-  } else {
-    try {
-      const parsed = new URL(siteUrl);
+  if (
+    siteUrl &&
+    publicSiteUrl &&
+    siteUrl !== publicSiteUrl
+  ) {
+    errors.push(
+      'SITE_URL och NEXT_PUBLIC_SITE_URL måste peka på samma origin'
+    );
+  }
 
-      if (parsed.protocol !== 'https:') {
-        errors.push(
-          'SITE_URL måste använda https i produktion'
-        );
-      }
-    } catch {
-      errors.push('SITE_URL är ogiltig');
-    }
+  const ownerEmail = extractEmail(env.OWNER_EMAIL);
+  const resendFromEmail = extractEmail(env.RESEND_FROM_EMAIL);
+
+  if (ownerEmail && !EMAIL_PATTERN.test(ownerEmail)) {
+    errors.push('OWNER_EMAIL är ogiltig');
+  }
+
+  if (
+    resendFromEmail &&
+    !EMAIL_PATTERN.test(resendFromEmail)
+  ) {
+    errors.push('RESEND_FROM_EMAIL är ogiltig');
+  }
+
+  if (resendFromEmail.endsWith('@resend.dev')) {
+    errors.push(
+      'RESEND_FROM_EMAIL får inte använda resend.dev i produktion; verifiera en egen avsändardomän'
+    );
   }
 
   if (

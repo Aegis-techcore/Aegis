@@ -86,6 +86,7 @@ export default function AgreementPage() {
 
       setAgreement(data.agreement);
       setLogin(data.login);
+      setAccessCode('');
     } catch (signError) {
       setError(signError.message || 'Avtalet kunde inte signeras.');
     } finally {
@@ -234,7 +235,7 @@ export default function AgreementPage() {
                 <div className="mt-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4">
                   <p className="text-sm font-black text-emerald-200">Kundlogin skapad</p>
                   <p className="mt-2 text-sm text-brand-muted">E-post: {login.email}</p>
-                  <p className="mt-1 text-sm text-brand-muted">Kundkod: <span className="font-black text-white">{login.accessCode}</span></p>
+                  <p className="mt-1 text-sm text-brand-muted">Använd kundkoden du precis valde. Av säkerhetsskäl visas den inte igen.</p>
                   <a href="/kund" className="mt-4 block rounded-xl bg-white px-4 py-3 text-center text-sm font-black text-slate-950 transition hover:bg-brand-primary">
                     Gå till kundportalen
                   </a>

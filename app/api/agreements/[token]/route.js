@@ -130,8 +130,7 @@ export async function POST(request, { params }) {
   return Response.json({
     agreement: publicAgreement(customer),
     login: {
-      email: customer.email,
-      accessCode
+      email: customer.email
     }
   });
 }

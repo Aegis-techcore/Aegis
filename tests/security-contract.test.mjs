@@ -73,12 +73,20 @@ test('Stripe completion is verified and a session id is never an auth token', as
   assert.match(webhook, /checkout\.session\.async_payment_failed/);
 });
 
-test('agreement links expire and are invalidated after signing', async () => {
+test('agreement links expire, are bounded and do not echo access codes', async () => {
   const store = await readProjectFile('app/lib/customerStore.js');
+  const route = await readProjectFile(
+    'app/api/agreements/[token]/route.js'
+  );
 
   assert.match(store, /AGREEMENT_TOKEN_TTL_MS/);
+  assert.match(store, /AGREEMENT_TOKEN_PATTERN/);
   assert.match(store, /isAgreementTokenExpired/);
   assert.match(store, /signToken:\s*null/);
+  assert.doesNotMatch(
+    route.match(/login:\s*\{([\s\S]*?)\}/)?.[1] || '',
+    /accessCode/
+  );
 });
 
 test('generated public links use configured site URLs instead of Host headers', async () => {
@@ -97,13 +105,16 @@ test('generated public links use configured site URLs instead of Host headers', 
   assert.doesNotMatch(agreementAdmin, /x-forwarded-proto|headers\.get\('host'\)/);
 });
 
-test('admin cannot manually activate an unverified Stripe membership', async () => {
+test('admin cannot manually drift Stripe-managed membership state', async () => {
   const adminRoute = await readProjectFile(
     'app/api/admin/customers/[id]/route.js'
   );
 
   assert.match(adminRoute, /source === 'stripe-checkout'/);
   assert.match(adminRoute, /subscriptionAllowsActivation/);
+  assert.match(adminRoute, /billingFieldsChanged/);
+  assert.match(adminRoute, /Stripe-planflöde/);
+  assert.match(adminRoute, /synkas från Stripe/);
   assert.match(adminRoute, /status:\s*409/);
   assert.match(adminRoute, /subscriptions\.cancel/);
 });
@@ -128,4 +139,22 @@ test('public abuse-prone endpoints use rate limiting', async () => {
       `${path} should use rate limiting`
     );
   }
+});
+
+
+test('membership cancellation cannot cancel project orders and is idempotent', async () => {
+  const cancelRoute = await readProjectFile(
+    'app/api/customer/cancel/route.js'
+  );
+
+  assert.match(cancelRoute, /current\.type !== 'membership'/);
+  assert.match(cancelRoute, /current\.status === 'cancelled'/);
+  assert.match(cancelRoute, /subscriptions\.cancel/);
+});
+
+test('Stripe payment failure retries do not duplicate system messages', async () => {
+  const store = await readProjectFile('app/lib/customerStore.js');
+
+  assert.match(store, /alreadyRecorded/);
+  assert.match(store, /if \(!alreadyRecorded\)/);
 });
