@@ -19,19 +19,27 @@ const sectionsSv = [
     text: 'Vi använder uppgifterna för att kunna besvara förfrågningar, skapa offerter, planera projekt, kommunicera med kunder, leverera tjänster, hantera support och förbättra våra digitala lösningar.'
   },
   {
-    title: '4. Hur länge sparas uppgifterna?',
+    title: '4. Vilken rättslig grund använder vi?',
+    text: 'Beroende på situation behandlar vi personuppgifter för att vidta åtgärder på din begäran innan avtal ingås, fullgöra avtal, uppfylla rättsliga skyldigheter eller med stöd av berättigat intresse, till exempel för säkerhet, support och att besvara relevanta förfrågningar. Om behandling i ett särskilt fall bygger på samtycke kan samtycket återkallas.'
+  },
+  {
+    title: '5. Hur länge sparas uppgifterna?',
     text: 'Vi sparar uppgifter så länge det behövs för att hantera förfrågan, projektet, kundrelationen eller för att uppfylla rättsliga skyldigheter. Uppgifter som inte längre behövs raderas eller anonymiseras.'
   },
   {
-    title: '5. Delar vi uppgifter med andra?',
-    text: 'Vi säljer aldrig personuppgifter. Uppgifter kan delas med tekniska tjänsteleverantörer som behövs för drift, e-post, hosting, kommunikation eller betalning, men endast när det är nödvändigt för att leverera våra tjänster.'
+    title: '6. Delar vi uppgifter med andra?',
+    text: 'Vi säljer aldrig personuppgifter. Uppgifter kan behandlas av leverantörer som behövs för drift, databas, e-post och betalning. Aegis använder bland annat Stripe för betalning och Resend för e-post. Fullständiga kortuppgifter anges i Stripes betalningsflöde och lagras inte av Aegis. Leverantörer får endast behandla uppgifter för de ändamål som krävs för tjänsten och enligt tillämpliga dataskyddskrav.'
   },
   {
-    title: '6. Dina rättigheter',
+    title: '7. Överföring utanför EU/EES',
+    text: 'Om en tjänsteleverantör behandlar personuppgifter utanför EU/EES ska överföringen ske med en giltig överföringsmekanism och tillämpliga skyddsåtgärder enligt GDPR. Vilka leverantörer och lagringsplatser som används kan förändras när Aegis infrastruktur förändras.'
+  },
+  {
+    title: '8. Dina rättigheter',
     text: 'Du har rätt att begära information om vilka personuppgifter vi behandlar om dig, begära rättelse, radering, begränsning av behandling och i vissa fall invända mot behandlingen. Du kan också lämna klagomål till Integritetsskyddsmyndigheten (IMY).'
   },
   {
-    title: '7. Kontakt',
+    title: '9. Kontakt',
     text: 'Om du har frågor om hur vi behandlar personuppgifter kan du kontakta oss via e-post: aegis.infon@gmail.com.'
   }
 ];
@@ -50,19 +58,27 @@ const sectionsEn = [
     text: 'We use the data to respond to inquiries, prepare offers, plan projects, communicate with customers, deliver services, handle support and improve our digital solutions.'
   },
   {
-    title: '4. How long do we store the data?',
+    title: '4. What legal basis do we use?',
+    text: 'Depending on the situation, we process personal data to take steps at your request before entering into a contract, to perform a contract, to comply with legal obligations, or on the basis of legitimate interests such as security, support and responding to relevant inquiries. Where a specific processing activity relies on consent, that consent can be withdrawn.'
+  },
+  {
+    title: '5. How long do we store the data?',
     text: 'We store personal data for as long as necessary to handle the inquiry, project, customer relationship or legal obligations. Data that is no longer needed is deleted or anonymized.'
   },
   {
-    title: '5. Do we share data?',
-    text: 'We never sell personal data. Data may be shared with technical service providers needed for hosting, email, communication, payment or service delivery, but only when necessary.'
+    title: '6. Do we share data?',
+    text: 'We never sell personal data. Data may be processed by providers needed for hosting, databases, email and payments. Aegis uses Stripe for payments and Resend for email. Full card details are entered in Stripe’s payment flow and are not stored by Aegis. Providers may only process data for the purposes needed to provide the service and in accordance with applicable data-protection requirements.'
   },
   {
-    title: '6. Your rights',
+    title: '7. Transfers outside the EU/EEA',
+    text: 'If a service provider processes personal data outside the EU/EEA, the transfer must use a valid transfer mechanism and applicable safeguards under the GDPR. The providers and storage locations used may change as Aegis infrastructure changes.'
+  },
+  {
+    title: '8. Your rights',
     text: 'You have the right to request access to your personal data, correction, deletion, restriction of processing and in some cases object to processing. You may also file a complaint with the Swedish Authority for Privacy Protection (IMY).'
   },
   {
-    title: '7. Contact',
+    title: '9. Contact',
     text: 'If you have questions about how we process personal data, contact us at: aegis.infon@gmail.com.'
   }
 ];
