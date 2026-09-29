@@ -6,6 +6,7 @@ $ErrorActionPreference = 'Stop'
 $projectRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
 $ciProject = 'aegis-local-release-check'
 $composeFiles = @('-f', 'compose.yaml', '-f', 'compose.ci.yaml')
+$dockerReady = $false
 
 function Invoke-Checked {
   param(
@@ -22,20 +23,76 @@ function Invoke-Checked {
   }
 }
 
+function Test-DockerEngine {
+  if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
+    return $false
+  }
+
+  & docker info --format '{{.ServerVersion}}' *> $null
+  return $LASTEXITCODE -eq 0
+}
+
+function Ensure-DockerEngine {
+  if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
+    throw 'Docker CLI hittades inte. Installera Docker Desktop innan release-verifieringen körs.'
+  }
+
+  if (Test-DockerEngine) {
+    Write-Host 'Docker engine is running.'
+    return
+  }
+
+  if ($env:OS -ne 'Windows_NT') {
+    throw 'Docker engine svarar inte. Starta Docker-tjänsten och kör verifieringen igen.'
+  }
+
+  $candidates = @(
+    (Join-Path $env:ProgramFiles 'Docker\Docker\Docker Desktop.exe'),
+    (Join-Path $env:LOCALAPPDATA 'Docker\Docker Desktop.exe')
+  ) | Where-Object {
+    $_ -and (Test-Path -LiteralPath $_ -PathType Leaf)
+  }
+
+  $dockerDesktop = $candidates | Select-Object -First 1
+
+  if (-not $dockerDesktop) {
+    throw 'Docker Desktop engine svarar inte och Docker Desktop kunde inte hittas automatiskt.'
+  }
+
+  Write-Host 'Docker Desktop is installed but the engine is not running. Starting Docker Desktop...'
+  Start-Process -FilePath $dockerDesktop | Out-Null
+
+  for ($attempt = 1; $attempt -le 60; $attempt += 1) {
+    Start-Sleep -Seconds 2
+
+    if (Test-DockerEngine) {
+      Write-Host 'Docker engine is ready.'
+      return
+    }
+  }
+
+  throw 'Docker Desktop startades men engine blev inte redo inom 120 sekunder.'
+}
+
 Push-Location $projectRoot
 
 try {
   Invoke-Checked 'Install locked dependencies' {
-    npm ci
+    npm ci --audit=false
   }
 
   Invoke-Checked 'Lint, typecheck, tests and production build' {
     npm run verify
   }
 
-  Invoke-Checked 'Audit production dependencies' {
-    npm audit --omit=dev --audit-level=high
+  Invoke-Checked 'Audit shipped production dependencies' {
+    npm audit --omit=dev --audit-level=moderate
   }
+
+  Write-Host ""
+  Write-Host '==> Docker engine preflight'
+  Ensure-DockerEngine
+  $dockerReady = $true
 
   Invoke-Checked 'Validate development/CI Compose configuration' {
     docker compose @composeFiles config --quiet
@@ -66,13 +123,23 @@ try {
 
   Write-Host ""
   Write-Host 'LOCAL RELEASE VERIFICATION PASSED.'
-  Write-Host 'This verifies code, build, production dependency audit, Docker integration and readiness.'
-  Write-Host 'It does not perform a real Stripe charge, send a real email, verify public DNS/HTTPS, or rotate external secrets.'
+  Write-Host 'Verified: install, lint, typecheck, tests, production build, shipped-dependency audit, Docker integration and readiness.'
+  Write-Host 'Not executed automatically: a real Stripe charge, real email delivery, public DNS/HTTPS or external-secret rotation.'
 }
 finally {
   Write-Host ""
   Write-Host 'Cleaning up local integration stack...'
-  docker compose @composeFiles --project-name $ciProject down --volumes --remove-orphans 2>$null
+
+  if ($dockerReady -and (Test-DockerEngine)) {
+    & docker compose @composeFiles --project-name $ciProject down --volumes --remove-orphans *> $null
+
+    if ($LASTEXITCODE -ne 0) {
+      Write-Host 'NOTE: Docker cleanup did not complete cleanly. Check Docker Desktop if test containers remain.'
+    }
+  } else {
+    Write-Host 'Cleanup skipped because Docker engine is not available.'
+  }
+
   Remove-Item Env:AEGIS_IMAGE_TAG -ErrorAction SilentlyContinue
   Remove-Item Env:SMOKE_TEST_READINESS -ErrorAction SilentlyContinue
   Pop-Location
