@@ -20,7 +20,7 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const clean = (value, maxLength) =>
   String(value ?? '').trim().slice(0, maxLength);
 
-const MEMBERSHIP_TERMS_VERSION = '2026-09-29';
+const MEMBERSHIP_TERMS_VERSION = '2026-09-29-v2';
 
 const buildMembershipRequirements = (stripePlan) => [
   `Villkorsversion: ${MEMBERSHIP_TERMS_VERSION}`,
@@ -28,7 +28,7 @@ const buildMembershipRequirements = (stripePlan) => [
   'Aegis hjälper med webbunderhåll, mindre utveckling, teknisk rådgivning och IT-support inom vald nivå.',
   'Extra arbete utöver abonnemangets omfattning startar först efter separat godkännande.',
   'Kunden ansvarar för att lämna korrekt information, inloggningar och material som behövs för arbetet.',
-  'Medlemskapet kan avslutas via kundportalen.',
+  'Abonnemanget förnyas månadsvis tills det avslutas. Medlemskapet kan avslutas via kundportalen och avslutas direkt.',
   'Om kunden är konsument och avtalet ingås på distans gäller som huvudregel 14 dagars ångerrätt enligt tillämplig svensk konsumenträtt. Information om hur ångerrätten används finns i Aegis allmänna villkor.'
 ].join('\n');
 
