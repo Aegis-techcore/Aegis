@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 import nextConfig from '../next.config.js';
+import { getProductionConfigErrors } from '../app/lib/runtimeConfig.js';
 
 const readProjectFile = (name) =>
   readFile(new URL(`../${name}`, import.meta.url), 'utf8');
@@ -85,21 +86,71 @@ test('local build has a safe database fallback without weakening runtime checks'
 
 
 test('production readiness validates critical secrets and public URL', async () => {
-  const runtimeConfig = await readProjectFile(
-    'app/lib/runtimeConfig.js'
-  );
   const readyRoute = await readProjectFile(
     'app/api/ready/route.js'
   );
 
-  assert.match(runtimeConfig, /STRIPE_WEBHOOK_SECRET/);
-  assert.match(runtimeConfig, /ADMIN_SESSION_SECRET/);
-  assert.match(runtimeConfig, /CUSTOMER_SESSION_SECRET/);
-  assert.match(runtimeConfig, /SITE_URL måste använda https/);
-  assert.match(runtimeConfig, /NEXT_PUBLIC_SITE_URL/);
-  assert.match(runtimeConfig, /samma origin/);
-  assert.match(runtimeConfig, /resend\.dev/);
-  assert.match(runtimeConfig, /OWNER_EMAIL/);
+  const validEnv = {
+    NODE_ENV: 'production',
+    DATABASE_URL: 'postgresql://aegis:aegis@example.invalid/aegis',
+    ADMIN_PASSWORD: 'ci-admin-password-only',
+    ADMIN_SESSION_SECRET: 'a'.repeat(40),
+    CUSTOMER_SESSION_SECRET: 'b'.repeat(40),
+    SITE_URL: 'https://www.aegis.dev',
+    NEXT_PUBLIC_SITE_URL: 'https://www.aegis.dev',
+    RESEND_API_KEY: 're_ci_placeholder',
+    RESEND_FROM_EMAIL: 'Aegis <noreply@aegis.dev>',
+    OWNER_EMAIL: 'owner@aegis.dev',
+    STRIPE_SECRET_KEY: 'sk_test_ci_placeholder',
+    STRIPE_WEBHOOK_SECRET: 'whsec_ci_placeholder',
+    STRIPE_PRICE_PRIVATE: 'price_ci_private',
+    STRIPE_PRICE_START: 'price_ci_start',
+    STRIPE_PRICE_PLUS: 'price_ci_plus',
+    STRIPE_PRICE_PRO: 'price_ci_pro',
+    STRIPE_PRICE_BUSINESS: 'price_ci_business'
+  };
+
+  assert.deepEqual(
+    getProductionConfigErrors(validEnv),
+    []
+  );
+
+  assert.ok(
+    getProductionConfigErrors({
+      ...validEnv,
+      SITE_URL: 'http://www.aegis.dev'
+    }).some((error) =>
+      error.includes('SITE_URL måste använda https')
+    )
+  );
+
+  assert.ok(
+    getProductionConfigErrors({
+      ...validEnv,
+      NEXT_PUBLIC_SITE_URL: 'https://aegis.dev'
+    }).some((error) =>
+      error.includes('måste peka på samma origin')
+    )
+  );
+
+  assert.ok(
+    getProductionConfigErrors({
+      ...validEnv,
+      RESEND_FROM_EMAIL: 'Aegis <onboarding@resend.dev>'
+    }).some((error) =>
+      error.includes('resend.dev')
+    )
+  );
+
+  assert.ok(
+    getProductionConfigErrors({
+      ...validEnv,
+      STRIPE_WEBHOOK_SECRET: ''
+    }).some((error) =>
+      error.includes('STRIPE_WEBHOOK_SECRET saknas')
+    )
+  );
+
   assert.match(readyRoute, /getProductionConfigErrors/);
 });
 
