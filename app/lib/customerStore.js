@@ -338,6 +338,17 @@ export async function createPendingMembershipCustomer(
     throw new Error('CUSTOMER_EMAIL_EXISTS');
   }
 
+  if (existing?.status === 'pending_payment') {
+    const verification = await verifyAccessCode(
+      accessCode,
+      existing.accessCode
+    );
+
+    if (!verification.valid) {
+      throw new Error('PENDING_MEMBERSHIP_EXISTS');
+    }
+  }
+
   const now = new Date();
   const values = {
     source: 'stripe-checkout',
