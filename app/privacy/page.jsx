@@ -8,7 +8,7 @@ export const metadata = {
 const sectionsSv = [
   {
     title: '1. Vem ansvarar för personuppgifterna?',
-    text: 'Aegis Core ansvarar för behandlingen av personuppgifter som samlas in via vår webbplats, kontaktformulär, kundportal och kommunikation med kunder. Organisationsnummer kommer att uppdateras när företaget är registrerat.'
+    text: 'Cedrus kommanditbolag (organisationsnummer 969804-8692), som driver Aegis, är personuppgiftsansvarig för personuppgifter som samlas in via webbplatsen, kontaktformulär, kundportal och kommunikation med kunder.'
   },
   {
     title: '2. Vilka uppgifter samlar vi in?',
@@ -39,7 +39,7 @@ const sectionsSv = [
 const sectionsEn = [
   {
     title: '1. Who is responsible for personal data?',
-    text: 'Aegis Core is responsible for the processing of personal data collected through our website, contact forms, customer portal and customer communication. Company registration number will be updated once the company is registered.'
+    text: 'Cedrus kommanditbolag (Swedish organisation number 969804-8692), which operates Aegis, is the controller for personal data collected through the website, contact forms, customer portal and customer communication.'
   },
   {
     title: '2. What data do we collect?',
@@ -87,7 +87,7 @@ export default function PrivacyPage() {
           </p>
 
           <p className="mt-3 text-xs text-brand-muted">
-            Senast uppdaterad: 2026-07-06
+            Senast uppdaterad: 2026-09-29
           </p>
 
           <div className="mt-10 grid gap-5">
