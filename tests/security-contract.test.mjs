@@ -158,3 +158,17 @@ test('Stripe payment failure retries do not duplicate system messages', async ()
   assert.match(store, /alreadyRecorded/);
   assert.match(store, /if \(!alreadyRecorded\)/);
 });
+
+
+test('pending Stripe membership retries require the original access code', async () => {
+  const store = await readProjectFile('app/lib/customerStore.js');
+  const checkout = await readProjectFile(
+    'app/api/stripe/checkout/route.js'
+  );
+
+  assert.match(store, /existing\?\.status === 'pending_payment'/);
+  assert.match(store, /verifyAccessCode/);
+  assert.match(store, /PENDING_MEMBERSHIP_EXISTS/);
+  assert.match(checkout, /PENDING_MEMBERSHIP_EXISTS/);
+  assert.match(checkout, /status:\s*409/);
+});
