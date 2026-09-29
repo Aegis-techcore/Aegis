@@ -6,6 +6,9 @@ services:
       ADMIN_SESSION_SECRET: ci-admin-session-secret-32-characters-minimum
       CUSTOMER_SESSION_SECRET: ci-customer-session-secret-32-characters-minimum
       SITE_URL: https://aegis-ci.example.invalid
+      NEXT_PUBLIC_SITE_URL: https://aegis-ci.example.invalid
+      RESEND_FROM_EMAIL: Aegis CI <noreply@aegis-ci.example.invalid>
+      OWNER_EMAIL: owner@aegis-ci.example.invalid
       RESEND_API_KEY: re_ci_placeholder
       STRIPE_SECRET_KEY: sk_test_ci_placeholder
       STRIPE_WEBHOOK_SECRET: whsec_ci_placeholder
