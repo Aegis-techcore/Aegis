@@ -8,7 +8,7 @@ export const metadata = {
 const sectionsSv = [
   {
     title: '1. Allmänt',
-    text: 'Dessa allmänna villkor gäller för samtliga tjänster som erbjuds av Aegis Core, inklusive webbutveckling, mjukvaruutveckling, AI-lösningar, cybersäkerhet, IT-support och övriga konsulttjänster.'
+    text: 'Dessa allmänna villkor gäller för tjänster som erbjuds under varumärket Aegis av Cedrus kommanditbolag, organisationsnummer 969804-8692, inklusive webbutveckling, mjukvaruutveckling, AI-lösningar, cybersäkerhet, IT-support och övriga konsulttjänster.'
   },
   {
     title: '2. Offert och avtal',
@@ -51,7 +51,7 @@ const sectionsSv = [
 const sectionsEn = [
   {
     title: '1. General',
-    text: 'These terms apply to all services provided by Aegis Core, including web development, software development, AI solutions, cybersecurity, IT support and consulting services.'
+    text: 'These terms apply to services provided under the Aegis brand by Cedrus kommanditbolag, Swedish organisation number 969804-8692, including web development, software development, AI solutions, cybersecurity, IT support and consulting services.'
   },
   {
     title: '2. Quotes and agreements',
@@ -111,7 +111,7 @@ export default function TermsPage() {
           </p>
 
           <p className="mt-3 text-xs text-brand-muted">
-            Senast uppdaterad: 2026-07-06
+            Senast uppdaterad: 2026-09-29
           </p>
 
           <div className="mt-10 grid gap-5">
