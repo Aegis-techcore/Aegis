@@ -216,6 +216,10 @@ test('release verifier handles Docker Desktop preflight and safe cleanup', async
   assert.match(script, /Test-DockerEngine/);
   assert.match(script, /\$dockerReady/);
   assert.match(script, /Cleanup skipped because Docker engine is not available/);
+  assert.match(script, /Docker cleanup completed/);
+  assert.match(script, /\$previousErrorActionPreference/);
+  assert.match(script, /\$cleanupExitCode/);
+  assert.match(script, /2>&1 \| Out-Null/);
   assert.match(script, /npm ci --audit=false/);
   assert.match(script, /npm audit --omit=dev --audit-level=moderate/);
 });
