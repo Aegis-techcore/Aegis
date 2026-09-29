@@ -206,3 +206,16 @@ test('authenticated GET APIs explicitly disable static caching', async () => {
     assert.match(source, /revalidate = 0/, path);
   }
 });
+
+
+test('release verifier handles Docker Desktop preflight and safe cleanup', async () => {
+  const script = await readProjectFile('scripts/verify-release.ps1');
+
+  assert.match(script, /Ensure-DockerEngine/);
+  assert.match(script, /Docker Desktop/);
+  assert.match(script, /Test-DockerEngine/);
+  assert.match(script, /\$dockerReady/);
+  assert.match(script, /Cleanup skipped because Docker engine is not available/);
+  assert.match(script, /npm ci --audit=false/);
+  assert.match(script, /npm audit --omit=dev --audit-level=moderate/);
+});
