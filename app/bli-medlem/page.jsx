@@ -42,7 +42,7 @@ const defaultRequirements = (plan) => [
   'Aegis hjälper med webbunderhåll, mindre utveckling, teknisk rådgivning och IT-support inom vald nivå.',
   'Extra arbete utöver abonnemangets omfattning startar först efter separat godkännande.',
   'Kunden ansvarar för att lämna korrekt information, inloggningar och material som behövs för arbetet.',
-  'Medlemskapet kan avslutas när som helst via kundportalen och avslutas direkt.'
+  'Abonnemanget förnyas månadsvis tills det avslutas. Medlemskapet kan avslutas när som helst via kundportalen och avslutas direkt.'
 ].join('\n');
 
 export default function JoinMembershipPage() {
