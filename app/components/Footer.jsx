@@ -133,6 +133,13 @@ export default function Footer() {
               >
                 Allmänna villkor
               </a>
+
+              <a
+                href="/angra"
+                className="transition hover:text-brand-primary"
+              >
+                Använd ångerrätten
+              </a>
             </div>
           </div>
         </div>
