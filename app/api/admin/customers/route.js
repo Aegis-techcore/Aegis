@@ -3,6 +3,8 @@ import { getCustomerStats, listCustomers } from '../../../lib/customerStore';
 import { getPublicBaseUrl } from '../../../lib/publicUrl';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET(request) {
   if (!isAdminRequest(request)) {
