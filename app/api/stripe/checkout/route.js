@@ -20,6 +20,18 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const clean = (value, maxLength) =>
   String(value ?? '').trim().slice(0, maxLength);
 
+const MEMBERSHIP_TERMS_VERSION = '2026-09-29';
+
+const buildMembershipRequirements = (stripePlan) => [
+  `Villkorsversion: ${MEMBERSHIP_TERMS_VERSION}`,
+  `Medlemskapet gäller abonnemanget ${stripePlan.name} för ${stripePlan.displayPrice}/månad.`,
+  'Aegis hjälper med webbundehåll, mindre utveckling, teknisk rådgivning och IT-support inom vald nivå.',
+  'Extra arbete utöver abonnemangets omfattning startar först efter separat godkännande.',
+  'Kunden ansvarar för att lämna korrekt information, inloggningar och material som behövs för arbetet.',
+  'Medlemskapet kan avslutas via kundportalen.',
+  'Om kunden är konsument och avtalet ingås på distans gäller som huvudregel 14 dagars ångerrätt enligt tillämplig svensk konsumenträtt. Information om hur ångerrätten används finns i Aegis allmänna villkor.'
+].join('\n');
+
 export async function POST(request) {
   const rateLimit = checkRateLimit(request, {
     key: 'stripe-checkout',
@@ -41,7 +53,6 @@ export async function POST(request) {
     const signatureTitle = clean(body?.signatureTitle, 120);
     const accessCode = normalizeAccessCode(body?.accessCode);
     const plan = clean(body?.plan, 40);
-    const requirements = clean(body?.requirements, 5000);
 
     if (!name) {
       return NextResponse.json(
@@ -90,6 +101,21 @@ export async function POST(request) {
       );
     }
 
+    if (
+      stripePlan.name === 'Privat' &&
+      body?.startServiceImmediately !== true
+    ) {
+      return NextResponse.json(
+        {
+          message:
+            'För Privat behöver du bekräfta att tjänsten får börja under ångerfristen.'
+        },
+        { status: 400 }
+      );
+    }
+
+    const requirements = buildMembershipRequirements(stripePlan);
+
     const pendingCustomer =
       await createPendingMembershipCustomer(
         {
@@ -127,12 +153,14 @@ export async function POST(request) {
         client_reference_id: pendingCustomer.id,
         metadata: {
           customerId: pendingCustomer.id,
-          plan: stripePlan.name
+          plan: stripePlan.name,
+          termsVersion: MEMBERSHIP_TERMS_VERSION
         },
         subscription_data: {
           metadata: {
             customerId: pendingCustomer.id,
-            plan: stripePlan.name
+            plan: stripePlan.name,
+            termsVersion: MEMBERSHIP_TERMS_VERSION
           }
         },
         allow_promotion_codes: true
