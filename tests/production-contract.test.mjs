@@ -112,3 +112,28 @@ test('deployment refuses placeholder domains', async () => {
   assert.match(deployment, /vars\.INGRESS_HOST/);
   assert.match(deployment, /placeholder domain/);
 });
+
+
+test('Next.js dependency is pinned above the patched RCE floor', async () => {
+  const packageJson = JSON.parse(await readProjectFile('package.json'));
+  const packageLock = JSON.parse(await readProjectFile('package-lock.json'));
+
+  assert.equal(packageJson.dependencies.next, '^16.3.6');
+  assert.equal(
+    packageLock.packages['node_modules/next'].version,
+    '16.3.6'
+  );
+});
+
+test('production headers include a restrictive Content-Security-Policy', async () => {
+  const rules = await nextConfig.headers();
+  const headers = new Map(
+    rules[0].headers.map(({ key, value }) => [key, value])
+  );
+  const csp = headers.get('Content-Security-Policy') || '';
+
+  assert.match(csp, /default-src 'self'/);
+  assert.match(csp, /object-src 'none'/);
+  assert.match(csp, /frame-ancestors 'none'/);
+  assert.match(csp, /upgrade-insecure-requests/);
+});
