@@ -137,3 +137,21 @@ test('production headers include a restrictive Content-Security-Policy', async (
   assert.match(csp, /frame-ancestors 'none'/);
   assert.match(csp, /upgrade-insecure-requests/);
 });
+
+
+test('authenticated GET APIs explicitly disable static caching', async () => {
+  const paths = [
+    'app/api/customer/me/route.js',
+    'app/api/admin/me/route.js',
+    'app/api/admin/notifications/route.js',
+    'app/api/admin/customers/route.js',
+    'app/api/admin/requests/route.js',
+    'app/api/admin/requests/[id]/route.js'
+  ];
+
+  for (const path of paths) {
+    const source = await readProjectFile(path);
+    assert.match(source, /dynamic = 'force-dynamic'/, path);
+    assert.match(source, /revalidate = 0/, path);
+  }
+});
