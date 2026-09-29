@@ -2,6 +2,8 @@ import { getCustomerIdFromRequest } from '../../../lib/customerAuth';
 import { getCustomer } from '../../../lib/customerStore';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 const publicCustomer = (customer) => ({
   id: customer.id,
