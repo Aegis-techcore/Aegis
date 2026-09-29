@@ -2,6 +2,8 @@ import { isAdminRequest } from '../../../lib/adminAuth';
 import { listAdminNotifications, markAdminNotificationsRead } from '../../../lib/notificationStore';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET(request) {
   if (!isAdminRequest(request)) {
