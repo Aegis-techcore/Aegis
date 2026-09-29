@@ -25,7 +25,7 @@ const MEMBERSHIP_TERMS_VERSION = '2026-09-29';
 const buildMembershipRequirements = (stripePlan) => [
   `Villkorsversion: ${MEMBERSHIP_TERMS_VERSION}`,
   `Medlemskapet gäller abonnemanget ${stripePlan.name} för ${stripePlan.displayPrice}/månad.`,
-  'Aegis hjälper med webbundehåll, mindre utveckling, teknisk rådgivning och IT-support inom vald nivå.',
+  'Aegis hjälper med webbunderhåll, mindre utveckling, teknisk rådgivning och IT-support inom vald nivå.',
   'Extra arbete utöver abonnemangets omfattning startar först efter separat godkännande.',
   'Kunden ansvarar för att lämna korrekt information, inloggningar och material som behövs för arbetet.',
   'Medlemskapet kan avslutas via kundportalen.',
