@@ -203,3 +203,28 @@ test('consumer withdrawal requests persist independently of email delivery', asy
   assert.match(withdrawal, /confirmWithdrawal !== true/);
   assert.match(footer, /href="\/angra"/);
 });
+
+
+test('recurring membership disclosure is consistent across UI and server terms', async () => {
+  const checkout = await readProjectFile(
+    'app/api/stripe/checkout/route.js'
+  );
+  const joinPage = await readProjectFile(
+    'app/bli-medlem/page.jsx'
+  );
+
+  assert.match(checkout, /förnyas månadsvis/);
+  assert.match(checkout, /avslutas direkt/);
+  assert.match(joinPage, /förnyas månadsvis/);
+  assert.match(joinPage, /avslutas direkt/);
+  assert.match(checkout, /2026-09-29-v2/);
+});
+
+test('privacy policy discloses legal basis and key processors', async () => {
+  const privacy = await readProjectFile('app/privacy/page.jsx');
+
+  assert.match(privacy, /rättslig grund/i);
+  assert.match(privacy, /Stripe/);
+  assert.match(privacy, /Resend/);
+  assert.match(privacy, /utanför EU\/EES/i);
+});
