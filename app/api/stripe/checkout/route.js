@@ -166,6 +166,16 @@ export async function POST(request) {
       );
     }
 
+    if (error?.message === 'PENDING_MEMBERSHIP_EXISTS') {
+      return NextResponse.json(
+        {
+          message:
+            'Det finns redan en väntande betalning för denna e-post. Använd samma kundkod som vid det första försöket eller kontakta Aegis.'
+        },
+        { status: 409 }
+      );
+    }
+
     console.error('Stripe Checkout error:', error);
 
     return NextResponse.json(
