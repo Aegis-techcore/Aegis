@@ -47,8 +47,18 @@ export default function CedrusPage() {
                 </div>
 
                 <div>
+                  <dt className="font-bold text-brand-primary">Organisationsnummer</dt>
+                  <dd className="mt-1 text-brand-muted">969804-8692</dd>
+                </div>
+
+                <div>
                   <dt className="font-bold text-brand-primary">Verksamhet / brand</dt>
                   <dd className="mt-1 text-brand-muted">Aegis</dd>
+                </div>
+
+                <div>
+                  <dt className="font-bold text-brand-primary">Registrerad adress</dt>
+                  <dd className="mt-1 text-brand-muted">Allmogeplatsen 15, 724 80 Västerås, Sverige</dd>
                 </div>
 
                 <div>
