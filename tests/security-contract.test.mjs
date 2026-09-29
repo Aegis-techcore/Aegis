@@ -172,3 +172,18 @@ test('pending Stripe membership retries require the original access code', async
   assert.match(checkout, /PENDING_MEMBERSHIP_EXISTS/);
   assert.match(checkout, /status:\s*409/);
 });
+
+
+test('Stripe membership terms are server-authoritative and versioned', async () => {
+  const checkout = await readProjectFile(
+    'app/api/stripe/checkout/route.js'
+  );
+  const store = await readProjectFile('app/lib/customerStore.js');
+
+  assert.match(checkout, /MEMBERSHIP_TERMS_VERSION/);
+  assert.match(checkout, /buildMembershipRequirements/);
+  assert.doesNotMatch(checkout, /body\?\.requirements/);
+  assert.match(checkout, /termsVersion: MEMBERSHIP_TERMS_VERSION/);
+  assert.match(checkout, /startServiceImmediately/);
+  assert.match(store, /signedAt:\s*now/);
+});
