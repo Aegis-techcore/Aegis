@@ -2,6 +2,8 @@ import { isAdminRequest } from '../../../../lib/adminAuth';
 import { deleteContactRequest } from '../../../../lib/requestStore';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function DELETE(request, { params }) {
   if (!isAdminRequest(request)) {
