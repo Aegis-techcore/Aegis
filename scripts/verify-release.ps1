@@ -131,10 +131,25 @@ finally {
   Write-Host 'Cleaning up local integration stack...'
 
   if ($dockerReady -and (Test-DockerEngine)) {
-    & docker compose @composeFiles --project-name $ciProject down --volumes --remove-orphans *> $null
+    $previousErrorActionPreference = $ErrorActionPreference
+    $cleanupExitCode = 0
 
-    if ($LASTEXITCODE -ne 0) {
+    try {
+      # Docker Compose writes normal progress messages to stderr on Windows.
+      # Run cleanup with non-terminating native stderr handling and inspect
+      # the real process exit code instead.
+      $ErrorActionPreference = 'Continue'
+      & docker compose @composeFiles --project-name $ciProject down --volumes --remove-orphans 2>&1 | Out-Null
+      $cleanupExitCode = $LASTEXITCODE
+    }
+    finally {
+      $ErrorActionPreference = $previousErrorActionPreference
+    }
+
+    if ($cleanupExitCode -ne 0) {
       Write-Host 'NOTE: Docker cleanup did not complete cleanly. Check Docker Desktop if test containers remain.'
+    } else {
+      Write-Host 'Docker cleanup completed.'
     }
   } else {
     Write-Host 'Cleanup skipped because Docker engine is not available.'
