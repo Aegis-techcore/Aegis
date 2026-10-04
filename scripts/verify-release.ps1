@@ -99,7 +99,14 @@ try {
   }
 
   Invoke-Checked 'Validate production Compose configuration' {
-    docker compose --env-file .env.production.example -f compose.production.yaml config --quiet
+    $previousEnvFile = $env:AEGIS_ENV_FILE
+    try {
+      $env:AEGIS_ENV_FILE = '.env.production.example'
+      docker compose --env-file .env.production.example -f compose.production.yaml config --quiet
+    }
+    finally {
+      $env:AEGIS_ENV_FILE = $previousEnvFile
+    }
   }
 
   Invoke-Checked 'Build and start isolated integration stack' {
@@ -114,7 +121,14 @@ try {
 
   if (Test-Path -LiteralPath $ProductionEnvFile -PathType Leaf) {
     Invoke-Checked 'Validate local production environment file against Compose' {
-      docker compose --env-file $ProductionEnvFile -f compose.production.yaml config --quiet
+      $previousEnvFile = $env:AEGIS_ENV_FILE
+      try {
+        $env:AEGIS_ENV_FILE = $ProductionEnvFile
+        docker compose --env-file $ProductionEnvFile -f compose.production.yaml config --quiet
+      }
+      finally {
+        $env:AEGIS_ENV_FILE = $previousEnvFile
+      }
     }
   } else {
     Write-Host ""

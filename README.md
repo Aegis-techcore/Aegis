@@ -109,11 +109,11 @@ För en låst release, använd `AEGIS_IMAGE_TAG=sha-HELA_GIT_SHA`. Rollback gör
 ## CI/CD
 
 - `ci.yml` verifierar kod, container, sårbarheter, secrets och Kubernetes-manifest.
-- `release.yml` publicerar SHA-taggade images till GHCR, skapar SBOM och signerar imagen med GitHub OIDC.
+- `release.yml` kräver att samma revision klarar hela CI före publicering till GHCR. Därefter skannas images med Trivy, signeras med GitHub OIDC och får SBOM.
 - `deploy.yml` kör migrationer när sådana finns och driftsätter med Helm `--atomic`.
 - Staging körs först. Production bör skyddas med required reviewers i GitHub Environment.
 - Dependabot skapar veckovisa uppdateringar för npm, Docker och GitHub Actions.
-- Kubernetes-jobben körs först när repository-variabeln `KUBERNETES_DEPLOY_ENABLED` är satt till `true`.
+- Kubernetes-deployment körs när repository-variabeln `KUBERNETES_DEPLOY_ENABLED` är satt till `true`. Helm- och schemakontroller körs alltid i CI.
 
 Se [Deployment](docs/deployment.md), [Secrets](docs/secrets.md) och [Operations](docs/operations.md) för fullständig konfiguration.
 
