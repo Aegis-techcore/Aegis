@@ -41,7 +41,7 @@ jobs:
       cancel-in-progress: false
     steps:
       - name: Check out deployed revision
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           ref: ${{ inputs.image_sha }}
 
