@@ -1,18 +1,18 @@
 # syntax=docker/dockerfile:1.7
 
-FROM node:24-alpine AS dependencies
+FROM node:26-alpine AS dependencies
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm \
     npm ci
 
-FROM node:24-alpine AS production-dependencies
+FROM node:26-alpine AS production-dependencies
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm \
     npm ci --omit=dev
 
-FROM node:24-alpine AS builder
+FROM node:26-alpine AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1 \
     DATABASE_URL=postgresql://build:build@example.invalid/aegis?sslmode=require
@@ -36,7 +36,7 @@ RUN apk upgrade --no-cache \
 USER node
 CMD ["node", "scripts/run-migrations.mjs"]
 
-FROM node:24-alpine AS runner
+FROM node:26-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production \
