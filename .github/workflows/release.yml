@@ -14,11 +14,17 @@ concurrency:
 
 permissions:
   contents: read
+  pull-requests: read
   packages: write
   id-token: write
 
 jobs:
+  validate:
+    name: Verify release revision
+    uses: ./.github/workflows/ci.yml
+
   publish:
+    needs: validate
     name: Publish ${{ matrix.name }} image
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -83,6 +89,15 @@ jobs:
           cache-to: type=gha,mode=max,scope=${{ matrix.target }}
           provenance: mode=max
           sbom: true
+
+      - name: Scan published image before signing and deployment
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ${{ steps.image.outputs.name }}@${{ steps.build.outputs.digest }}
+          format: table
+          exit-code: "1"
+          ignore-unfixed: true
+          severity: HIGH,CRITICAL
 
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3.10.0

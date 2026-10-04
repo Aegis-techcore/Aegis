@@ -60,7 +60,7 @@ function Ensure-DockerEngine {
   }
 
   Write-Host 'Docker Desktop is installed but the engine is not running. Starting Docker Desktop...'
-  Start-Process -FilePath $dockerDesktop | Out-Null
+  Start-Process -FilePath $dockerDesktop -WindowStyle Hidden | Out-Null
 
   for ($attempt = 1; $attempt -le 60; $attempt += 1) {
     Start-Sleep -Seconds 2

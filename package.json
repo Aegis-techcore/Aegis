@@ -3,13 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "description": "Aegis website built with Next.js.",
-  "homepage": "https://github.com/sharbel0022/Aegis#readme",
+  "homepage": "https://github.com/Aegis-techcore/Aegis#readme",
   "bugs": {
-    "url": "https://github.com/sharbel0022/Aegis/issues"
+    "url": "https://github.com/Aegis-techcore/Aegis/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sharbel0022/Aegis.git"
+    "url": "git+https://github.com/Aegis-techcore/Aegis.git"
   },
   "license": "ISC",
   "author": "",

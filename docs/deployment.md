@@ -6,7 +6,7 @@ Production Compose bygger ingenting lokalt. Den hämtar runtime- och migrationsi
 
 ```bash
 cp .env.production.example .env.production
-docker login ghcr.io -u sharbel0022
+docker login ghcr.io -u YOUR_GITHUB_USERNAME
 bash scripts/update-production.sh
 ```
 

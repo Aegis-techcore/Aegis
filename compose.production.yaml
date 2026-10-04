@@ -2,7 +2,7 @@ name: aegis-production
 
 services:
   migrate:
-    image: ${AEGIS_TOOLING_IMAGE:-ghcr.io/sharbel0022/aegis-tooling}:${AEGIS_IMAGE_TAG:-main}
+    image: ${AEGIS_TOOLING_IMAGE:-ghcr.io/aegis-techcore/aegis-tooling}:${AEGIS_IMAGE_TAG:-main}
     pull_policy: always
     env_file:
       - path: ${AEGIS_ENV_FILE:-.env.production}
@@ -17,7 +17,7 @@ services:
     restart: "no"
 
   web:
-    image: ${AEGIS_IMAGE:-ghcr.io/sharbel0022/aegis}:${AEGIS_IMAGE_TAG:-main}
+    image: ${AEGIS_IMAGE:-ghcr.io/aegis-techcore/aegis}:${AEGIS_IMAGE_TAG:-main}
     pull_policy: always
     init: true
     restart: unless-stopped

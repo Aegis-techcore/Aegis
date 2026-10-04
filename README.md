@@ -79,8 +79,8 @@ Chartet använder en Kubernetes `Deployment`, som skapar och återställer podda
 
 GitHub Actions publicerar två multi-platform-images:
 
-- `ghcr.io/sharbel0022/aegis:main`
-- `ghcr.io/sharbel0022/aegis-tooling:main`
+- `ghcr.io/aegis-techcore/aegis:main`
+- `ghcr.io/aegis-techcore/aegis-tooling:main`
 
 Runtime-imagen kör webbplatsen och tooling-imagen kör databasmigrationer. Inget behöver byggas på produktionsservern.
 
@@ -88,7 +88,7 @@ Första installationen:
 
 ```powershell
 Copy-Item .env.production.example .env.production
-docker login ghcr.io -u sharbel0022
+docker login ghcr.io -u YOUR_GITHUB_USERNAME
 .\scripts\update-production.ps1
 ```
 
@@ -96,7 +96,7 @@ På Linux:
 
 ```bash
 cp .env.production.example .env.production
-docker login ghcr.io -u sharbel0022
+docker login ghcr.io -u YOUR_GITHUB_USERNAME
 bash scripts/update-production.sh
 ```
 

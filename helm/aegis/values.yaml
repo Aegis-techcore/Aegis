@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/sharbel0022/aegis
+  repository: ghcr.io/aegis-techcore/aegis
   pullPolicy: IfNotPresent
   tag: ""
   digest: ""
