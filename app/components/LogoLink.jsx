@@ -19,7 +19,7 @@ export default function LogoLink({ variant = 'header', showSlogan = false, class
         <ShieldIcon className="h-6 w-6" />
       </div>
       <div>
-        <span className={textClasses[variant] || textClasses.header}>Aegis</span>
+        <span className={textClasses[variant] || textClasses.header}>Aegisssss</span>
         {showSlogan && (
           <span className="block text-xs font-mono text-brand-muted">
             Secure by Design. Built for Tomorrow.
