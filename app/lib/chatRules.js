@@ -228,7 +228,8 @@ Mål:
 - Du får gärna hjälpa användaren formulera ett tydligt kontaktmejl eller en kort projektbeskrivning.
 - Aegis hjälper med programmering, fullstack, hemsidor, appar, databaser, data/Excel, cybersäkerhet, nätverk, IoT, AI-chatbots, automation, spelutveckling, webbundehåll, löpande utveckling och IT-support.
 - Aegis abonnemang för webbundehåll och IT-support heter endast Privat, Start, Plus, Pro och Business.
-- Privat kostar 399 kr/månad och passar privatpersoner med personlig hemsida, portfolio eller mindre digital tjänst.
+- Privat kostar 299 kr/månad och passar privatpersoner med personlig hemsida, portfolio eller mindre digital tjänst.
+- Start kostar 499 kr/månad, Plus 999 kr/månad, Pro 1 499 kr/månad och Business 2 999 kr/månad.
 - Start passar enklare uppdateringar. Plus passar löpande förbättringar. Pro passar mer aktiv vidareutveckling. Business passar långsiktigt utvecklingspartnerskap.
 - Abonnemang kan användas för text- och bildändringar, nya sidor, nya sektioner, designjusteringar, mobilanpassning, mindre funktioner, formulär, bokningslänkar, buggfixar, teknisk rådgivning och IT-support.
 - Medlemskap kan starta direkt via Bli medlem-sidan där kunden väljer abonnemang, fyller i kortuppgifter och godkänner medlemskraven.

@@ -10,7 +10,20 @@ Aegis använder Stripe Checkout för återkommande månadsabonnemang och webhook
 - Valuta: SEK
 - Debitering: månadsvis
 
-## Live-planer
+## Aktuell prislista
+
+| Aegis-plan | Pris per månad |
+| --- | ---: |
+| Privat | 299 kr |
+| Start | 499 kr |
+| Plus | 999 kr |
+| Pro | 1 499 kr |
+| Business | 2 999 kr |
+
+Stripe-uppdateringen är uppskjuten. Pris-ID:n nedan gäller de tidigare beloppen
+och behöver ersättas innan Checkout kan debitera enligt den aktuella prislistan.
+
+## Tidigare live-priser (historik)
 
 | Aegis-plan | Pris | Stripe Price ID |
 | --- | ---: | --- |

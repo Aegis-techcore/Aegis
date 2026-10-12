@@ -11,7 +11,7 @@ import {
 const subscriptionPlans = [
   {
     name: "Privat",
-    price: "99 kr",
+    price: "299 kr",
     period: "/månad",
     audience:
       "För privatpersoner som vill ha hjälp med en personlig hemsida, portfolio eller mindre digital tjänst utan stora kostnader.",
@@ -29,7 +29,7 @@ const subscriptionPlans = [
   },
   {
     name: "Start",
-    price: "299 kr",
+    price: "499 kr",
     period: "/månad",
     audience:
       "För mindre företag som vill hålla sin webbplats uppdaterad, professionell och fungerande över tid.",
@@ -48,7 +48,7 @@ const subscriptionPlans = [
   },
   {
     name: "Plus",
-    price: "699 kr",
+    price: "999 kr",
     period: "/månad",
     audience:
       "För företag som vill förbättra sin webbplats löpande och utveckla nya delar utan stora engångskostnader.",
@@ -69,7 +69,7 @@ const subscriptionPlans = [
   },
   {
     name: "Pro",
-    price: "1 490 kr",
+    price: "1 499 kr",
     period: "/månad",
     audience:
       "För företag som vill ha löpande utveckling, förbättringar och teknisk support varje månad.",
@@ -90,7 +90,7 @@ const subscriptionPlans = [
   },
   {
     name: "Business",
-    price: "2 990 kr",
+    price: "2 999 kr",
     period: "/månad",
     audience:
       "För företag som vill ha en långsiktig teknikpartner för utveckling, förbättringar, support och digital tillväxt.",
