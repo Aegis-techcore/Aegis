@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import LogoLink from '../../components/LogoLink';
+import { formatDate } from '../../lib/formatDate.js';
 import { CheckIcon, ShieldIcon } from '../../components/Icons';
 
 const statusLabels = {
@@ -16,15 +17,6 @@ const statusLabels = {
 const typeLabels = {
   membership: 'Medlemskap',
   order: 'Beställning'
-};
-
-const formatDate = (value) => {
-  if (!value) return '';
-
-  return new Intl.DateTimeFormat('sv-SE', {
-    dateStyle: 'medium',
-    timeStyle: 'short'
-  }).format(new Date(value));
 };
 
 export default function AgreementPage() {

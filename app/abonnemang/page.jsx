@@ -2,130 +2,13 @@
 import Footer from "../components/Footer";
 import { useState } from "react";
 import Header from "../components/Header";
+import SubscriptionCard from "./SubscriptionCard";
+import { subscriptionPlans, subscriptionUseCases } from "./plans.js";
 import {
   ServerIcon,
   SparklesIcon,
   CheckIcon
 } from "../components/Icons";
-
-const subscriptionPlans = [
-  {
-    name: "Privat",
-    price: "299 kr",
-    period: "/månad",
-    audience:
-      "För privatpersoner som vill ha hjälp med en personlig hemsida, portfolio eller mindre digital tjänst utan stora kostnader.",
-    hours: "Upp till 30 minuters hjälp varje vecka",
-    features: [
-      "Ändring av enklare texter och bilder",
-      "Uppdatering av kontaktuppgifter eller länkar",
-      "Mindre justeringar på personlig hemsida eller portfolio",
-      "Hjälp med enklare publicering",
-      "Support via e-post"
-    ],
-    fit:
-      "Har en mindre privat webbplats och vill kunna få enkel hjälp vid behov.",
-    useCaseCount: 4
-  },
-  {
-    name: "Start",
-    price: "499 kr",
-    period: "/månad",
-    audience:
-      "För mindre företag som vill hålla sin webbplats uppdaterad, professionell och fungerande över tid.",
-    hours: "Upp till 1 timmes arbete varje vecka",
-    features: [
-      "Ändring av texter, bilder och innehåll",
-      "Uppdatering av kontaktuppgifter, öppettider och företagsinformation",
-      "Mindre designjusteringar",
-      "Felsökning av mindre problem",
-      "Enklare teknisk rådgivning",
-      "Support via e-post"
-    ],
-    fit:
-      "Vill ha hjälp då och då för att hålla webbplatsen aktuell och professionell.",
-    useCaseCount: 6
-  },
-  {
-    name: "Plus",
-    price: "999 kr",
-    period: "/månad",
-    audience:
-      "För företag som vill förbättra sin webbplats löpande och utveckla nya delar utan stora engångskostnader.",
-    hours: "Upp till 2 timmars arbete varje vecka",
-    features: [
-      "Allt som ingår i Start",
-      "Skapande av nya sektioner på webbplatsen",
-      "Uppdatering av menyer, knappar och layout",
-      "Mindre förbättringar av design och struktur",
-      "Hjälp med mobilanpassning",
-      "Mindre funktioner, exempelvis formulär, knappar eller bokningslänkar",
-      "Prioriterad e-postsupport"
-    ],
-    fit:
-      "Vill kunna utveckla webbplatsen lite varje månad med tillgång till teknisk hjälp.",
-    highlighted: true,
-    useCaseCount: 8
-  },
-  {
-    name: "Pro",
-    price: "1 499 kr",
-    period: "/månad",
-    audience:
-      "För företag som vill ha löpande utveckling, förbättringar och teknisk support varje månad.",
-    hours: "Upp till 3 timmars arbete varje vecka",
-    features: [
-      "Allt som ingår i Plus",
-      "Löpande vidareutveckling av webbplats eller app",
-      "Nya sidor och landningssidor",
-      "Förbättringar av användarupplevelse och design",
-      "Felsökning och buggfixar",
-      "Teknisk rådgivning kring förbättringar",
-      "Enklare API- och automationshjälp",
-      "Support via e-post och telefon"
-    ],
-    fit:
-      "Vill ha en flexibel utvecklingspartner tillgänglig varje månad.",
-    useCaseCount: 11
-  },
-  {
-    name: "Business",
-    price: "2 999 kr",
-    period: "/månad",
-    audience:
-      "För företag som vill ha en långsiktig teknikpartner för utveckling, förbättringar, support och digital tillväxt.",
-    hours: "Upp till 5 timmars arbete varje vecka",
-    features: [
-      "Allt som ingår i Pro",
-      "Kontinuerlig utveckling av webbplats, app eller digital tjänst",
-      "Planering och genomförande av nya funktioner",
-      "Större design- och strukturförbättringar",
-      "Hjälp med kampanjsidor och nya tjänstesidor",
-      "AI-, automation- och API-förbättringar vid behov",
-      "Regelbundna avstämningar",
-      "Prioriterad support och snabbare hantering"
-    ],
-    fit:
-      "Vill ha en pålitlig teknikpartner som aktivt hjälper företaget att växa digitalt.",
-    useCaseCount: 13
-  }
-];
-
-const subscriptionUseCases = [
-  "Ändra texter och bilder",
-  "Lägga till nya sidor",
-  "Skapa nya sektioner",
-  "Uppdatera produkter eller tjänster",
-  "Lägga till kontaktformulär",
-  "Förbättra design och layout",
-  "Göra webbplatsen mer mobilanpassad",
-  "Fixa buggar och tekniska problem",
-  "Lägga till bokningslänkar eller externa tjänster",
-  "Skapa kampanjsidor",
-  "Göra mindre ändringar i appar",
-  "Förbättra användarupplevelsen",
-  "IT-support och teknisk rådgivning"
-];
 
 export default function AbonnemangPage() {
   const [selectedSubscriptionName, setSelectedSubscriptionName] =
@@ -182,138 +65,16 @@ export default function AbonnemangPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-5">
-            {subscriptionPlans.map((plan, planIndex) => {
-              const isSelected =
-                selectedSubscriptionPlan.name === plan.name;
-
-              const isIncludedInSelectedLevel =
-                planIndex <= selectedSubscriptionIndex;
-
-              return (
-                <div
-                  key={plan.name}
-                  role="button"
-                  tabIndex={0}
-                  aria-pressed={isSelected}
-                  onClick={() => setSelectedSubscriptionName(plan.name)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault();
-                      setSelectedSubscriptionName(plan.name);
-                    }
-                  }}
-                  className={`group relative flex h-full cursor-pointer flex-col rounded-3xl border p-5 text-left outline-none transition duration-300 hover:-translate-y-1 hover:border-brand-primary hover:bg-brand-primary/10 focus-visible:border-brand-primary focus-visible:ring-2 focus-visible:ring-brand-primary/40 ${
-                    isSelected
-                      ? "border-brand-primary bg-brand-primary/15 shadow-2xl shadow-brand-glow/25"
-                      : plan.highlighted
-                        ? "border-brand-primary/50 bg-brand-primary/10 shadow-xl shadow-brand-glow/10"
-                        : "border-brand-border bg-slate-950/55"
-                  }`}
-                >
-                  <div className="mb-5 flex items-start justify-between gap-3">
-                    <div>
-                      <p className="mb-2 text-[10px] font-black uppercase tracking-[0.22em] text-brand-primary">
-                        Nivå {planIndex + 1}
-                      </p>
-
-                      <h2 className="text-2xl font-black text-white">
-                        {plan.name}
-                      </h2>
-
-                      <p className="mt-2 text-sm leading-6 text-brand-muted">
-                        {plan.audience}
-                      </p>
-                    </div>
-
-                    {(plan.highlighted || isSelected) && (
-                      <span
-                        className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-wider ${
-                          isSelected
-                            ? "bg-white text-slate-950"
-                            : "bg-brand-primary text-brand-bg"
-                        }`}
-                      >
-                        {isSelected ? "Vald" : "Populär"}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="mb-5">
-                    <span className="text-3xl font-black text-white">
-                      {plan.price}
-                    </span>
-
-                    <span className="ml-1 text-sm font-bold text-brand-muted">
-                      {plan.period}
-                    </span>
-
-                    <p className="mt-2 rounded-xl border border-brand-border bg-black/25 px-3 py-2 text-xs font-bold text-brand-primary">
-                      {plan.hours}
-                    </p>
-
-                    <p className="mt-2 text-xs font-bold text-brand-muted">
-                      {plan.useCaseCount} valbara hjälpområden
-                    </p>
-                  </div>
-
-                  <ul className="mb-6 space-y-3">
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-3">
-                        <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-brand-border bg-brand-primary/10 text-brand-primary">
-                          <CheckIcon className="h-3 w-3" />
-                        </span>
-
-                        <span
-                          className={`text-sm leading-6 ${
-                            isSelected
-                              ? "text-white/90"
-                              : "text-brand-muted"
-                          }`}
-                        >
-                          {feature}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="mt-auto">
-                    <div className="mb-5 rounded-2xl border border-brand-border bg-black/25 p-4">
-                      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-brand-primary">
-                        Passar dig som
-                      </p>
-
-                      <p className="mt-2 text-sm leading-6 text-white/85">
-                        {plan.fit}
-                      </p>
-                    </div>
-
-                    <a
-                      href={`/bli-medlem?plan=${encodeURIComponent(plan.name)}`}
-                      onClick={(event) => event.stopPropagation()}
-                      className={`block w-full rounded-xl px-4 py-3 text-center text-sm font-black transition active:scale-95 ${
-                        isSelected || plan.highlighted
-                          ? "bg-brand-primary text-brand-bg hover:bg-brand-primary-hover"
-                          : "border border-brand-border text-white hover:border-brand-primary hover:bg-brand-primary/10"
-                      }`}
-                    >
-                      Bli medlem
-                    </a>
-
-                    <p
-                      className={`mt-3 text-center text-[11px] font-bold ${
-                        isIncludedInSelectedLevel
-                          ? "text-brand-primary"
-                          : "text-brand-muted"
-                      }`}
-                    >
-                      {isIncludedInSelectedLevel
-                        ? "Ingår i vald nivå eller lägre"
-                        : "Klicka för att se fler val"}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
+            {subscriptionPlans.map((plan, planIndex) => (
+              <SubscriptionCard
+                key={plan.name}
+                plan={plan}
+                planIndex={planIndex}
+                isSelected={selectedSubscriptionPlan.name === plan.name}
+                isIncludedInSelectedLevel={planIndex <= selectedSubscriptionIndex}
+                onSelect={setSelectedSubscriptionName}
+              />
+            ))}
           </div>
 
           {/* Selected subscription */}

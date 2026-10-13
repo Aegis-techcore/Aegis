@@ -4,6 +4,8 @@ Aegis är en Next.js-webbplats med kontaktflöde, kundportal, adminpanel, Neon/P
 
 Projektet innehåller en säker produktionscontainer, Docker Compose för lokal körning, ett Helm-chart för Kubernetes och GitHub Actions för CI, signerade releaser och deployment till staging/production.
 
+Se [kodstrukturen](docs/code-structure.md) för en guide till mappar, gemensam logik och var vanliga ändringar ska göras.
+
 ## Krav
 
 - Node.js 24

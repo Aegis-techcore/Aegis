@@ -2,6 +2,7 @@
 import Footer from "../components/Footer";
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
+import { serviceOptions } from "../lib/services.js";
 import {
   CheckIcon,
   ShieldIcon,
@@ -16,45 +17,6 @@ const initialFormData = {
   service: "programming",
   message: ""
 };
-
-const serviceOptions = [
-  {
-    value: "programming",
-    label: "Programmering & Utveckling"
-  },
-  {
-    value: "fullstack",
-    label: "Fullstack-utveckling"
-  },
-  {
-    value: "data",
-    label: "Data & Excel-automation"
-  },
-  {
-    value: "cybersecurity",
-    label: "Cybersäkerhet"
-  },
-  {
-    value: "network",
-    label: "Nätverk & Brandvägg"
-  },
-  {
-    value: "embedded",
-    label: "Embedded Systems / IoT"
-  },
-  {
-    value: "ai",
-    label: "AI-chatbot / Automation"
-  },
-  {
-    value: "maintenance",
-    label: "Webbunderhåll & IT-support"
-  },
-  {
-    value: "games",
-    label: "Spelutveckling"
-  }
-];
 
 export default function KontaktPage() {
   const [formData, setFormData] = useState(initialFormData);

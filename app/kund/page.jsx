@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import LogoLink from '../components/LogoLink';
+import { formatDate } from '../lib/formatDate.js';
 import { ChatBubbleIcon, CheckIcon, ShieldIcon } from '../components/Icons';
 
 const statusLabels = {
@@ -15,15 +16,6 @@ const statusLabels = {
 const typeLabels = {
   membership: 'Medlemskap',
   order: 'Beställning'
-};
-
-const formatDate = (value) => {
-  if (!value) return '';
-
-  return new Intl.DateTimeFormat('sv-SE', {
-    dateStyle: 'medium',
-    timeStyle: 'short'
-  }).format(new Date(value));
 };
 
 const authorLabels = {

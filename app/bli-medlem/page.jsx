@@ -3,39 +3,7 @@ import Footer from "../components/Footer";
 import { useEffect, useMemo, useState } from 'react';
 import LogoLink from '../components/LogoLink';
 import { ShieldIcon } from '../components/Icons';
-
-const plans = [
-  {
-    name: 'Privat',
-    price: '299 kr',
-    audience: 'Privatpersoner med personlig hemsida, portfolio eller mindre digital tjänst.',
-    hours: 'Upp till 30 minuter per vecka'
-  },
-  {
-    name: 'Start',
-    price: '499 kr',
-    audience: 'Mindre företag som vill hålla sin webbplats uppdaterad.',
-    hours: 'Upp till 1 timme per vecka'
-  },
-  {
-    name: 'Plus',
-    price: '999 kr',
-    audience: 'Företag som vill förbättra webbplatsen löpande.',
-    hours: 'Upp till 2 timmar per vecka'
-  },
-  {
-    name: 'Pro',
-    price: '1 499 kr',
-    audience: 'Företag med aktiv vidareutveckling och support.',
-    hours: 'Upp till 3 timmar per vecka'
-  },
-  {
-    name: 'Business',
-    price: '2 999 kr',
-    audience: 'Långsiktigt partnerskap för utveckling, support och digital tillväxt.',
-    hours: 'Upp till 5 timmar per vecka'
-  }
-];
+import { plans } from './plans.js';
 
 const defaultRequirements = (plan) => [
   `Medlemskapet gäller abonnemanget ${plan.name} för ${plan.price}/månad.`,

@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { SERVICE_LABELS } from './services.js';
 import { addAdminNotification } from './notificationStore';
 import { saveContactRequest } from './requestStore';
 
@@ -10,18 +11,6 @@ const FROM_EMAIL =
   'Aegis Core <onboarding@resend.dev>';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-const SERVICE_LABELS = {
-  programming: 'Programmering & Utveckling',
-  fullstack: 'Fullstack-utveckling',
-  data: 'Data & Excel-automation',
-  cybersecurity: 'Cybersäkerhet',
-  network: 'Nätverk & Brandvägg',
-  embedded: 'Embedded Systems / IoT',
-  ai: 'AI-chatbot / Automation',
-  maintenance: 'Webbunderhåll & IT-support',
-  games: 'Spelutveckling'
-};
 
 const cleanSingleLine = (value, maxLength) =>
   String(value ?? '')

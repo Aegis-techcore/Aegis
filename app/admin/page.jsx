@@ -2,48 +2,16 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import LogoLink from '../components/LogoLink';
-
-const statusLabels = {
-  pending_signature: 'Väntar signering',
-  pending_payment: 'Väntar betalning',
-  active: 'Aktiv',
-  cancel_requested: 'Avslut begärt',
-  cancelled: 'Avslutad',
-  completed: 'Slutförd'
-};
-
-const typeLabels = {
-  membership: 'Medlemskap',
-  order: 'Beställning'
-};
-
-const planOptions = ['Privat', 'Start', 'Plus', 'Pro', 'Business', 'Projekt'];
-
-const viewTabs = [
-  { id: 'requests', label: 'Förfrågningar' },
-  { id: 'active', label: 'Aktiva' },
-  { id: 'pending', label: 'Väntar' },
-  { id: 'archive', label: 'Arkiv' },
-  { id: 'all', label: 'Alla kunder' }
-];
-
-const formatDate = (value) => {
-  if (!value) return '';
-
-  return new Intl.DateTimeFormat('sv-SE', {
-    dateStyle: 'medium',
-    timeStyle: 'short'
-  }).format(new Date(value));
-};
-
-const getDraftValue = (drafts, requestId, field, fallback = '') => drafts[requestId]?.[field] ?? fallback;
-
-const getStats = (customers) => ({
-  total: customers.length,
-  active: customers.filter((customer) => customer.status === 'active').length,
-  pending: customers.filter((customer) => ['pending_signature', 'pending_payment'].includes(customer.status)).length,
-  archive: customers.filter((customer) => ['cancel_requested', 'cancelled', 'completed'].includes(customer.status)).length
-});
+import { formatDate } from '../lib/formatDate.js';
+import {
+  statusLabels,
+  typeLabels,
+  planOptions,
+  viewTabs,
+  getDraftValue,
+  getStats,
+  filterCustomers
+} from './customerViews.js';
 
 export default function AdminPage() {
   const [password, setPassword] = useState('');
@@ -63,28 +31,10 @@ export default function AdminPage() {
 
   const stats = useMemo(() => getStats(customers), [customers]);
 
-  const visibleCustomers = useMemo(() => {
-    const query = search.trim().toLowerCase();
-
-    return customers.filter((customer) => {
-      const matchesView =
-        activeView === 'all' ||
-        (activeView === 'active' && customer.status === 'active') ||
-        (activeView === 'pending' && ['pending_signature', 'pending_payment'].includes(customer.status)) ||
-        (activeView === 'archive' && ['cancel_requested', 'cancelled', 'completed'].includes(customer.status));
-
-      const searchable = [
-        customer.name,
-        customer.company,
-        customer.email,
-        customer.phone,
-        customer.projectTitle,
-        customer.plan
-      ].join(' ').toLowerCase();
-
-      return matchesView && (!query || searchable.includes(query));
-    });
-  }, [activeView, customers, search]);
+  const visibleCustomers = useMemo(
+    () => filterCustomers(customers, activeView, search),
+    [activeView, customers, search]
+  );
 
   const loadDashboard = async () => {
     const [requestsResponse, customersResponse, notificationsResponse] = await Promise.all([
